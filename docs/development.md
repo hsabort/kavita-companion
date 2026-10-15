@@ -31,6 +31,22 @@ docker run --rm -u "$(id -u):$(id -g)" -e npm_config_cache=/tmp/npm -v "$PWD":/a
 Updating dependencies: change the version in `package.json`, then regenerate the lock file the same way
 with `npm install --package-lock-only --ignore-scripts`.
 
+## Releases and deploying live
+
+`main` is the deployable branch; work happens on short-lived feature branches (the test worktree is on
+`develop`). CI (`.github/workflows/ci.yml`) type-checks and builds on every push and pull request.
+
+To cut a release:
+
+1. Bump the version in `kavita-companion/package.json` and `package-lock.json`.
+2. Move the `Unreleased` items in `CHANGELOG.md` under a new `## <version> — <date>` heading.
+3. Commit, then tag: `git tag v<version> && git push origin main --tags`.
+4. Update live: `cd /srv/kavita && git pull && ./setup.sh` (adds new settings, rebuilds the portal,
+   restarts the stack). Verify with `tests/run.sh` **in the test worktree** first.
+
+The portal database migrates itself on start; see [operations.md](operations.md) for backups and
+rollback.
+
 ## Conventions
 
 - Settings come from environment variables (`src/config.ts`), set in `compose.yaml` from `.env`. A new
