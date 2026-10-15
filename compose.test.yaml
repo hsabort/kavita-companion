@@ -1,0 +1,13 @@
+# Overlay for the test environment (docs/development.md). It makes the test Caddy reuse the live
+# stack's Let's Encrypt certificate instead of running ACME: the domain's HTTP-01 challenge can only
+# reach one stack on this host, and the certificate is per-domain, so reusing it keeps the portal's
+# Secure session cookie and the browser tests working with no code changes.
+#
+# Used only by the test checkout, which sets these in its .env:
+#   COMPOSE_FILE=compose.yaml:compose.test.yaml
+#   CADDYFILE=Caddyfile.test
+#   LIVE_CERT_DIR=<live caddy certificate folder>
+services:
+  caddy:
+    volumes:
+      - ${LIVE_CERT_DIR}:/certs:ro
