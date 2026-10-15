@@ -107,8 +107,15 @@ with sync_playwright() as p:
 
     href = link.get_attribute("href")
     kavita.goto(href)
-    kavita.wait_for_timeout(4000)
-    check("'Open in Kavita' opens that series in Kavita", series in kavita.inner_text("body"), href)
+    # Kavita's series page is an Angular view that fetches its data after load; on a cold cache it can
+    # take longer than a fixed sleep, so poll for the series name instead.
+    opened = False
+    for _ in range(30):
+        if series in kavita.inner_text("body"):
+            opened = True
+            break
+        kavita.wait_for_timeout(1000)
+    check("'Open in Kavita' opens that series in Kavita", opened, href)
     kavita.screenshot(path=f"{shots}/fix-kavita-series.png")
 
     entry.locator("button", has_text="Fix…").click()
