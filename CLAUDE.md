@@ -14,12 +14,15 @@ Real users (jim, and others) use the portal: never touch their uploads or librar
 
 - Repository: `/srv/kavita` (code) with runtime data in `/srv/kavita/data` and media in `/srv/media`
   (moved from `~/projects/kavita` and `~/media` on 2026-10-15). Never commit `.env`, `data/`, `backups/`.
+  The test environment is a git worktree at `/srv/kavita-test` (branch `develop`).
 - Rebuild the portal: `docker compose up -d --build kavita-companion`. Caddy config change:
   `docker compose restart caddy`.
 - Kavita API from the host: `python3 scripts/kavita-api.py METHOD PATH [JSON] [--as uploader|readonly|admin]`.
-- Tests: `tests/run.sh [--browser] [--roles]` (needs the TEST_* accounts; see `tests/README.md`). Don't run
-  `--roles` while real people use the portal — it changes test-uploader's roles. More than two full runs
-  within 15 minutes trips the per-address failed sign-in limit (restart kavita-companion to clear it).
+- Tests: run them in the test worktree `/srv/kavita-test` against the test stack, not here (they create
+  series and change roles; see docs/development.md). `tests/run.sh [--browser] [--roles]` needs the
+  TEST_* accounts (`tests/README.md`); `tests/create_test_accounts.py` creates them. On the live stack,
+  never run `--roles` while real people use the portal: it changes test-uploader's roles. More than two
+  full runs within 15 minutes trips the per-address failed sign-in limit (restart kavita-companion).
 - Never commit or push until the user has created the repository and provided credentials for it.
 - No Node on the host: build/type-check inside Docker (`docs/development.md`).
 
