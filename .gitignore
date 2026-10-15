@@ -1,0 +1,20 @@
+# Secrets and machine-specific settings
+.env
+.env.test
+*.secret
+.claude/settings.local.json
+
+# Runtime data (databases, certificates, backups)
+/data/
+/data-test/
+/backups/
+
+# Build output
+kavita-companion/node_modules/
+kavita-companion/dist/
+kavita-companion/public/build/
+
+# Test artefacts
+tests/screenshots/
+__pycache__/
+*.pyc
