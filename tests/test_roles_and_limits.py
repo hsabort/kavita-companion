@@ -26,7 +26,9 @@ if "--force" not in sys.argv:
     now_ms = time.time() * 1000
     people = con.execute("""SELECT DISTINCT username FROM audit_log WHERE action = 'login' AND at > ?
         AND username NOT LIKE 'test-%'""", (now_ms - 3_600_000,)).fetchall()
-    real_uploads = con.execute("""SELECT filename FROM uploads WHERE created_at > ? AND filename NOT LIKE '%Test%'
+    real_uploads = con.execute("""SELECT filename FROM uploads WHERE created_at > ?
+        AND owner_name NOT LIKE 'test-%'
+        AND filename NOT LIKE '%Test%'
         AND filename NOT LIKE 'Slow %' AND filename NOT LIKE 'Fake %' AND filename NOT LIKE 'Big Series %'
         AND filename NOT LIKE 'Mislabelled %' AND filename NOT LIKE 'Kc %' AND filename NOT LIKE 'Not A Book %'
         AND filename NOT LIKE 'Browser %' AND filename NOT LIKE 'Kavita Test Book%'""", (now_ms - 1_800_000,)).fetchall()
