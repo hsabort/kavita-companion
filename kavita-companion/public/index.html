@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Kavita Uploads</title>
+  <link rel="icon" type="image/png" href="/assets/img/favicon-32.png">
+  <link rel="stylesheet" href="/build/app.css">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/build/app.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" id="brand-link" href="/">
+      <img src="/assets/img/kavita-logo.png" alt="" width="28" height="28">
+      <span class="wordmark">Kavita</span>
+    </a>
+    <span class="nav-title">Uploads</span>
+    <nav class="nav-end" id="nav-end" hidden>
+      <a class="nav-link" id="back-to-kavita" href="/">Back to Kavita</a>
+      <span class="nav-user" id="who"></span>
+      <button id="logout" type="button" class="btn btn-outline small">Sign out</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="login-view" class="login" hidden>
+      <div class="login-brand">
+        <img src="/assets/img/kavita-logo.png" alt="" width="56" height="56">
+        <span class="wordmark">Kavita</span>
+      </div>
+      <form id="login-form" class="login-card" autocomplete="on">
+        <h1>Sign in to upload</h1>
+        <p class="muted">Use your Kavita username and password.</p>
+        <label class="visually-hidden" for="login-username">Username</label>
+        <input id="login-username" name="username" placeholder="Username" autocomplete="username" required autocapitalize="none" spellcheck="false">
+        <label class="visually-hidden" for="login-password">Password</label>
+        <input id="login-password" name="password" type="password" placeholder="Password" autocomplete="current-password" required>
+        <button type="submit" class="btn btn-outline-primary">Sign in</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <div id="home-view" hidden>
+      <p id="notice" class="notice" role="status" hidden></p>
+
+      <section id="review-section" hidden>
+        <div class="section-head">
+          <h2>Waiting for review <span id="review-count" class="count-badge" hidden></span></h2>
+          <button id="review-refresh" type="button" class="btn btn-outline small">Refresh</button>
+        </div>
+        <p id="review-banner" class="banner" hidden><span id="review-banner-text"></span>
+          <button id="review-banner-refresh" type="button" class="btn btn-outline small">Show them</button></p>
+        <p id="review-empty" class="empty">Nothing is waiting for review.</p>
+        <div id="review-list"></div>
+        <div id="fix-area"></div>
+        <details id="review-recent-wrap" class="recent">
+          <summary>Recent decisions</summary>
+          <ul id="review-recent" class="uploads"></ul>
+        </details>
+        <details class="recent">
+          <summary>Find an approved file to fix</summary>
+          <label for="approved-search">File name or path</label>
+          <input id="approved-search" type="search" autocomplete="off" placeholder="e.g. Iron Man">
+          <ul id="approved-results" class="uploads"></ul>
+        </details>
+      </section>
+
+      <section id="upload-section" hidden>
+        <h2>Upload</h2>
+        <div class="upload-library">
+          <label for="library">Library</label>
+          <select id="library" required></select>
+        </div>
+        <div id="uploader"></div>
+        <p class="hint">If your connection drops, the upload carries on by itself. If you close the page, add the same
+          file again and it continues where it stopped. An admin reviews every upload before it appears in Kavita.</p>
+      </section>
+
+      <section>
+        <h2>Your uploads</h2>
+        <p id="uploads-empty" class="empty">You haven't uploaded anything yet.</p>
+        <ul id="uploads" class="uploads"></ul>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

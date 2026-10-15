@@ -1,0 +1,774 @@
+import Uppy from "@uppy/core";
+import Dashboard from "@uppy/dashboard";
+import Tus from "@uppy/tus";
+import "@uppy/core/css/style.min.css";
+import "@uppy/dashboard/css/style.min.css";
+
+const $ = (id) => document.getElementById(id);
+const GB = 1024 ** 3;
+
+async function api(path, options = {}) {
+  // Only declare JSON when there is a body: Fastify rejects an empty body labelled application/json.
+  const headers = options.body === undefined ? {} : { "Content-Type": "application/json" };
+  const res = await fetch(path, {
+    ...options,
+    headers: { ...headers, ...(options.headers ?? {}) },
+    credentials: "same-origin",
+  });
+  const body = await res.json().catch(() => ({}));
+  return { status: res.status, body };
+}
+
+// ---------- Kavita theme ----------
+// The server reads the user's Kavita theme and sends its colours as portal tokens (src/themes.ts).
+// Values are set as CSS custom properties through the CSSOM, never as style text.
+
+const THEME_TOKENS = ["--bg", "--text", "--primary", "--primary-hover", "--on-primary", "--navbar", "--navbar-text",
+  "--input-bg", "--input-text", "--input-placeholder", "--error", "--secondary", "--muted", "--surface-solid"];
+let scheme = "dark";
+let appliedTheme = "";
+
+function applyTheme(theme) {
+  appliedTheme = JSON.stringify(theme ?? null);
+  const root = document.documentElement;
+  for (const name of THEME_TOKENS) root.style.removeProperty(name);
+  for (const [name, value] of Object.entries(theme?.tokens ?? {})) {
+    if (THEME_TOKENS.includes(name)) root.style.setProperty(name, value);
+  }
+  scheme = theme?.scheme === "light" ? "light" : "dark";
+  root.style.colorScheme = scheme;
+  root.dataset.scheme = scheme;
+  root.dataset.theme = theme?.name ?? "Dark";
+  uppy?.getPlugin("Dashboard")?.setOptions({ theme: scheme }); // live, without touching uploads in progress
+}
+
+// Follow theme changes made in Kavita: check when the tab comes back into view and every 30 seconds.
+async function checkTheme() {
+  if (document.visibilityState !== "visible" || $("home-view").hidden) return;
+  const { status, body } = await api("/api/theme");
+  if (status === 200 && JSON.stringify(body.theme ?? null) !== appliedTheme) applyTheme(body.theme);
+}
+document.addEventListener("visibilitychange", checkTheme);
+window.addEventListener("focus", checkTheme);
+setInterval(checkTheme, 30_000);
+
+async function refreshMe() {
+  const { body } = await api("/api/me");
+  applyTheme(body.theme);
+  show(body.user ?? null, body.kavitaUrl);
+  return body;
+}
+
+// ---------- Sign in / out ----------
+
+let uppy = null;
+let refreshTimer = null;
+
+function notice(text, problem = false) {
+  $("notice").textContent = text ?? "";
+  $("notice").hidden = !text;
+  $("notice").classList.toggle("is-problem", problem);
+}
+
+function show(user, kavitaUrl) {
+  $("login-view").hidden = !!user;
+  $("home-view").hidden = !user;
+  $("nav-end").hidden = !user;
+  if (kavitaUrl) {
+    $("back-to-kavita").href = kavitaUrl;
+    $("brand-link").href = kavitaUrl;
+  }
+  clearInterval(refreshTimer);
+  if (!user) {
+    uppy?.destroy();
+    uppy = null;
+    return;
+  }
+  $("who").textContent = user.username;
+  $("review-section").hidden = !user.isReviewer;
+  if (user.isReviewer) refreshReview();
+  if (!user.canUpload) notice("Your Kavita account is read-only, so uploading isn't available.");
+  $("upload-section").hidden = !user.canUpload;
+  if (user.canUpload) startUploader();
+  refreshUploads();
+  refreshTimer = setInterval(refreshUploads, 10_000);
+}
+
+$("login-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.target);
+  $("login-error").textContent = "";
+  const button = event.target.querySelector("button");
+  button.disabled = true;
+  const { status, body } = await api("/api/login", {
+    method: "POST",
+    body: JSON.stringify({ username: form.get("username"), password: form.get("password") }),
+  });
+  button.disabled = false;
+  if (status === 200) {
+    event.target.reset();
+    await refreshMe(); // picks up the user's Kavita theme
+    if (body.sidebar === "added" || body.sidebar === "shown") {
+      notice("Uploads is now in your Kavita sidebar. Next time, open it from there and you're signed in automatically.");
+    } else if (body.sidebar === "repaired") {
+      notice("The Uploads link in your Kavita sidebar has been repaired.");
+    }
+  } else if (status === 429) {
+    $("login-error").textContent = "Too many attempts. Wait 15 minutes and try again.";
+  } else {
+    $("login-error").textContent = body.error ?? "Sign-in failed.";
+  }
+});
+
+$("logout").addEventListener("click", async () => {
+  await api("/api/logout", { method: "POST", body: "{}" });
+  notice(null);
+  await refreshMe(); // back to the server's default theme
+});
+
+// ---------- Uploading ----------
+
+async function startUploader() {
+  const [{ body: libs }, { body: mine }] = await Promise.all([api("/api/libraries"), api("/api/uploads")]);
+  const limits = mine.limits;
+
+  const select = $("library");
+  select.replaceChildren(new Option("Choose a library…", ""));
+  for (const lib of libs.libraries ?? []) select.add(new Option(lib.name, String(lib.id)));
+
+  uppy?.destroy();
+  uppy = new Uppy({
+    autoProceed: false,
+    restrictions: {
+      maxFileSize: limits.maxFileGb * GB,
+      allowedFileTypes: limits.acceptedExtensions.map((e) => "." + e),
+    },
+    onBeforeUpload: () => {
+      if (!select.value) {
+        uppy.info("Choose a library first.", "error", 4000);
+        select.focus();
+        return false;
+      }
+      return true;
+    },
+  })
+    .use(Dashboard, {
+      target: "#uploader",
+      inline: true,
+      width: "100%",
+      height: 380,
+      theme: scheme,
+      proudlyDisplayPoweredByUppy: false,
+      fileManagerSelectionType: "both",
+      note: `${limits.acceptedExtensions.map((e) => "." + e).join(" ")}, up to ${limits.maxFileGb} GB per file`,
+    })
+    .use(Tus, {
+      endpoint: "/files",
+      // Small enough that one chunk finishes quickly on a phone connection; a dropped
+      // connection only re-sends the current chunk.
+      chunkSize: 25 * 1024 * 1024,
+      limit: limits.maxConcurrentPerUser,
+      retryDelays: [0, 1000, 3000, 5000, 10000, 20000, 30000, 60000],
+      allowedMetaFields: ["name", "type", "libraryId"],
+      removeFingerprintOnSuccess: true,
+    });
+
+  select.addEventListener("change", () => uppy.setMeta({ libraryId: select.value }));
+
+  // Show the server's own explanation (quota, file type, ...) instead of the raw protocol error.
+  uppy.on("upload-error", (file, error) => {
+    const body = error?.originalResponse?.getBody?.();
+    if (body) uppy.info(`${file.name}: ${body}`, "error", 8000);
+  });
+  uppy.on("upload-success", () => setTimeout(refreshUploads, 1500));
+  uppy.on("complete", refreshUploads);
+}
+
+// ---------- My uploads ----------
+
+const STATUS_TEXT = {
+  uploading: "Uploading",
+  checking: "Checking file…",
+  pending: "Waiting for review",
+  approving: "Being reviewed",
+  rejecting: "Being reviewed",
+  approved: "In the library",
+  rejected: "Rejected",
+  invalid: "Not accepted",
+  duplicate: "Duplicate",
+  cancelled: "Cancelled",
+  expired: "Expired",
+  withdrawn: "Withdrawn",
+};
+
+const formatDate = (ms) =>
+  new Date(ms).toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+
+function formatSize(bytes) {
+  if (bytes >= GB) return `${(bytes / GB).toFixed(1)} GB`;
+  if (bytes >= 1024 ** 2) return `${Math.round(bytes / 1024 ** 2)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+const RECENT_UPLOADS = 15;
+let showAllUploads = false;
+
+async function refreshUploads() {
+  const { status, body } = await api("/api/uploads");
+  if (status === 401) return show(null);
+  const list = $("uploads");
+  const all = body.uploads ?? [];
+  const uploads = showAllUploads ? all : all.slice(0, RECENT_UPLOADS);
+  $("uploads-empty").hidden = all.length > 0;
+  list.replaceChildren(
+    ...uploads.map((u) => {
+      const li = document.createElement("li");
+      li.className = `upload status-${u.status}`;
+      const name = document.createElement("div");
+      name.className = "upload-name";
+      name.textContent = u.filename;
+      const meta = document.createElement("div");
+      meta.className = "upload-meta";
+      const state = document.createElement("span");
+      state.className = "status";
+      state.textContent = STATUS_TEXT[u.status] ?? u.status;
+      meta.append(state, ` in ${u.library_name}, ${formatSize(u.size)}, uploaded ${formatDate(u.created_at)}`);
+      li.append(name, meta);
+      if (u.kavita_url) {
+        const open = document.createElement("a");
+        open.href = u.kavita_url;
+        open.textContent = "Open in Kavita";
+        open.className = "kavita-link";
+        meta.append(" ", open);
+      }
+      if (u.error) {
+        const err = document.createElement("div");
+        err.className = "upload-error";
+        err.textContent = u.error;
+        li.append(err);
+      }
+      if (u.status === "pending") {
+        const withdraw = document.createElement("button");
+        withdraw.type = "button";
+        withdraw.className = "btn btn-outline small";
+        withdraw.textContent = "Withdraw";
+        withdraw.addEventListener("click", async () => {
+          if (!confirm(`Withdraw "${u.filename}"? The file will be deleted.`)) return;
+          await api(`/api/uploads/${encodeURIComponent(u.id)}`, { method: "DELETE" });
+          refreshUploads();
+        });
+        li.append(withdraw);
+      }
+      return li;
+    }),
+  );
+  if (all.length > uploads.length) {
+    const more = document.createElement("button");
+    more.type = "button";
+    more.className = "btn btn-outline small show-older";
+    more.textContent = `Show ${all.length - uploads.length} older upload${all.length - uploads.length === 1 ? "" : "s"}`;
+    more.addEventListener("click", () => { showAllUploads = true; refreshUploads(); });
+    list.append(more);
+  }
+}
+
+// ---------- Review (admins) ----------
+// Pending uploads are shown in groups (same uploader, library and series), so a batch like
+// "Iron Man #1-6" is reviewed once: shared fields at the top, per-file rows below.
+
+const el = (tag, props = {}, ...children) => {
+  const { dataset, ...rest } = props;
+  const node = Object.assign(document.createElement(tag), rest);
+  if (dataset) Object.assign(node.dataset, dataset); // dataset itself is read-only
+  node.append(...children.filter((c) => c !== null && c !== undefined));
+  return node;
+};
+const field = (label, input, hint) => el("label", { className: "field" }, label, input, hint ? el("small", { className: "muted", textContent: hint }) : null);
+
+let review = null; // last /api/review response
+const seriesLists = new Map(); // libraryId -> Promise<string[]>
+const contentsCache = new Map(); // `${libraryId}|${name}` -> Promise<{exists, numbers, volumes, name}>
+
+function seriesFor(libraryId) {
+  if (!seriesLists.has(libraryId)) {
+    seriesLists.set(libraryId, api(`/api/review/series?libraryId=${libraryId}`).then(({ body }) => body.series ?? []));
+  }
+  return seriesLists.get(libraryId);
+}
+
+function contentsFor(libraryId, name) {
+  const key = `${libraryId}|${name.toLowerCase()}`;
+  if (!contentsCache.has(key)) {
+    contentsCache.set(key, api(`/api/review/series-contents?libraryId=${libraryId}&name=${encodeURIComponent(name)}`).then(({ body }) => body));
+  }
+  return contentsCache.get(key);
+}
+
+function forgetLibrary(libraryId) {
+  seriesLists.delete(libraryId);
+  for (const key of contentsCache.keys()) if (key.startsWith(`${libraryId}|`)) contentsCache.delete(key);
+  document.getElementById(`series-list-${libraryId}`)?.remove();
+}
+
+async function ensureDatalist(libraryId) {
+  const id = `series-list-${libraryId}`;
+  if (!$(id)) {
+    const list = el("datalist", { id });
+    for (const name of await seriesFor(libraryId)) list.append(el("option", { value: name }));
+    document.body.append(list);
+  }
+  return id;
+}
+
+const normalizeSeries = (s) => s.toLowerCase().replace(/\(\d{4}\)/g, "").replace(/^the\s+/, "").replace(/[^a-z0-9]+/g, "");
+const sameName = (a, b) => a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0;
+
+function editDistance(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+
+/** Existing series that look like typos/variants of `name` (but aren't the same series). */
+function nearMisses(name, existing) {
+  const n = normalizeSeries(name);
+  if (!n || existing.some((e) => sameName(e, name))) return [];
+  return existing.filter((e) => {
+    const m = normalizeSeries(e);
+    return m === n || (n.length >= 6 && editDistance(m, n) <= 2) || (m.length >= 4 && (m.startsWith(n) || n.startsWith(m)));
+  }).slice(0, 3);
+}
+
+const pad = (value, width) => {
+  const m = /^(\d+)(\.\d+)?$/.exec(value ?? "");
+  return m ? m[1].padStart(width, "0") + (m[2] ?? "") : value;
+};
+
+/** Suggested file name (without extension), following Kavita's naming guide per library type. */
+function templateName(libraryType, f) {
+  const series = f.Series?.trim() || "";
+  const num = f.Number?.trim();
+  const vol = f.Volume?.trim();
+  const title = f.Title?.trim();
+  if (libraryType === 2 || libraryType === 4) { // Book / Light novel
+    if (series && title) return `${series}${num ? ` ${pad(num, 2)}` : ""} - ${title}`;
+    return title || series;
+  }
+  if (libraryType === 0) { // Manga
+    return `${series}${vol ? ` v${pad(vol, 2)}` : ""}${num ? ` c${pad(num, 3)}` : ""}`;
+  }
+  return `${series}${vol ? ` v${vol}` : ""}${num ? ` #${pad(num, 3)}` : ""}`; // Comics
+}
+
+const SHARED_MORE = ["Writer", "Penciller", "Inker", "Colorist", "CoverArtist", "Publisher", "Imprint", "Genre", "Tags", "LanguageISO"];
+const LABELS = { LanguageISO: "Language (ISO code, e.g. en)", CoverArtist: "Cover artist" };
+
+/** The value all items share, or "" if they differ (blank = keep each file's own). */
+function common(items, key) {
+  const values = new Set(items.map((i) => i.defaults?.[key] ?? ""));
+  return values.size === 1 ? [...values][0] : "";
+}
+
+function groupCard(items) {
+  const first = items[0];
+  const fixing = first.mode === "fix";
+  const libraries = review.libraries;
+  const card = el("article", { className: fixing ? "review-group is-fix" : "review-group" });
+
+  // Shared fields
+  const library = el("select");
+  for (const lib of libraries) library.add(new Option(lib.name, String(lib.id), false, lib.id === first.libraryId));
+  const series = el("input", { value: first.defaults.Series ?? "", autocomplete: "off", required: true });
+  const year = el("input", { value: common(items, "Year"), inputMode: "numeric", maxLength: 4, placeholder: items.length > 1 ? "keep each file's" : "" });
+  const age = el("select");
+  age.add(new Option(items.length > 1 ? "Keep each file's" : "Not set", ""));
+  for (const r of review.ageRatings) age.add(new Option(r, r, false, r === common(items, "AgeRating")));
+  const seriesNote = el("div", { className: "series-note" });
+  const more = {};
+  const moreBox = el("details", { className: "more" }, el("summary", { textContent: items.length > 1 ? "More (applies to all files)" : "More" }));
+  for (const key of SHARED_MORE) {
+    more[key] = el("input", { value: common(items, key), placeholder: items.length > 1 ? "keep each file's" : "", autocomplete: "off" });
+    moreBox.append(field(LABELS[key] ?? key, more[key]));
+  }
+
+  const libraryType = () => libraries.find((l) => String(l.id) === library.value)?.type ?? 0;
+  const rows = items.map((item) => itemRow(item, { library, series, year, age, more, libraryType }));
+  const updateAll = async () => {
+    for (const row of rows) row.update(); // immediately; refined below once Kavita's series list is in
+    series.setAttribute("list", await ensureDatalist(Number(library.value)));
+    const existing = await seriesFor(Number(library.value));
+    const name = series.value.trim();
+    const match = existing.find((e) => sameName(e, name));
+    seriesNote.replaceChildren();
+    if (match) {
+      seriesNote.append(el("span", { className: "ok", textContent: `Adds to existing series "${match}".` }));
+    } else if (name) {
+      seriesNote.append(el("span", { textContent: "New series. " }));
+      for (const alt of nearMisses(name, existing)) {
+        const use = el("button", { type: "button", className: "link", textContent: `Use "${alt}"?` });
+        use.addEventListener("click", () => { series.value = alt; updateAll(); });
+        seriesNote.append(el("span", { className: "warn", textContent: "Similar existing series: " }), use, " ");
+      }
+    }
+    const contents = match ? await contentsFor(Number(library.value), match) : null;
+    for (const row of rows) row.update(contents);
+  };
+  for (const input of [library, series, year, age, ...Object.values(more)]) {
+    input.addEventListener(input.tagName === "SELECT" ? "change" : "input", updateAll);
+  }
+
+  const approveAll = el("button", { type: "button", textContent: items.length > 1 ? `Approve all ${items.length}` : "Approve" });
+  approveAll.addEventListener("click", async () => {
+    approveAll.disabled = true;
+    for (const row of rows) if (!row.done()) await row.approve();
+    approveAll.disabled = false;
+    refreshUploads();
+  });
+
+  card.append(...[
+    el("div", { className: "group-head" },
+      el("h3", { textContent: fixing ? `Fix ${first.filename}` : items.length > 1 ? `${first.defaults.Series}: ${items.length} files` : first.filename }),
+      el("div", {
+        className: "upload-meta",
+        textContent: fixing ? `Now at ${first.currentPath}. Uploaded by ${first.uploader}.` : `Uploaded by ${first.uploader} to ${first.libraryName}`,
+      })),
+    el("div", { className: "grid-2" }, field("Library", library), field("Series", series)),
+    seriesNote,
+    el("div", { className: "grid-2" }, field("Year", year), field("Age rating", age)),
+    moreBox,
+    el("div", { className: "rows" }, ...rows.map((r) => r.node)),
+    items.length > 1 ? el("div", { className: "actions group-actions" }, approveAll) : null,
+  ].filter(Boolean));
+  updateAll();
+  return card;
+}
+
+function itemRow(item, shared) {
+  const d = item.defaults;
+  const number = el("input", { value: d.Number ?? "", autocomplete: "off", inputMode: "decimal" });
+  const volume = el("input", { value: d.Volume ?? "", autocomplete: "off" });
+  const title = el("input", { value: d.Title ?? "", autocomplete: "off" });
+  const filename = el("input", { autocomplete: "off", spellcheck: false });
+  const summary = el("textarea", { value: d.Summary ?? "", rows: 4 });
+  const fixing = item.mode === "fix";
+  // A fix keeps the current file name unless it is changed by hand.
+  let filenameTouched = fixing;
+  if (fixing) filename.value = item.currentFilename;
+  filename.addEventListener("input", () => { filenameTouched = true; update(); });
+  const destination = el("p", { className: "destination muted" });
+  const warnings = el("ul", { className: "warnings" });
+  const status = el("p", { className: "row-status", role: "status" });
+  let done = false;
+  let lastContents = null;
+
+  const values = () => {
+    const meta = {
+      Number: number.value, Volume: volume.value, Title: title.value, Summary: summary.value,
+      Year: shared.year.value, AgeRating: shared.age.value,
+    };
+    for (const [k, input] of Object.entries(shared.more)) meta[k] = input.value;
+    return meta;
+  };
+
+  function update(contents = lastContents) {
+    lastContents = contents;
+    const f = { ...values(), Series: shared.series.value };
+    if (!filenameTouched) filename.value = templateName(shared.libraryType(), f) || item.filename.replace(/\.[^.]+$/, "");
+    const libName = shared.library.selectedOptions[0]?.text ?? "?";
+    destination.replaceChildren("Will be saved as ",
+      el("strong", { textContent: `${libName} / ${shared.series.value.trim() || "?"} / ${filename.value.trim() || "?"}.${item.targetExtension}` }));
+    badge.textContent = number.value.trim() ? `#${number.value.trim()}` : "";
+    caption.textContent = shared.series.value.trim();
+    const list = [...item.warnings];
+    if (item.reviewError) list.unshift(item.reviewError);
+    if (contents?.exists && number.value.trim() && contents.numbers.some((n) => Number(n) === Number(number.value))) {
+      list.push(`#${number.value.trim()} is already in "${contents.name}". Check this isn't a duplicate.`);
+    }
+    if (item.kind === "comic" && !number.value.trim()) list.push("No issue/chapter number: Kavita may treat this as a special.");
+    if (shared.year.value && !/^\d{4}$/.test(shared.year.value)) list.push("Year must be four digits.");
+    warnings.replaceChildren(...list.map((w) => el("li", { textContent: w })));
+  }
+  for (const input of [number, volume, title, summary]) input.addEventListener("input", () => update());
+
+  const approve = el("button", { type: "button", textContent: fixing ? "Save changes" : "Approve" });
+  const reject = el("button", { type: "button", className: "secondary", textContent: fixing ? "Cancel" : "Reject…" });
+  const download = fixing ? null : el("a", { href: `/api/review/${encodeURIComponent(item.id)}/download`, textContent: "Download" });
+
+  async function doApprove() {
+    status.textContent = "";
+    approve.disabled = reject.disabled = true;
+    const { status: code, body } = await api(`/api/review/${encodeURIComponent(item.id)}/${fixing ? "fix" : "approve"}`, {
+      method: "POST",
+      body: JSON.stringify({
+        libraryId: Number(shared.library.value),
+        seriesName: shared.series.value,
+        filename: filename.value,
+        metadata: values(),
+      }),
+    });
+    if (code !== 202) {
+      approve.disabled = reject.disabled = false;
+      status.className = "row-status error";
+      status.textContent = body.error ?? (fixing ? "Saving failed." : "Approving failed.");
+      return false;
+    }
+    done = true;
+    node.classList.add("is-approving");
+    status.className = "row-status";
+    status.textContent = `${fixing ? "Saving" : "Approving"}… → ${body.destination}`;
+    forgetLibrary(Number(shared.library.value));
+    pollReview();
+    return true;
+  }
+  approve.addEventListener("click", doApprove);
+
+  reject.addEventListener("click", async () => {
+    if (fixing) {
+      node.closest(".review-group")?.remove();
+      return;
+    }
+    const reason = prompt(`Why is "${item.filename}" rejected? The uploader will see this.`);
+    if (!reason?.trim()) return;
+    const { status: code, body } = await api(`/api/review/${encodeURIComponent(item.id)}/reject`, {
+      method: "POST",
+      body: JSON.stringify({ reason }),
+    });
+    if (code !== 200) {
+      status.className = "row-status error";
+      status.textContent = body.error ?? "Rejecting failed.";
+      return;
+    }
+    done = true;
+    node.classList.add("is-done");
+    status.className = "row-status";
+    status.textContent = "Rejected.";
+    approve.disabled = reject.disabled = true;
+    pollReview();
+  });
+
+  // Drawn like a Kavita series tile: cover art, caption, and a green badge with the issue number.
+  const placeholder = () => el("div", { className: "cover-none", textContent: item.kind === "comic" ? "No cover" : item.kind.toUpperCase() });
+  let art = placeholder();
+  if (item.inspection?.hasCover) {
+    art = el("img", { src: `/api/review/${encodeURIComponent(item.id)}/cover${fixing ? `?fix=1&t=${Date.now()}` : ""}`, alt: `Cover of ${item.filename}`, loading: "lazy" });
+    art.addEventListener("error", () => art.replaceWith(placeholder())); // unreadable image
+  }
+  const badge = el("span", { className: "badge" });
+  const caption = el("div", { className: "caption" });
+  const cover = el("div", { className: "cover-tile" }, art, badge, caption);
+  const facts = [formatSize(item.size), item.inspection?.pages ? `${item.inspection.pages} page${item.inspection.pages === 1 ? "" : "s"}` : null,
+    item.inspection?.hasEmbeddedMetadata ? "has metadata inside" : "no metadata inside", `${fixing ? "saved" : "will be saved"} as .${item.targetExtension}`].filter(Boolean).join(", ");
+
+  const node = el("div", { className: "review-row", dataset: { id: item.id, mode: fixing ? "fix" : "approve" } },
+    cover,
+    el("div", { className: "row-body" },
+      el("div", { className: "upload-name", textContent: item.filename }),
+      el("div", { className: "facts", textContent: facts }),
+      el("div", { className: "grid-3" }, field("Number", number), field("Volume", volume), field("Title", title)),
+      field("File name", filename),
+      destination,
+      warnings,
+      el("details", { className: "more" }, el("summary", { textContent: "Summary" }), summary),
+      el("div", { className: "actions" }, approve, reject, download),
+      status,
+    ),
+  );
+  return { node, update, approve: doApprove, done: () => done };
+}
+
+function placeholderCard(item) {
+  return el("article", { className: "review-group", dataset: { inspecting: item.id } },
+    el("div", { className: "upload-name", textContent: item.filename }),
+    el("div", { className: "upload-meta", textContent: `from ${item.uploader} · reading the file…` }));
+}
+
+/** "In Kavita ✓ / Open in Kavita", "Checking…", or why Kavita hasn't listed it (with Check again). */
+function kavitaLine(item) {
+  if (item.status !== "approved") return null;
+  if (item.kavitaStatus === "confirmed" && item.kavitaUrl) {
+    return el("div", { className: "upload-meta kavita-ok" }, "In Kavita ✓ ", el("a", { href: item.kavitaUrl, textContent: "Open in Kavita" }));
+  }
+  if (item.kavitaStatus === "missing") {
+    const again = el("button", { type: "button", className: "link", textContent: "Check again" });
+    again.addEventListener("click", async () => {
+      await api(`/api/review/${encodeURIComponent(item.id)}/recheck`, { method: "POST", body: "{}" });
+      refreshReview();
+    });
+    return el("div", { className: "upload-error" }, `${item.kavitaNote} `, again);
+  }
+  return el("div", { className: "upload-meta", textContent: "Checking that Kavita shows it…" });
+}
+
+async function openFix(id) {
+  const area = $("fix-area");
+  area.replaceChildren(el("p", { className: "muted", textContent: "Reading the file…" }));
+  area.scrollIntoView({ behavior: "smooth", block: "start" });
+  const { status, body } = await api(`/api/review/${encodeURIComponent(id)}/fix`);
+  if (status !== 200) {
+    area.replaceChildren(el("p", { className: "error", textContent: body.error ?? "This file can't be fixed right now." }));
+    return;
+  }
+  review = { ...review, libraries: body.libraries };
+  area.replaceChildren(groupCard([body.item]));
+}
+
+function recentItem(item) {
+  const label = { approving: "Approving…", approved: "Approved", fixing: "Saving changes…", rejected: "Rejected" }[item.status] ?? item.status;
+  const li = el("li", { className: `upload status-${item.status}` },
+    el("div", { className: "upload-name", textContent: item.filename }),
+    el("div", {
+      className: "upload-meta",
+      textContent: `${label}${item.reviewedBy ? ` by ${item.reviewedBy}` : ""}, ${formatDate(item.reviewedAt)}. Uploaded by ${item.uploader}.`,
+    }),
+  );
+  if (item.status === "approved" || item.status === "fixing") {
+    li.append(el("div", { className: "upload-meta", textContent: item.finalPath }));
+    const line = kavitaLine(item);
+    if (line) li.append(line);
+    if (item.reviewError) li.append(el("div", { className: "upload-error", textContent: item.reviewError }));
+    if (item.canFix) {
+      const fix = el("button", { type: "button", className: "btn btn-outline small", textContent: "Fix…" });
+      fix.addEventListener("click", () => openFix(item.id));
+      li.append(fix);
+    }
+  }
+  if (item.status === "rejected") {
+    li.append(el("div", { className: "upload-error", textContent: item.note }));
+    if (item.canRestore) {
+      const restore = el("button", { type: "button", className: "btn btn-outline small", textContent: "Restore to queue" });
+      restore.title = `Rejected files are kept for ${review.rejectedRetentionDays} days`;
+      restore.addEventListener("click", async () => {
+        await api(`/api/review/${encodeURIComponent(item.id)}/restore`, { method: "POST", body: "{}" });
+        refreshReview();
+      });
+      li.append(restore);
+    }
+  }
+  return li;
+}
+
+function groupPending(pending) {
+  const groups = new Map();
+  for (const item of pending) {
+    const key = item.defaults
+      ? `${item.uploader}|${item.libraryId}|${normalizeSeries(item.defaults.Series ?? "")}`
+      : `inspecting|${item.id}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+  for (const items of groups.values()) {
+    items.sort((a, b) => (Number(a.defaults?.Number) || 0) - (Number(b.defaults?.Number) || 0) || a.filename.localeCompare(b.filename, undefined, { numeric: true }));
+  }
+  return [...groups.values()];
+}
+
+function renderRecent() {
+  $("review-recent").replaceChildren(...review.recent.map(recentItem));
+  $("review-recent-wrap").hidden = review.recent.length === 0;
+}
+
+const needsPolling = (items) => items.some((r) => ["approving", "fixing"].includes(r.status) || (r.status === "approved" && r.kavitaStatus === "waiting"));
+
+async function refreshReview() {
+  const { status, body } = await api("/api/review");
+  if (status !== 200) return;
+  review = body;
+  $("review-count").textContent = body.pending.length || "";
+  $("review-count").hidden = !body.pending.length;
+  $("review-empty").hidden = body.pending.length > 0;
+  $("review-banner").hidden = true;
+  $("review-list").replaceChildren(...groupPending(body.pending).map((items) => (items[0].defaults ? groupCard(items) : placeholderCard(items[0]))));
+  renderRecent();
+  if (body.pending.some((p) => p.inspecting) || needsPolling(body.recent)) pollReview();
+}
+
+// While approvals run or files are being read, refresh statuses without re-rendering the cards
+// (that would throw away edits in progress).
+let pollTimer = null;
+function pollReview() {
+  if (pollTimer) return;
+  pollTimer = setTimeout(async () => {
+    pollTimer = null;
+    const { status, body } = await api("/api/review");
+    if (status !== 200) return;
+    review = body;
+    renderRecent();
+    const pendingIds = new Set(body.pending.map((p) => p.id));
+    const byId = new Map(body.recent.map((r) => [r.id, r]));
+    for (const row of document.querySelectorAll(".review-row.is-approving[data-mode='fix']")) {
+      const { body: state } = await api(`/api/review/${encodeURIComponent(row.dataset.id)}/state`);
+      const item = state.item;
+      const line = row.querySelector(".row-status");
+      if (item?.status === "approved") {
+        row.classList.remove("is-approving");
+        if (item.reviewError) {
+          line.className = "row-status error";
+          line.textContent = item.reviewError;
+          row.querySelectorAll("button").forEach((b) => (b.disabled = false));
+        } else {
+          row.classList.add("is-done");
+          line.textContent = `Saved ✓ ${item.finalPath}. Kavita updates in about a minute.`;
+        }
+      }
+    }
+    for (const row of document.querySelectorAll(".review-row.is-approving[data-mode='approve']")) {
+      const result = byId.get(row.dataset.id);
+      const line = row.querySelector(".row-status");
+      if (result?.status === "approved") {
+        row.classList.replace("is-approving", "is-done");
+        line.textContent = `Approved ✓ ${result.finalPath}. It appears in Kavita in about a minute.`;
+      } else if (pendingIds.has(row.dataset.id)) {
+        const item = body.pending.find((p) => p.id === row.dataset.id);
+        row.classList.remove("is-approving");
+        line.className = "row-status error";
+        line.textContent = item.reviewError ?? "Approval failed.";
+        row.querySelectorAll("button").forEach((b) => (b.disabled = false));
+      }
+    }
+    // Files that finished being read replace their placeholder (nothing was being edited there).
+    for (const placeholder of document.querySelectorAll("[data-inspecting]")) {
+      const item = body.pending.find((p) => p.id === placeholder.dataset.inspecting);
+      if (item?.defaults) placeholder.replaceWith(groupCard([item]));
+    }
+    const shown = new Set([...document.querySelectorAll(".review-row, [data-inspecting]")].map((n) => n.dataset.id ?? n.dataset.inspecting));
+    const fresh = body.pending.filter((p) => !shown.has(p.id)).length;
+    $("review-banner").hidden = fresh === 0;
+    $("review-banner-text").textContent = `${fresh} new upload${fresh === 1 ? "" : "s"} waiting.`;
+    $("review-count").textContent = body.pending.length || "";
+  $("review-count").hidden = !body.pending.length;
+    if (document.querySelector(".review-row.is-approving, [data-inspecting]") || needsPolling(body.recent)) pollReview();
+    else refreshUploads();
+  }, 3000);
+}
+
+$("review-refresh").addEventListener("click", () => refreshReview());
+
+let searchTimer = null;
+$("approved-search").addEventListener("input", (event) => {
+  clearTimeout(searchTimer);
+  const term = event.target.value.trim();
+  searchTimer = setTimeout(async () => {
+    if (!term) {
+      $("approved-results").replaceChildren();
+      return;
+    }
+    const { body } = await api(`/api/review/approved?q=${encodeURIComponent(term)}`);
+    const items = body.items ?? [];
+    $("approved-results").replaceChildren(...(items.length ? items.map(recentItem) : [el("li", { className: "muted", textContent: "No approved files match." })]));
+  }, 300);
+});
+$("review-banner-refresh").addEventListener("click", () => refreshReview());
+
+// Coming from Kavita's sidebar link (GET /login) when it didn't work.
+const signin = new URLSearchParams(location.search).get("signin");
+if (signin) {
+  history.replaceState(null, "", "/");
+  $("login-error").textContent = signin === "kavita-down"
+    ? "Kavita isn't reachable right now, so the link from Kavita couldn't sign you in. Try again shortly."
+    : "The link from Kavita couldn't sign you in. Sign in with your Kavita password; that also repairs the link.";
+}
+
+await refreshMe();

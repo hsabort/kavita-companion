@@ -1,0 +1,126 @@
+# Architecture
+
+## Components
+
+```
+                 Internet
+                    │  HTTPS :KAVITA_HTTPS_PORT          HTTPS :COMPANION_HTTPS_PORT
+                    │  (+ :ACME_HTTP_PORT for Let's Encrypt checks)
+                    ▼
+            ┌───────────────┐
+            │     caddy     │  TLS (Let's Encrypt), reverse proxy, optional PROXY protocol
+            └──┬─────────┬──┘
+               │         │                      Docker network DOCKER_SUBNET
+       kavita:5000   kavita-companion:3000
+               │         │
+     ┌─────────▼──┐   ┌──▼───────────────────┐
+     │   kavita   │◄──┤   kavita-companion   │  calls Kavita's REST API (admin auth key,
+     │ (linuxsrv) │   │  Fastify + tus + SQL │  and users' own sessions for sign-in)
+     └─────┬──────┘   └───┬──────────────────┘
+           │ read-only    │ read-write
+           ▼              ▼
+     MEDIA_ROOT/{manga,comics,books}     MEDIA_ROOT/.incoming (upload staging)
+```
+
+| Service | Image | Role |
+|---|---|---|
+| `kavita` | `lscr.io/linuxserver/kavita` (pinned) | The reader. Library folders are mounted read-only. Its plain HTTP port is published only on the Docker network gateway for local admin tools. |
+| `caddy` | `caddy` (pinned) | The only public entry point. HTTPS for both apps, certificates via Let's Encrypt HTTP-01. |
+| `kavita-companion` | built from `kavita-companion/` | The upload portal. Not published; reached through Caddy. |
+
+All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after start-up).
+
+## kavita-companion internals
+
+`kavita-companion/src/`:
+
+| File | Does |
+|---|---|
+| `server.ts` | Fastify app: security headers, CSRF origin check, rate limits, sign-in (password and Kavita sidebar link), hourly jobs |
+| `auth.ts` | Sessions (cookie `__Host-kc_session`, SHA-256 of the token in SQLite), permissions from Kavita roles, live role re-check |
+| `uploads.ts` | Resumable uploads (tus protocol at `/files`), limits, file-type detection, duplicate check, "your uploads" API |
+| `inspect.ts` | Reads each pending upload once: page count, cover, embedded metadata |
+| `review.ts` | Review queue API, approval plan and background approval job, reject/restore, cleanup |
+| `archive.ts` | Safe wrappers around 7-Zip (read) and yazl (write zips) |
+| `metadata.ts` | Read/write ComicInfo.xml and EPUB OPF metadata, preserving everything not edited |
+| `sidebar.ts` | Adds the "Uploads" link to a user's Kavita sidebar |
+| `themes.ts` | Follows the user's Kavita theme: reads the theme's colour variables and maps them onto the portal's design tokens |
+| `kavita.ts` | Kavita REST API client |
+| `db.ts` | SQLite (Node's built-in `node:sqlite`): sessions, uploads, audit log |
+| `backup.ts` | Daily `VACUUM INTO` snapshot of the database |
+| `setup-kavita.ts` | First-run setup used by `setup.sh` (admin, libraries, auth key) |
+
+The browser side (`kavita-companion/web/main.js`, bundled with esbuild) uses Uppy for uploads.
+
+## Upload to library: the data flow
+
+1. **Upload.** The browser sends the file in 25 MB chunks with the tus protocol. Before any data is
+   accepted the server checks the user (signed in, not Read Only), the file name and type, the size
+   (≤ 8 GB), the chosen library, the user's limits (≤ 3 at once, ≤ 50 GB waiting) and free disk.
+   Chunks land in `MEDIA_ROOT/.incoming/partial/`. A dropped connection resumes from the last byte.
+2. **Check.** When complete: the real file type is read from its first bytes, a SHA-256 is compared
+   against everything waiting or in the library, and failures are deleted with a reason shown to the
+   uploader. Good files move to `.incoming/pending/<id>.<ext>` and are inspected (cover, pages,
+   embedded metadata).
+3. **Review.** Kavita admins see the queue, grouped by uploader + library + series. Defaults come from
+   the file's embedded metadata, with gaps filled by Kavita's own file-name parser; warnings flag
+   mismatches, duplicates in the series, missing numbers, unsafe archives.
+4. **Approve** (background job, one at a time): extract → write the approved metadata (ComicInfo.xml
+   for comics, OPF for EPUB) → repack (comics always become CBZ) → write as `.kc-<id>.part` in the
+   series folder → rename → ask Kavita to scan that folder. Kavita shows it about a minute later.
+   Failures return the upload to the queue with the reason.
+5. **Reject** with a reason (shown to the uploader); the file is kept 7 days so it can be restored.
+
+## Storage layout
+
+```
+MEDIA_ROOT/                 (default /srv/media)
+  manga/ comics/ books/     Kavita libraries: one folder per series (Kavita ignores files at the root)
+  .incoming/                upload staging, invisible to Kavita
+    partial/                uploads in progress
+    pending/                checked, waiting for review
+    covers/                 cover images for the review screen
+    work/                   temporary space for approvals
+DATA_ROOT/                  (default ./data)
+  kavita/                   Kavita's database, settings, covers, logs
+  companion/companion.db    portal database (sessions, uploads, audit log)
+  companion/backups/        daily snapshots of companion.db (14 kept)
+  caddy/                    certificates and Caddy state
+```
+
+Staging is inside `MEDIA_ROOT` on purpose: it is the same filesystem as the libraries, so approving
+even an 8 GB file is a rename, not a copy.
+
+## Networking
+
+- Only Caddy's ports are published. Kavita's HTTP port is bound to `DOCKER_GATEWAY`, which is reachable
+  from the host but not from outside.
+- Caddy accepts a PROXY protocol header only from `DOCKER_GATEWAY` and uses it when present. This lets
+  a host-level TCP forwarder (such as an Incus proxy device) pass the real client IP through Docker's
+  userland proxy. On ordinary hosts no header arrives and nothing changes.
+- kavita-companion trusts `X-Forwarded-For` only from `DOCKER_SUBNET` (i.e. Caddy).
+
+## Theme sync
+
+Kavita themes are CSS files that override Kavita's CSS variables inside `:root .bg-<name> { … }`; the
+built-in **Dark** theme has no file. At sign-in (password or sidebar link) the portal reads the user's
+theme from their Kavita preferences and stores its id with the session. `/api/me` returns that theme's
+colours mapped onto the portal's tokens (`public/style.css` lists the pairs; surfaces, borders and
+focus rings are derived from the theme's text colour so any theme works). Signed-out pages use the
+server's default theme. The portal keeps the user's Kavita session (encrypted) with the portal session
+and re-reads the theme preference when the page asks (`/api/theme`): whenever the tab comes back into
+view or gains focus, and every 30 seconds. So a theme changed in Kavita shows up as soon as the user
+switches back to the portal tab.
+
+## After approval: confirmation and fixes
+
+- Every minute the portal checks recently approved or fixed files against Kavita: it finds the series
+  whose folder holds the file and checks that Kavita lists the exact file path. Confirmed files get the
+  Kavita series id (used for the "Open in Kavita" link, `/library/<libraryId>/series/<seriesId>`).
+  Not listed after 3 minutes: another scan of that folder is requested. After 15 minutes: marked
+  missing with a note. Files approved before this existed are checked once as well.
+- **Fix** uses the same background job as approval, starting from the library file instead of the
+  pending upload: the source is never modified, the new file is written as `.kc-<id>.part` beside the
+  destination and renamed into place (replacing the file when the name is unchanged), then the old file
+  and an emptied folder are removed and both locations are rescanned (a whole-library scan when the old
+  folder is gone, so Kavita drops the old series).

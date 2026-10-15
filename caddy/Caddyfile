@@ -1,0 +1,40 @@
+# Public HTTPS entry points. Values come from the environment (compose.yaml passes them from .env).
+# Certificates: Let's Encrypt via HTTP-01 on Caddy's plain-HTTP listener (:8080 in the container,
+# ACME_HTTP_PORT on the host). TLS-ALPN is disabled because the HTTPS ports are not 443.
+{
+	http_port 8080
+	https_port {$COMPANION_HTTPS_PORT}
+	# Real client IPs behind a TCP proxy (e.g. an Incus proxy device with proxy_protocol=true)
+	# that lands on the host's loopback and reaches Caddy through Docker's userland proxy, i.e.
+	# from DOCKER_GATEWAY. Only that source may send a PROXY header, and it is used only when
+	# present, so this is harmless on hosts without such a proxy. See docs/install.md.
+	servers {
+		listener_wrappers {
+			proxy_protocol {
+				timeout 5s
+				allow {$DOCKER_GATEWAY}/32
+			}
+			tls
+		}
+	}
+}
+
+(le) {
+	tls {
+		issuer acme {
+			disable_tlsalpn_challenge
+		}
+	}
+}
+
+# Kavita
+{$DOMAIN}:{$KAVITA_HTTPS_PORT} {
+	import le
+	reverse_proxy kavita:5000
+}
+
+# kavita-companion: upload portal
+{$DOMAIN}:{$COMPANION_HTTPS_PORT} {
+	import le
+	reverse_proxy kavita-companion:3000
+}

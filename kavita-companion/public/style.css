@@ -1,0 +1,306 @@
+/* Kavita Companion, styled to match Kavita's own dark theme (v0.9.1.4, UI/Web/src/theme/themes/dark.scss).
+   Token values are Kavita's unless noted. */
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "League Spartan";
+  src: url("/assets/fonts/LeagueSpartan-VariableFont_wght.ttf");
+  font-display: swap;
+}
+
+:root {
+  /* Defaults = Kavita's built-in Dark theme. When a user picks another Kavita theme, the portal sets
+     the "theme inputs" below from that theme's variables (web/main.js applyTheme); everything else is
+     derived from them, so every theme recolours the whole portal. */
+  color-scheme: dark;
+  /* theme inputs (Kavita variable in brackets) */
+  --bg: #212529;                 /* --bs-body-bg */
+  --text: #efefef;               /* --body-text-color */
+  --primary: #4ac694;            /* --primary-color */
+  --primary-hover: #338a67;      /* --primary-color-darker-shade */
+  --on-primary: #fff;            /* --btn-primary-text-color */
+  --navbar: #000;                /* --navbar-bg-color */
+  --navbar-text: #fff;           /* --navbar-text-color */
+  --input-bg: #343a40;           /* --input-bg-color */
+  --input-text: #fff;            /* --input-text-color */
+  --input-placeholder: #aeaeae;  /* --input-placeholder-color */
+  --error: #bd362f;              /* --error-color */
+  --secondary: #6c757d;          /* --btn-secondary-bg-color */
+  --muted: color-mix(in srgb, var(--text) 62%, transparent); /* --text-muted-color; Kavita Dark uses 45%, raised for contrast */
+  --surface-solid: color-mix(in srgb, var(--text) 9%, var(--bg)); /* --card-bg-color when the theme sets one */
+  /* derived */
+  --surface: color-mix(in srgb, var(--text) 5%, transparent);
+  --surface-2: color-mix(in srgb, var(--text) 8%, transparent);
+  --border: color-mix(in srgb, var(--text) 10%, transparent);
+  --border-strong: color-mix(in srgb, var(--text) 25%, transparent);
+  --focus-ring: color-mix(in srgb, var(--text) 50%, transparent);
+  --cover-bg: color-mix(in srgb, var(--bg) 70%, #000);
+  --error-text: color-mix(in srgb, var(--error) 65%, var(--text));
+  --warning-text: color-mix(in srgb, #f89406 80%, var(--text)); /* Kavita's warning colour */
+  --radius: 0.375rem;
+}
+
+* { box-sizing: border-box; }
+/* Author display rules (e.g. .login's grid) would otherwise override the hidden attribute. */
+[hidden] { display: none !important; }
+
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.5 "Poppins", system-ui, sans-serif;
+}
+
+a { color: var(--primary); }
+a:hover { color: var(--primary-hover); }
+:focus-visible { outline: none; box-shadow: 0 0 0 0.15rem var(--focus-ring); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* ---------- Navbar (Kavita's black bar) ---------- */
+
+.navbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 0.75rem;
+  height: 48px; padding: 0 1rem;
+  background: var(--navbar);
+}
+.brand { display: flex; align-items: center; gap: 0.5rem; color: var(--navbar-text); text-decoration: none; }
+.brand:hover { color: var(--navbar-text); }
+.wordmark { font: 700 1.45rem/1 "League Spartan", "Poppins", sans-serif; letter-spacing: 0.01em; padding-top: 0.15em; }
+.nav-title {
+  color: color-mix(in srgb, var(--navbar-text) 65%, transparent); font-size: 1rem;
+  padding-left: 0.75rem; border-left: 1px solid color-mix(in srgb, var(--navbar-text) 25%, transparent);
+}
+.nav-end { margin-left: auto; display: flex; align-items: center; gap: 1rem; min-width: 0; }
+.nav-end[hidden] { display: none; }
+.nav-link { color: var(--navbar-text); text-decoration: none; white-space: nowrap; }
+/* Buttons in the bar use the bar's colours (themes like Light keep a black bar on a light page). */
+.navbar .btn-outline { color: var(--navbar-text); border-color: color-mix(in srgb, var(--navbar-text) 40%, transparent); }
+.navbar .btn-outline:hover { background: color-mix(in srgb, var(--navbar-text) 15%, transparent); }
+.nav-link:hover { color: var(--primary); }
+.nav-user { color: color-mix(in srgb, var(--navbar-text) 65%, transparent); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 40rem) {
+  .nav-title, .nav-user { display: none; }
+  .navbar { gap: 0.5rem; }
+  .nav-end { gap: 0.6rem; }
+}
+
+/* ---------- Page ---------- */
+
+main {
+  max-width: 68rem;
+  padding: 1.25rem 1.5rem 3rem;
+}
+@media (max-width: 40rem) { main { padding: 1rem 1rem 3rem; } }
+
+section { margin: 0 0 2.25rem; }
+h2 {
+  /* Kavita's section titles ("Recently Updated Series") */
+  font-size: 1.6rem; font-weight: 400; line-height: 1.2;
+  margin: 0 0 0.9rem;
+}
+h3 { font-size: 1.1rem; font-weight: 500; margin: 0; overflow-wrap: anywhere; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.section-head h2 { margin: 0; }
+.count-badge {
+  display: inline-block; vertical-align: 0.2em; min-width: 1.6em; padding: 0.1em 0.45em;
+  font-size: 0.75rem; font-weight: 600; line-height: 1.4; text-align: center;
+  color: var(--on-primary); background: var(--primary); border-radius: 0.3rem;
+}
+.count-badge[hidden] { display: none; }
+
+.muted { color: var(--muted); }
+.hint { color: var(--muted); font-size: 0.85rem; max-width: 62ch; }
+.empty { color: var(--muted); margin: 0; }
+.error { color: var(--error-text); min-height: 1.5em; margin: 0.75rem 0 0; font-size: 0.9rem; }
+
+.notice {
+  margin: 0 0 1.5rem; padding: 0.7rem 1rem;
+  background: var(--surface); border-left: 3px solid var(--primary); border-radius: var(--radius);
+}
+.notice[hidden] { display: none; }
+.notice.is-problem { border-left-color: var(--error); }
+
+.banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin: 0 0 1rem; padding: 0.5rem 0.75rem;
+  background: var(--surface); border-left: 3px solid var(--primary); border-radius: var(--radius);
+}
+.banner[hidden] { display: none; }
+
+/* ---------- Form controls (Kavita: filled inputs, focus ring) ---------- */
+
+label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.3rem; cursor: pointer; }
+input, select, textarea {
+  display: block; width: 100%;
+  padding: 0.45rem 0.75rem;
+  font: inherit; font-size: 0.95rem; color: var(--input-text);
+  background: var(--input-bg);
+  border: 1px solid transparent; border-radius: var(--radius);
+}
+/* Light themes put white fields on a light page: give them an edge, as Kavita does. */
+:root[data-scheme="light"] :is(input, select, textarea) { border-color: var(--border-strong); }
+input::placeholder, textarea::placeholder { color: var(--input-placeholder); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--border-strong); box-shadow: 0 0 0 0.2rem var(--focus-ring); }
+textarea { resize: vertical; }
+select { cursor: pointer; }
+
+/* ---------- Buttons (Kavita's btn-primary / btn-outline-primary / btn-outline-secondary) ---------- */
+
+.btn, button {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0.45rem 1rem;
+  font: inherit; font-size: 0.95rem; font-weight: 500; line-height: 1.4;
+  color: var(--on-primary); background: var(--primary);
+  border: 1px solid var(--primary); border-radius: var(--radius);
+  cursor: pointer;
+}
+.btn:hover, button:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+.btn-outline, button.secondary {
+  background: transparent; border-color: var(--secondary); color: var(--text);
+}
+.btn-outline:hover, button.secondary:hover { background: var(--secondary); border-color: var(--secondary); color: #fff; }
+.btn-outline-primary { background: transparent; color: var(--text); border-color: var(--primary); }
+.btn-outline-primary:hover { background: var(--primary); color: var(--on-primary); }
+.btn.small, button.small { padding: 0.25rem 0.7rem; font-size: 0.85rem; }
+button:disabled { opacity: 0.55; cursor: default; }
+button.link {
+  padding: 0; background: none; border: 0; color: var(--primary);
+  font-weight: 500; text-decoration: underline; text-underline-offset: 2px;
+}
+button.link:hover { background: none; color: var(--primary-hover); }
+
+/* ---------- Sign-in (Kavita's login card) ---------- */
+
+.login { display: grid; justify-items: center; padding-top: 8vh; }
+.login-brand { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+.login-brand .wordmark { font-size: 2.1rem; }
+.login-card {
+  width: min(19rem, 100%);
+  display: grid; gap: 0.75rem;
+  padding: 1.25rem 1rem 1rem;
+  background: var(--surface-solid);
+  border-top: 2px solid var(--primary);
+  border-radius: var(--radius);
+  text-align: center;
+}
+.login-card h1 { font-size: 1.15rem; font-weight: 500; margin: 0; }
+.login-card p { margin: 0; font-size: 0.85rem; }
+.login-card button { margin-top: 0.25rem; }
+.login-card .error { margin: 0; min-height: 0; }
+
+/* ---------- Upload ---------- */
+
+.upload-library { max-width: 22rem; margin-bottom: 0.9rem; }
+#uploader { margin-bottom: 0.75rem; }
+
+/* Uppy (light or dark to match the theme), pulled toward the theme's surfaces and accent */
+.uppy-Dashboard-inner { background-color: var(--surface) !important; border: 1px dashed var(--border-strong) !important; border-radius: var(--radius) !important; }
+.uppy-Dashboard-AddFiles { border: 0 !important; }
+.uppy-Dashboard-AddFiles-title, .uppy-Dashboard-note { font-family: "Poppins", sans-serif !important; }
+.uppy-Dashboard-browse { color: var(--primary) !important; }
+.uppy-StatusBar-actionBtn--upload { background-color: var(--primary) !important; border-radius: var(--radius) !important; }
+.uppy-StatusBar-actionBtn--upload:hover { background-color: var(--primary-hover) !important; }
+.uppy-StatusBar-progress { background-color: var(--primary) !important; }
+.uppy-Root { font-family: "Poppins", sans-serif !important; }
+
+/* ---------- Lists (your uploads, recent decisions) ---------- */
+
+.uploads { list-style: none; margin: 0; padding: 0; }
+.show-older { margin-top: 0.4rem; }
+.upload {
+  padding: 0.75rem 1rem; margin-bottom: 0.4rem;
+  background: var(--surface); border-radius: var(--radius);
+}
+.upload-name { font-weight: 500; overflow-wrap: anywhere; }
+.upload-meta { color: var(--muted); font-size: 0.85rem; }
+.upload-error { color: var(--error-text); font-size: 0.85rem; margin-top: 0.2rem; }
+.upload .btn, .upload button { margin-top: 0.5rem; }
+.status { font-weight: 500; }
+.status-pending .status, .status-approving .status, .status-checking .status, .status-uploading .status { color: var(--text); }
+.status-approved .status { color: var(--primary); }
+.status-invalid .status, .status-duplicate .status, .status-rejected .status { color: var(--error-text); }
+
+.recent { margin-top: 1.25rem; }
+.recent summary { cursor: pointer; color: var(--muted); margin-bottom: 0.6rem; }
+
+/* ---------- Review ---------- */
+
+.review-group {
+  padding: 1rem 1.1rem 0.6rem; margin-bottom: 1rem;
+  background: var(--surface); border-radius: var(--radius);
+}
+.group-head { margin-bottom: 0.25rem; }
+.field { margin: 0.7rem 0 0; min-width: 0; }
+.field small { display: block; color: var(--muted); }
+.grid-2, .grid-3 { display: grid; gap: 0 0.85rem; }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: 1fr 1fr 2fr; }
+@media (max-width: 36rem) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+.series-note { font-size: 0.85rem; margin-top: 0.35rem; color: var(--muted); }
+.series-note .ok { color: var(--primary); }
+.series-note .warn { color: var(--warning-text); }
+.more { margin-top: 0.8rem; }
+.more summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
+
+.rows { margin-top: 0.4rem; }
+.review-row {
+  display: flex; gap: 1.1rem; align-items: flex-start;
+  padding: 1rem 0 0.5rem; margin-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+.row-body { flex: 1; min-width: 0; }
+@media (max-width: 36rem) { .review-row { flex-direction: column; } }
+
+/* The cover is drawn like a Kavita series tile: 2:3 art, caption bar, green number badge. */
+.cover-tile {
+  position: relative; flex: 0 0 auto; width: 120px;
+  border-radius: 4px; overflow: hidden; background: var(--surface-solid);
+}
+.cover-tile img, .cover-tile .cover-none { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; background: var(--cover-bg); }
+.cover-tile .cover-none { display: grid; place-items: center; color: var(--muted); font-size: 0.8rem; }
+.cover-tile .caption {
+  padding: 0.3rem 0.5rem; font-size: 0.75rem; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cover-tile .badge {
+  position: absolute; top: 6px; right: 6px;
+  padding: 0 0.4em; min-width: 1.5em; text-align: center;
+  font-size: 0.75rem; font-weight: 600; line-height: 1.5;
+  color: var(--on-primary); background: var(--primary); border-radius: 0.3rem;
+}
+.cover-tile .badge:empty { display: none; }
+@media (max-width: 36rem) { .cover-tile { width: 108px; } }
+
+.facts { color: var(--muted); font-size: 0.85rem; }
+.destination { font-size: 0.85rem; color: var(--muted); margin: 0.75rem 0 0.25rem; overflow-wrap: anywhere; }
+.destination strong { color: var(--text); font-weight: 500; }
+.warnings { margin: 0.3rem 0 0.5rem; padding-left: 1.1rem; font-size: 0.85rem; color: var(--warning-text); }
+.warnings:empty { display: none; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; margin-top: 0.75rem; }
+.actions a { font-size: 0.9rem; }
+.group-actions { margin: 0.9rem 0 0.4rem; }
+.row-status { font-size: 0.875rem; margin: 0.5rem 0 0; overflow-wrap: anywhere; }
+.row-status:empty { display: none; }
+.row-status.error { color: var(--error-text); }
+.review-row.is-approving, .review-row.is-done { opacity: 0.75; }
+.review-row.is-done .row-status { color: var(--primary); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn, button, input, select, textarea { transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s; }
+}
+
+/* Fixing a file already in the library */
+.review-group.is-fix { border-left: 3px solid var(--primary); }
+#fix-area:empty { display: none; }
+.kavita-ok { color: var(--primary); }
+.kavita-link { margin-left: 0.25rem; }
+#approved-search { max-width: 26rem; margin-bottom: 0.75rem; }

@@ -1,0 +1,249 @@
+#!/usr/bin/env python3
+"""M2 acceptance tests: resumable uploads, validation, limits, ownership. Runs against the
+public HTTPS URL as the TEST_* users from ../.env, then withdraws everything it uploaded.
+
+Run: python3 tests/test_uploads.py
+"""
+import base64
+import hashlib
+import http.client
+import io
+import json
+import os
+import pathlib
+import secrets
+import ssl
+import sys
+import time
+import urllib.error
+import urllib.request
+import zipfile
+
+from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, env, library_ids
+
+_libs = library_ids()
+COMICS, BOOKS = _libs["Comics"], _libs["Books"]
+
+
+results = []
+created = []  # (cookie, upload id) to withdraw at the end
+
+
+def check(name, ok, detail=""):
+    results.append(bool(ok))
+    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""))
+
+
+def request(method, path, body=None, headers=None, cookie=None, origin=ORIGIN):
+    h = dict(headers or {})
+    if origin:
+        h["Origin"] = origin
+    if cookie:
+        h["Cookie"] = cookie
+    req = urllib.request.Request(ORIGIN + path, body, h, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return r.status, r.headers, r.read()
+    except urllib.error.HTTPError as e:
+        return e.code, e.headers, e.read()
+
+
+def login(key):
+    body = json.dumps({"username": env[f"TEST_{key}_USERNAME"], "password": env[f"TEST_{key}_PASSWORD"]}).encode()
+    status, headers, _ = request("POST", "/api/login", body, {"Content-Type": "application/json"})
+    assert status == 200, f"login {key} failed: {status}"
+    for v in headers.get_all("Set-Cookie"):
+        if v.startswith("__Host-kc_session="):
+            return v.split(";", 1)[0]
+    raise AssertionError("no session cookie")
+
+
+def b64(s):
+    return base64.b64encode(str(s).encode()).decode()
+
+
+def tus_create(cookie, filename, size, library_id=COMICS, origin=ORIGIN):
+    meta = f"filename {b64(filename)},name {b64(filename)}"
+    if library_id is not None:
+        meta += f",libraryId {b64(library_id)}"
+    status, headers, body = request("POST", "/files", None, {
+        "Tus-Resumable": "1.0.0", "Upload-Length": str(size), "Upload-Metadata": meta,
+    }, cookie, origin)
+    location = headers.get("Location")
+    return status, location, body.decode(errors="replace")
+
+
+def tus_patch(cookie, location, offset, data, origin=ORIGIN):
+    status, headers, body = request("PATCH", location, data, {
+        "Tus-Resumable": "1.0.0", "Upload-Offset": str(offset),
+        "Content-Type": "application/offset+octet-stream",
+    }, cookie, origin)
+    return status, int(headers.get("Upload-Offset") or -1), body
+
+
+def tus_head(cookie, location):
+    status, headers, _ = request("HEAD", location, None, {"Tus-Resumable": "1.0.0"}, cookie)
+    return status, int(headers.get("Upload-Offset") or -1)
+
+
+def tus_upload(cookie, filename, data, library_id=COMICS, chunk=25 * 1024 * 1024):
+    status, location, body = tus_create(cookie, filename, len(data), library_id)
+    if status != 201:
+        return status, None, body
+    upload_id = location.rsplit("/", 1)[1]
+    created.append((cookie, upload_id))
+    offset = 0
+    while offset < len(data):
+        st, offset, body = tus_patch(cookie, location, offset, data[offset:offset + chunk])
+        if st != 204:
+            return st, upload_id, body
+    return 204, upload_id, b""
+
+
+def interrupted_patch(cookie, location, offset, data, send_bytes):
+    """Send a PATCH declaring len(data) bytes but drop the connection after send_bytes."""
+    conn = http.client.HTTPSConnection(HOST, PORT, context=ssl.create_default_context(), timeout=60)
+    conn.putrequest("PATCH", location)
+    for k, v in {"Tus-Resumable": "1.0.0", "Upload-Offset": str(offset), "Origin": ORIGIN, "Cookie": cookie,
+                 "Content-Type": "application/offset+octet-stream", "Content-Length": str(len(data))}.items():
+        conn.putheader(k, v)
+    conn.endheaders()
+    view = memoryview(data)
+    for i in range(0, send_bytes, 1024 * 1024):
+        conn.send(view[i:min(i + 1024 * 1024, send_bytes)])
+    conn.sock.close()
+
+
+def my_uploads(cookie):
+    status, _, body = request("GET", "/api/uploads", cookie=cookie)
+    return {u["id"]: u for u in json.loads(body)["uploads"]}
+
+
+def wait_final(cookie, upload_id, timeout=120):
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        u = my_uploads(cookie).get(upload_id)
+        if u and u["status"] not in ("uploading", "checking"):
+            return u
+        time.sleep(1)
+    return my_uploads(cookie).get(upload_id)
+
+
+def make_cbz(payload_size=200_000):
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as z:
+        z.writestr("001.jpg", b"\xff\xd8\xff\xe0" + os.urandom(payload_size))
+    return buf.getvalue()
+
+
+def make_epub():
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        z.writestr(zipfile.ZipInfo("mimetype"), "application/epub+zip", compress_type=zipfile.ZIP_STORED)
+        z.writestr("META-INF/container.xml", "<container/>" + secrets.token_hex(16))
+    return buf.getvalue()
+
+
+uploader = login("UPLOADER")
+readonly = login("READONLY")
+admin = login("ADMIN")
+tag = secrets.token_hex(3)
+
+# --- Refusals before any data is sent ---
+st, _, body = tus_create(None, "x.cbz", 100)
+check("upload without signing in refused (401)", st == 401, f"{st} {body}")
+st, _, body = tus_create(readonly, "x.cbz", 100)
+check("read-only user cannot start an upload (403)", st == 403, f"{st} {body}")
+st, _, body = tus_create(uploader, "x.cbz", 100, origin=None)
+check("upload request without Origin refused (403)", st == 403, f"{st} {body}")
+st, _, body = tus_create(uploader, "setup.exe", 100)
+check(".exe refused with a readable message (415)", st == 415 and "not accepted" in body, f"{st} {body}")
+st, _, body = tus_create(uploader, "x.cbz", 100, library_id=None)
+check("upload without a library refused (400)", st == 400 and "library" in body.lower(), f"{st} {body}")
+st, _, body = tus_create(uploader, "huge.cbz", 9 * 1024**3)
+check("9 GB file refused (413, limit 8 GB)", st == 413, f"{st} {body}")
+
+# --- Small valid comic: full path to pending ---
+cbz = make_cbz()
+st, cbz_id, body = tus_upload(uploader, f"Test Series {tag} v01.cbz", cbz)
+check("small .cbz uploads", st == 204, f"{st} {body}")
+u = wait_final(uploader, cbz_id)
+check("valid .cbz ends up waiting for review", u and u["status"] == "pending", str(u))
+pending_file = INCOMING / "pending" / f"{cbz_id}.cbz"
+check("file is in the pending area with identical contents",
+      pending_file.exists() and hashlib.sha256(pending_file.read_bytes()).digest() == hashlib.sha256(cbz).digest())
+check("partial upload files cleaned up", not (INCOMING / "partial" / cbz_id).exists()
+      and not (INCOMING / "partial" / f"{cbz_id}.json").exists())
+
+# --- Ownership ---
+_, location_other = None, f"/files/{cbz_id}"
+st, _ = tus_head(admin, location_other)
+check("another user cannot see someone else's upload (404)", st == 404, str(st))
+
+# --- Interrupted connection, then resume (60 MB file, 25 MB chunks) ---
+big = make_cbz(60 * 1024 * 1024)
+st, location, body = tus_create(uploader, f"Big Series {tag} v01.cbz", len(big))
+big_id = location.rsplit("/", 1)[1] if location else None
+created.append((uploader, big_id))
+st1, off1, _ = tus_patch(uploader, location, 0, big[:25 * 1024 * 1024])
+check("first 25 MB chunk accepted", st1 == 204 and off1 == 25 * 1024 * 1024, f"{st1} {off1}")
+interrupted_patch(uploader, location, off1, big[off1:off1 + 25 * 1024 * 1024], 10 * 1024 * 1024)
+time.sleep(2)
+st, off2 = tus_head(uploader, location)
+check("after a dropped connection the server reports how much it kept",
+      st == 200 and off1 <= off2 <= off1 + 10 * 1024 * 1024, f"{st} offset={off2}")
+offset = off2
+while offset < len(big):
+    st, offset, _ = tus_patch(uploader, location, offset, big[offset:offset + 25 * 1024 * 1024])
+    if st != 204:
+        break
+check("upload resumes from that offset and completes", st == 204 and offset == len(big), f"{st} {offset}")
+u = wait_final(uploader, big_id)
+stored = INCOMING / "pending" / f"{big_id}.cbz"
+check("resumed file is byte-for-byte identical",
+      u and u["status"] == "pending" and stored.exists()
+      and hashlib.sha256(stored.read_bytes()).hexdigest() == hashlib.sha256(big).hexdigest(), str(u))
+
+# --- Content checks ---
+st, fake_id, _ = tus_upload(uploader, f"Fake {tag}.cbz", os.urandom(50_000))
+u = wait_final(uploader, fake_id)
+check("random bytes named .cbz are rejected as invalid", u and u["status"] == "invalid" and u["error"], str(u))
+check("invalid file is deleted", not any((INCOMING / d / fake_id).exists() for d in ("partial", "pending")))
+
+st, dup_id, _ = tus_upload(uploader, f"Copy of Test Series {tag}.cbz", cbz)
+u = wait_final(uploader, dup_id)
+check("identical file uploaded again is flagged as duplicate", u and u["status"] == "duplicate", str(u))
+
+st, epub_id, _ = tus_upload(uploader, f"Test Book {tag}.epub", make_epub(), library_id=BOOKS)
+u = wait_final(uploader, epub_id)
+check("valid .epub accepted", u and u["status"] == "pending", str(u))
+st, bad_epub_id, _ = tus_upload(uploader, f"Not A Book {tag}.epub", make_cbz(), library_id=BOOKS)
+u = wait_final(uploader, bad_epub_id)
+check("plain zip named .epub rejected", u and u["status"] == "invalid", str(u))
+
+# --- Concurrency limit: 3 in progress, 4th refused; then cancel them ---
+locs = []
+for i in range(3):
+    st, loc, _ = tus_create(uploader, f"Slow {tag} {i}.cbz", 1_000_000)
+    locs.append(loc)
+st4, _, body4 = tus_create(uploader, f"Slow {tag} 3.cbz", 1_000_000)
+check("4th simultaneous upload refused (429)", all(locs) and st4 == 429, f"{st4} {body4}")
+cancel = [request("DELETE", loc, None, {"Tus-Resumable": "1.0.0"}, uploader)[0] for loc in locs if loc]
+mine = my_uploads(uploader)
+check("cancelled uploads are recorded as cancelled",
+      cancel == [204] * 3 and all(mine[l.rsplit('/', 1)[1]]["status"] == "cancelled" for l in locs), str(cancel))
+
+# --- Withdraw ---
+st, _, _ = request("DELETE", f"/api/uploads/{cbz_id}", cookie=uploader)
+check("uploader can withdraw a pending upload", st == 200 and my_uploads(uploader)[cbz_id]["status"] == "withdrawn"
+      and not pending_file.exists(), str(st))
+
+# --- Clean up everything this run left pending ---
+for cookie, uid in created:
+    if uid and my_uploads(cookie).get(uid, {}).get("status") == "pending":
+        request("DELETE", f"/api/uploads/{uid}", cookie=cookie)
+leftover = [uid for _, uid in created if uid and my_uploads(uploader).get(uid, {}).get("status") == "pending"]
+check("test uploads cleaned up", not leftover, str(leftover))
+
+print(f"\n{sum(results)}/{len(results)} passed")
+sys.exit(0 if all(results) else 1)
