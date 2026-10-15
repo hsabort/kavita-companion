@@ -25,7 +25,7 @@ Requirements: a Linux host with Docker and the compose plugin, a domain name poi
 a way for Let's Encrypt to reach it on port 80 (see [docs/install.md](docs/install.md)).
 
 ```bash
-git clone <this repository> /srv/kavita
+git clone https://github.com/hsabort/kavita-companion.git /srv/kavita
 cd /srv/kavita
 ./setup.sh
 ```

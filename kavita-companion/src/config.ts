@@ -14,8 +14,9 @@ export const config = {
   kavitaAuthKey: required("KAVITA_AUTH_KEY"),
   // The only origin browsers may send state-changing requests from (CSRF check).
   publicOrigin: required("PUBLIC_ORIGIN"),
-  // Kavita's own public address, for "Back to Kavita" links.
-  kavitaPublicUrl: process.env.KAVITA_PUBLIC_URL ?? "https://paragon.greyarea.contact:20005",
+  // Kavita's own public address, for "Back to Kavita" and "Open in Kavita" links. compose.yaml always
+  // sets KAVITA_PUBLIC_URL; this fallback is only for running the portal on its own.
+  kavitaPublicUrl: process.env.KAVITA_PUBLIC_URL ?? "http://localhost:5000",
   dataDir: process.env.DATA_DIR ?? "/data",
   sessionTtlHours: Number(process.env.SESSION_TTL_HOURS ?? 12),
   // Encrypts the Kavita session tokens stored with portal sessions (seal.ts). setup.sh generates it.
