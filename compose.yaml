@@ -44,7 +44,7 @@ services:
       - "${PUBLISH_ADDRESS:-0.0.0.0}:${COMPANION_HTTPS_PORT}:${COMPANION_HTTPS_PORT}" # HTTPS: kavita-companion
       - "${PUBLISH_ADDRESS:-0.0.0.0}:${KAVITA_HTTPS_PORT}:${KAVITA_HTTPS_PORT}"       # HTTPS: Kavita
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/${CADDYFILE:-Caddyfile}:/etc/caddy/Caddyfile:ro
       - ${DATA_ROOT:-./data}/caddy/data:/data
       - ${DATA_ROOT:-./data}/caddy/config:/config
     restart: unless-stopped
@@ -64,7 +64,8 @@ services:
   # Upload portal. Not published: reached only through Caddy.
   kavita-companion:
     build: ./kavita-companion
-    image: kavita-companion:local
+    # COMPANION_IMAGE_TAG lets the test stack build its own image beside the live one (docs/development.md).
+    image: kavita-companion:${COMPANION_IMAGE_TAG:-local}
     user: "${PUID}:${PGID}"
     depends_on:
       - kavita

@@ -43,13 +43,40 @@ with `npm install --package-lock-only --ignore-scripts`.
 - Anything that depends on Kavita API behaviour should be checked against the live server and recorded
   in [kavita-api.md](kavita-api.md).
 
+## Test environment
+
+Tests create series, approve files and (with `--roles`) change roles, so they must not run against the
+live stack. A second, fully isolated stack runs beside it as its own compose project: a git worktree
+at `/srv/kavita-test` on a development branch.
+
+```bash
+git worktree add -b develop /srv/kavita-test main      # once
+cd /srv/kavita-test
+cp .env.test.example .env && chmod 600 .env            # once (never committed)
+COMPOSE_ENV_FILES=.env KAVITA_ADMIN_USERNAME=admin KAVITA_ADMIN_PASSWORD='...' \
+  ./setup.sh --non-interactive                         # once: creates the test Kavita + libraries
+./setup.sh                                             # after that: (re)build and start it
+```
+
+It differs from live only through that `.env`: project `kavita-test`, ports 20006/20007/20008 (Kavita
+local 20002), Docker subnet `172.31.0.0/24`, `MEDIA_ROOT=/srv/media-test`, `DATA_ROOT=./data-test` and
+portal image `kavita-companion:test`. It loads `compose.test.yaml` and `caddy/Caddyfile.test`, which
+**reuse the live stack's Let's Encrypt certificate** (the domain's HTTP-01 challenge can only reach one
+stack). Restart the test Caddy after the live certificate renews: `docker compose restart caddy`.
+
+The `TEST_*` Kavita accounts must exist in the test stack (create them once in the test Kavita,
+Settings → Users). Work on a feature branch in the worktree, then merge to `main` and update live with
+`git pull && ./setup.sh`.
+
 ## Tests
 
-Acceptance tests run against the live stack described by `.env`. See [tests/README.md](../tests/README.md).
+Acceptance tests run against the stack described by the checkout's `.env` (the test environment above).
+See [tests/README.md](../tests/README.md).
 
 ```bash
 tests/run.sh             # API tests
 tests/run.sh --browser   # plus headless-browser tests
+tests/run.sh --roles     # plus test_roles_and_limits.py (safe on the test stack)
 ```
 
 ## Admin helper

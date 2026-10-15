@@ -1,0 +1,30 @@
+# Test-stack Caddyfile (docs/development.md). Same entry points as caddy/Caddyfile, but it trusts the
+# live stack's Let's Encrypt certificate for the domain instead of running ACME — the domain's HTTP-01
+# challenge can only reach the live stack. Used when CADDYFILE=Caddyfile.test and compose.test.yaml is
+# enabled. The live certificate is mounted at /certs (LIVE_CERT_DIR in the test checkout's .env).
+{
+	http_port 8080
+	https_port {$COMPANION_HTTPS_PORT}
+	# Same PROXY-protocol handling as the live stack; see caddy/Caddyfile.
+	servers {
+		listener_wrappers {
+			proxy_protocol {
+				timeout 5s
+				allow {$DOCKER_GATEWAY}/32
+			}
+			tls
+		}
+	}
+}
+
+# Kavita
+{$DOMAIN}:{$KAVITA_HTTPS_PORT} {
+	tls /certs/{$DOMAIN}.crt /certs/{$DOMAIN}.key
+	reverse_proxy kavita:5000
+}
+
+# kavita-companion: upload portal
+{$DOMAIN}:{$COMPANION_HTTPS_PORT} {
+	tls /certs/{$DOMAIN}.crt /certs/{$DOMAIN}.key
+	reverse_proxy kavita-companion:3000
+}

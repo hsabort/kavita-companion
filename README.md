@@ -58,9 +58,12 @@ for the upload portal. Each user signs in to the portal once with their Kavita p
 
 ```
 compose.yaml          the whole stack (Kavita, Caddy, kavita-companion)
+compose.test.yaml     overlay for the test environment (reuses live's certificate)
 .env.example          every setting, documented (setup.sh creates .env from it)
+.env.test.example     test-environment settings (docs/development.md)
 setup.sh              install / update script
-caddy/Caddyfile       HTTPS front end
+caddy/Caddyfile       HTTPS front end (live)
+caddy/Caddyfile.test  HTTPS front end for the test environment
 kavita-companion/     the upload portal (TypeScript, Node 24)
 scripts/              admin helpers: backup.sh, kavita-api.py
 tests/                acceptance tests (API + browser) and their runner
