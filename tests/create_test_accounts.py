@@ -79,8 +79,11 @@ def main():
     text = ENV.read_text()
     for label, spec in ACCOUNTS.items():
         username = spec["username"]
-        if username not in existing:
-            invite = {"email": spec["email"], "roles": spec["roles"], "libraries": library_ids,
+        created = username not in existing
+        if created:
+            # Kavita gives every new account its default roles, so the invite asks for none (asking for
+            # a default role fails with "UserAlreadyInRole"); the exact roles are set just below.
+            invite = {"email": spec["email"], "roles": [], "libraries": library_ids,
                       "ageRestriction": {"ageRating": 0, "includeUnknowns": False}}
             status, body = call("POST", "/api/Account/invite", invite, key=key)
             if status != 200:
@@ -91,16 +94,22 @@ def main():
             status, body = call("POST", "/api/Account/confirm-email", confirm)
             if status != 200:
                 sys.exit(f"Confirming {username} failed (HTTP {status}): {body}")
-            text = set_env(text, f"TEST_{label}_USERNAME", username)
+        # update replaces the role set, so the exact roles never clash with the defaults.
+        status, users = call("GET", "/api/Users", key=key)
+        user_id = next((user["id"] for user in users if user["username"] == username), None) if status == 200 else None
+        if user_id is None:
+            sys.exit(f"{username} was not created")
+        status, body = call("POST", "/api/Account/update",
+                            {"userId": user_id, "username": username, "roles": spec["roles"],
+                             "libraries": library_ids,
+                             "ageRestriction": {"ageRating": 0, "includeUnknowns": False}}, key=key)
+        if status != 200:
+            sys.exit(f"Setting roles for {username} failed (HTTP {status}): {body}")
+        text = set_env(text, f"TEST_{label}_USERNAME", username)
+        if created:
             text = set_env(text, f"TEST_{label}_PASSWORD", confirm["password"])
             print(f"created {username} ({', '.join(spec['roles'])})")
         else:
-            # Keep roles and library access in step; leave the password alone.
-            call("POST", "/api/Account/update",
-                 {"userId": existing[username], "username": username, "roles": spec["roles"],
-                  "libraries": library_ids, "ageRestriction": {"ageRating": 0, "includeUnknowns": False}},
-                 key=key)
-            text = set_env(text, f"TEST_{label}_USERNAME", username)
             print(f"{username} already exists; roles/libraries refreshed, password unchanged")
     ENV.write_text(text)
     print(f"updated {ENV}")
