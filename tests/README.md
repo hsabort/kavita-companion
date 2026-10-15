@@ -17,6 +17,10 @@ The tests need three Kavita accounts, created in Kavita (Settings → Users) and
 Use long random passwords (`tests/rotate_test_admin_password.py` sets one for the admin account).
 On a production server, delete these accounts and clear the `TEST_*` lines when you're done testing.
 
+On the test environment ([docs/development.md](../docs/development.md)) create them in one step with
+`python3 tests/create_test_accounts.py`, which invites the three accounts, sets their roles and library
+access, and fills the `TEST_*` lines in `.env` (passwords are generated, never printed).
+
 ## Running
 
 ```bash
