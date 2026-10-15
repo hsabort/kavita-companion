@@ -49,7 +49,7 @@ TLS-ALPN checks are disabled because the HTTPS ports are not 443.
 
 ```bash
 sudo mkdir -p /srv/kavita && sudo chown "$USER": /srv/kavita
-git clone <this repository> /srv/kavita
+git clone https://github.com/hsabort/kavita-companion.git /srv/kavita
 cd /srv/kavita
 ./setup.sh
 ```
