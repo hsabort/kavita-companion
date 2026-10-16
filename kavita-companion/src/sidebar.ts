@@ -5,12 +5,15 @@
 import { config } from "./config.js";
 import { asUser } from "./kavita.js";
 
-const SOURCE_NAME = "Uploads";
+// Shown in Kavita's sidebar. Kavita stores the entry's name when it is created and uses it for both
+// the label and its hover tooltip, and adds no icon of its own, so the "opens in a new tab" cue has to
+// be in the text (docs/roadmap.md §8).
+const DISPLAY_NAME = "Uploads ↗";
 const KEY_NAME = "Kavita Companion";
 const host = () => config.publicOrigin.replace(/\/?$/, "/");
 
 interface ExternalSource { id: number; name: string; host: string; apiKey: string }
-interface SideNavStream { externalSourceId: number | null; streamType: number; visible: boolean }
+interface SideNavStream { id: number; name: string | null; externalSourceId: number | null; streamType: number; visible: boolean }
 
 async function json<T>(res: Response, what: string): Promise<T> {
   if (!res.ok) throw new Error(`${what}: HTTP ${res.status}`);
@@ -19,10 +22,12 @@ async function json<T>(res: Response, what: string): Promise<T> {
 
 /** A fresh, never-expiring auth key for this user, used only by the sidebar link. */
 async function newKey(token: string): Promise<string> {
-  const key = await json<{ key: string }>(
-    await asUser(token, "POST", "/api/Account/create-auth-key", { keyLength: 32, name: KEY_NAME, expiresUtc: null }),
-    "create auth key",
-  );
+  const create = (name: string) =>
+    asUser(token, "POST", "/api/Account/create-auth-key", { keyLength: 32, name, expiresUtc: null });
+  // Kavita requires the key name to be unique per account; fall back to a suffix if it is taken.
+  let res = await create(KEY_NAME);
+  if (!res.ok) res = await create(`${KEY_NAME} ${Math.random().toString(36).slice(2, 8)}`);
+  const key = await json<{ key: string }>(res, "create auth key");
   return key.key;
 }
 
@@ -38,23 +43,35 @@ async function keyWorks(apiKey: string): Promise<boolean> {
  * Make sure the user has a working "Uploads" sidebar entry. Returns what was done:
  * "added", "repaired" (key replaced), "shown" (entry existed but was hidden) or "present".
  */
-export async function ensureSidebarLink(token: string): Promise<"added" | "repaired" | "shown" | "present"> {
+export async function ensureSidebarLink(token: string): Promise<"added" | "repaired" | "shown" | "renamed" | "present"> {
   const sources = await json<ExternalSource[]>(await asUser(token, "GET", "/api/Stream/external-sources"), "list external sources");
   let source = sources.find((s) => s.host === host());
-  let result: "added" | "repaired" | "shown" | "present" = "present";
+  let result: "added" | "repaired" | "shown" | "renamed" | "present" = "present";
 
   if (!source) {
     source = await json<ExternalSource>(
-      await asUser(token, "POST", "/api/Stream/create-external-source", { id: 0, name: SOURCE_NAME, host: host(), apiKey: await newKey(token) }),
+      await asUser(token, "POST", "/api/Stream/create-external-source", { id: 0, name: DISPLAY_NAME, host: host(), apiKey: await newKey(token) }),
       "create external source",
     );
     result = "added";
-  } else if (!(await keyWorks(source.apiKey))) {
+  } else if (source.name !== DISPLAY_NAME) {
+    // Kavita keeps the name an entry was created with and will not rename it, so recreate the source
+    // with the same auth key to pick up "Uploads ↗" (this migrates the older "Uploads" entries too).
+    const removed = await asUser(token, "DELETE", `/api/Stream/delete-external-source?externalSourceId=${source.id}`);
+    if (!removed.ok) throw new Error(`remove old external source: HTTP ${removed.status}`);
+    source = await json<ExternalSource>(
+      await asUser(token, "POST", "/api/Stream/create-external-source", { id: 0, name: DISPLAY_NAME, host: host(), apiKey: source.apiKey }),
+      "recreate external source",
+    );
+    result = "renamed";
+  }
+
+  if (!(await keyWorks(source.apiKey))) {
     source = await json<ExternalSource>(
       await asUser(token, "POST", "/api/Stream/update-external-source", { ...source, apiKey: await newKey(token) }),
       "update external source",
     );
-    result = "repaired";
+    if (result === "present") result = "repaired";
   }
 
   const streams = await json<SideNavStream[]>(await asUser(token, "GET", "/api/Stream/sidenav?visibleOnly=false"), "list sidebar");
