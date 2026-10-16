@@ -26,7 +26,8 @@ the portal follows as soon as you switch back to its tab.
 2. Drag files or whole folders onto the upload area, or use *browse files* / *browse folders*.
 3. Press **Upload**.
 
-Accepted: `.cbz .cbr .cb7 .zip .rar .7z` (comics/manga), `.epub` and `.pdf`; up to 8 GB per file,
+Accepted: `.cbz .cbr .cb7 .zip .rar .7z` (comics/manga), `.epub` and `.pdf`, plus `.mobi`/`.azw`/`.azw3`
+in a Books library (converted to EPUB on upload); up to 8 GB per file,
 3 at a time, and up to 50 GB waiting for review per person.
 
 If your connection drops, the upload carries on by itself. If you close the page, add the same file
