@@ -127,6 +127,17 @@ def make_epub():
     return buf.getvalue()
 
 
+def make_epub_noncanonical():
+    """A valid EPUB that isn't laid out the canonical way (container first, mimetype deflated).
+    Kavita reads it, so the sniffer must not call it a plain zip and discard it."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("META-INF/container.xml", "<container/>" + secrets.token_hex(16))
+        z.writestr("mimetype", "application/epub+zip")
+        z.writestr("OEBPS/content.opf", "<package/>")
+    return buf.getvalue()
+
+
 uploader = login("UPLOADER")
 readonly = login("READONLY")
 admin = login("ADMIN")
@@ -203,6 +214,10 @@ check("valid .epub accepted", u and u["status"] == "pending", str(u))
 st, bad_epub_id, _ = tus_upload(uploader, f"Not A Book {tag}.epub", make_cbz(), library_id=BOOKS)
 u = wait_final(uploader, bad_epub_id)
 check("plain zip named .epub rejected", u and u["status"] == "invalid", str(u))
+st, alt_epub_id, _ = tus_upload(uploader, f"Alt Layout {tag}.epub", make_epub_noncanonical(), library_id=BOOKS)
+u = wait_final(uploader, alt_epub_id)
+check("a valid EPUB in a non-canonical layout is accepted, not misread as a zip",
+      u and u["status"] == "pending", str(u))
 
 # --- Concurrency limit: 3 in progress, 4th refused; then cancel them ---
 locs = []
