@@ -307,11 +307,16 @@ async function matchFor(
           });
         }
       } catch (err) {
+        // A provider that is rate-limited is not an error: the throttle records the cooldown and
+        // throws a `cooldown` error carrying the remaining wait, so the card can say "skipped:
+        // cooldown" with a retry time rather than a generic "couldn't be reached". A 429's
+        // Retry-After arrives the same way (retryAfterMs set, code "http").
         const retryAfterMs = err instanceof ProviderHttpError ? err.retryAfterMs : undefined;
+        const cooldown = err instanceof ProviderHttpError && err.code === "cooldown";
         if (status) {
-          status.skipped = retryAfterMs ? "cooldown" : "error";
+          status.skipped = cooldown || retryAfterMs ? "cooldown" : "error";
           status.retryAfterMs = retryAfterMs;
-          status.error = err instanceof Error ? err.message : String(err);
+          status.error = cooldown ? undefined : err instanceof Error ? err.message : String(err);
         }
       }
     }
@@ -904,6 +909,17 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     } catch (err) {
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
       if (err instanceof ProviderHttpError) {
+        // One provider is picked here, so there is no per-provider "skipped" list to report it on:
+        // surface the cooldown with its retry time instead of a generic "couldn't be reached".
+        if (err.code === "cooldown") {
+          const seconds = err.retryAfterMs ? Math.ceil(err.retryAfterMs / 1000) : undefined;
+          return reply.code(503).send({
+            error: seconds
+              ? `That metadata provider is rate-limited right now. Try again in about ${seconds}s.`
+              : "That metadata provider is rate-limited right now. Try again shortly.",
+            retryAfterMs: err.retryAfterMs,
+          });
+        }
         return reply.code(502).send({ error: "The metadata provider could not be reached. Try again shortly." });
       }
       return reply.code(500).send({ error: err instanceof Error ? err.message : "Applying failed." });

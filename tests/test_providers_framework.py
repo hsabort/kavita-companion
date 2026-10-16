@@ -13,6 +13,7 @@ Run: python3 tests/test_providers_framework.py
 import json
 import pathlib
 import sqlite3
+import subprocess
 import time
 from urllib.parse import urlparse
 
@@ -41,6 +42,50 @@ def at_rest_contains(needle):
         if path.exists() and needle.encode() in path.read_bytes():
             return True
     return False
+
+
+# The test stack sets every *_MIN_INTERVAL_MS to 0, so a long token-bucket wait cannot be driven through
+# the portal's routes. Instead, run the compiled HTTP client itself inside the running container and pick
+# the interval there: one call fills the bucket, a second inside the window must return a cooldown at
+# once (no upstream request), and a short interval must still be slept through as before.
+THROTTLE_SCRIPT = r"""
+const http = await import("/app/dist/providers/http.js");
+const base = (process.env.PROVIDER_STUB_BASE || "").replace(/\/$/, "");
+const call = (provider, minIntervalMs) => http.providerFetchJson({
+  provider, url: `${base}/stub/probe`, minIntervalMs, retries: 0,
+});
+const out = {};
+await call("throttle-long", 60_000);                 // first call reaches the provider and fills the bucket
+const t0 = Date.now();
+try {
+  await call("throttle-long", 60_000);               // second call: must not sleep the 60 s out
+  out.long = { threw: false };
+} catch (err) {
+  out.long = { threw: true, code: err.code, retryAfterMs: err.retryAfterMs, elapsedMs: Date.now() - t0 };
+}
+out.cooldownMs = http.providerCooldownMs("throttle-long");
+const t1 = Date.now();
+await call("throttle-short", 400);                   // a short wait is still slept through
+await call("throttle-short", 400);
+out.shortElapsedMs = Date.now() - t1;
+console.log(JSON.stringify(out));
+"""
+
+
+def throttle_probe():
+    """Run THROTTLE_SCRIPT in the portal container; returns its JSON output, or None on failure."""
+    result = subprocess.run(
+        ["docker", "compose", "exec", "-T", "kavita-companion",
+         "node", "--input-type=module", "-e", THROTTLE_SCRIPT],
+        cwd=str(ROOT), capture_output=True, text=True, timeout=120)
+    if result.returncode != 0:
+        print((result.stderr or result.stdout).strip(), flush=True)
+        return None
+    try:
+        return json.loads(result.stdout.strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        print((result.stdout + result.stderr).strip(), flush=True)
+        return None
 
 
 try:
@@ -151,6 +196,25 @@ try:
     status, body = app("POST", "/api/admin/providers/stub/test", admin)
     check("an oversized response is refused by the size cap",
           status == 200 and body.get("ok") is False and "exceed" in str(body.get("error", "")).lower(), str(body))
+
+    # --- a long minimum interval is skipped as a cooldown, never slept through ---
+    fake.reset()
+    throttle = throttle_probe()
+    long_call = (throttle or {}).get("long", {})
+    check("the throttle probe runs against the built HTTP client once",
+          fake.count("/stub/probe") >= 1, str(fake.count("/stub/probe")))
+    check("a second call inside a long minimum interval throws a cooldown",
+          long_call.get("threw") is True and long_call.get("code") == "cooldown", str(long_call))
+    check("the cooldown is returned well under the interval, not slept through",
+          long_call.get("elapsedMs", 10_000) < 1_000, str(long_call))
+    check("the cooldown carries a positive remaining time",
+          0 < long_call.get("retryAfterMs", 0) <= 60_000, str(long_call))
+    check("the cooldown is visible to providerCooldownMs",
+          (throttle or {}).get("cooldownMs", 0) > 0, str((throttle or {}).get("cooldownMs")))
+    check("the skipped call made no upstream request",
+          fake.count("/stub/probe") == 3, str(fake.count("/stub/probe")))  # 1 long + 2 short
+    check("a short minimum interval still waits normally",
+          (throttle or {}).get("shortElapsedMs", 0) >= 350, str((throttle or {}).get("shortElapsedMs")))
 
     # --- cache get/put + TTL ---
     fake.reset()
