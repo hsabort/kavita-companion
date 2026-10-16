@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.9 — 2026-10-16
+
+Added:
+- **Kindle books (`.mobi`/`.azw`/`.azw3`) can be uploaded to a Books library.** Kavita reads EPUB and PDF
+  only, so on upload the portal converts a Kindle ebook to EPUB with **KindleUnpack** and hands the EPUB
+  to the normal review flow — nothing else about review or approval changes. Conversion runs in the
+  portal image (Python + the `mobi` package, GPL-3.0; see `NOTICE.md`): KF8 books come out as a finished
+  EPUB, MOBI6 books are assembled from KindleUnpack's HTML tree. **DRM-protected or unreadable files are
+  refused with a clear reason** — DRM is never stripped. Kindle formats are accepted only in a Books
+  library (415 elsewhere).
+
 ## 0.6.8 — 2026-10-16
 
 Changed:
