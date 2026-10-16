@@ -44,7 +44,7 @@ const MEDIA_SELECTION = `
   startDate { year }
   genres
   tags { name rank category }
-  staff(edges { role node { name } })
+  staff { edges { role node { name } } }
   isAdult
   countryOfOrigin
   chapters
