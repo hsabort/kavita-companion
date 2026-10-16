@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 — 2026-10-16
 
 Added:
 - **MangaDex manga adapter (phase 2, W4)**: MangaDex joins the provider framework as the manga primary
