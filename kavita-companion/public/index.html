@@ -118,6 +118,35 @@
         <p id="uploads-empty" class="empty">You haven't uploaded anything yet.</p>
         <ul id="uploads" class="uploads"></ul>
       </section>
+
+      <details id="notify-wrap" class="recent" hidden>
+        <summary>Notifications</summary>
+        <p class="muted">Get told when your uploads are approved, rejected or corrected.</p>
+        <label class="field">Where
+          <select id="notify-channel">
+            <option value="off">Off</option>
+            <option value="webhook">Webhook (JSON POST)</option>
+            <option value="ntfy">ntfy topic URL</option>
+            <option value="discord">Discord webhook</option>
+          </select>
+        </label>
+        <label class="field">Address
+          <input id="notify-target" type="url" placeholder="https://…" autocomplete="off" spellcheck="false">
+        </label>
+        <fieldset class="notify-events">
+          <legend>Tell me when</legend>
+          <label><input type="checkbox" id="notify-approved"> an upload is approved</label>
+          <label><input type="checkbox" id="notify-rejected"> an upload is rejected</label>
+          <label><input type="checkbox" id="notify-fixed"> a file in the library is corrected</label>
+          <label><input type="checkbox" id="notify-invalid"> a file is discarded (wrong type)</label>
+          <label><input type="checkbox" id="notify-duplicate"> a duplicate file is found</label>
+        </fieldset>
+        <div class="actions">
+          <button id="notify-save" type="button" class="btn btn-outline-primary small">Save</button>
+          <button id="notify-test" type="button" class="btn btn-outline small">Send test</button>
+          <span id="notify-status" class="muted"></span>
+        </div>
+      </details>
     </div>
   </main>
 </body>

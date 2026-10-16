@@ -16,7 +16,11 @@ Status key: **planned** (specced here) · **idea** (raised, not specced).
 
 ---
 
-## 1. Notifications — planned
+## 1. Notifications — built
+
+Shipped in 0.2.3: per-user webhook / ntfy / Discord notifications for approved, rejected, fixed,
+invalid and duplicate events (`src/notify.ts`), with an outbox worker and an SSRF-guarded target check.
+Email (Kavita's SMTP) remains a later step. Tests in `tests/test_notifications.py`.
 
 **Goal.** Tell uploaders what happened to their upload (approved, rejected, fixed, or discarded as
 invalid/duplicate) instead of making them re-open the portal. Optionally tell reviewers that something

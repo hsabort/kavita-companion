@@ -13,6 +13,7 @@ import { pipeline } from "node:stream/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { createZip, extractAll, naturalCompare, pageImages, type ArchiveEntry } from "./archive.js";
 import { currentUser, type SessionUser } from "./auth.js";
+import { notifyUploader } from "./notify.js";
 import { config } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
@@ -398,6 +399,7 @@ async function runJob(id: string) {
       audit("upload_approved", row.reviewed_by, null, {
         id, filename: row.filename, destination: toKavitaPath(plan.destination), metadata: plan.metadata,
       });
+      notifyUploader(row.owner_id, "approved", `Approved: ${row.filename}`, `Your upload was approved and added to ${plan.libraryName}.`);
     } else {
       const oldDir = dirname(source.path);
       if (plan.destination !== source.path) {
@@ -408,6 +410,7 @@ async function runJob(id: string) {
       audit("upload_fixed", plan.actor ?? null, null, {
         id, from: toKavitaPath(source.path), to: toKavitaPath(plan.destination), metadata: plan.metadata,
       });
+      notifyUploader(row.owner_id, "fixed", `Updated: ${row.filename}`, "An admin corrected this file in the library.");
       // Let Kavita drop the old location: re-scan its folder, or the whole library if the folder is gone.
       if (oldDir !== plan.seriesDir) {
         if (await exists(oldDir)) await kavita.scanFolder(toKavitaPath(oldDir)).catch(() => undefined);
@@ -754,6 +757,7 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     q.rejected.run(request.body.reason.trim(), user.username, now, now, row.id);
     defaultsCache.delete(row.id);
     audit("upload_rejected", user.username, request.ip, { id: row.id, filename: row.filename, reason: request.body.reason });
+    notifyUploader(row.owner_id, "rejected", `Not accepted: ${row.filename}`, `An admin rejected this upload: ${request.body.reason.trim()}`);
     return { ok: true };
   });
 

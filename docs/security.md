@@ -65,6 +65,14 @@ Kavita can't inject styles or load anything into the portal.
 - Approved names are sanitised (no path separators, control or reserved characters, leading dots) and
   the destination is verified to be inside the chosen library; existing files are never overwritten.
 
+## Notifications
+
+A user can ask to be told about their own uploads through a webhook, ntfy or Discord. The target is a
+URL the user supplies and the portal calls server-side, so to limit server-side request forgery
+(SSRF): only `http(s)` is accepted; unless `NOTIFY_ALLOW_PRIVATE=true`, `https` is required and
+loopback/link-local/private addresses are refused; requests have a short timeout. Payloads contain only
+that user's own file names and statuses, never other users' data or secrets.
+
 ## Containers
 
 - kavita-companion and Caddy: read-only root filesystem, `no-new-privileges`, all Linux capabilities

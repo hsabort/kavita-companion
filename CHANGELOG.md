@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.3 — 2026-10-16
+
+Added:
+- **Notifications**: each user can be told — through a webhook, an ntfy topic or a Discord webhook —
+  when their uploads are approved or rejected, when a file of theirs in the library is corrected, or
+  when a file is discarded or found to be a duplicate. Configured under **Notifications** in the portal;
+  off by default. New setting `NOTIFY_ALLOW_PRIVATE` for self-hosted LAN targets
+  (see [docs/security.md](docs/security.md)). See [docs/user-guide.md](docs/user-guide.md).
+
 ## 0.2.2 — 2026-10-16
 
 Added:

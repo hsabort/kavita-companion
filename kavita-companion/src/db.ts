@@ -57,6 +57,32 @@ db.exec(`
     detail     TEXT,
     ip         TEXT
   );
+
+  -- Where to tell a user about their uploads (webhook / ntfy / Discord). No row = notifications off.
+  CREATE TABLE IF NOT EXISTS notification_prefs (
+    user_id    INTEGER PRIMARY KEY,
+    channel    TEXT NOT NULL,
+    target     TEXT NOT NULL,
+    events     TEXT NOT NULL,          -- JSON array, e.g. ["approved","rejected"]
+    updated_at INTEGER NOT NULL
+  );
+
+  -- Delivery outbox: one row per notification, sent (and retried) by a background worker.
+  CREATE TABLE IF NOT EXISTS notifications (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    event        TEXT NOT NULL,
+    title        TEXT NOT NULL,
+    body         TEXT NOT NULL,
+    url          TEXT,
+    channel      TEXT NOT NULL,
+    target       TEXT NOT NULL,
+    created_at   INTEGER NOT NULL,
+    attempts     INTEGER NOT NULL DEFAULT 0,
+    delivered_at INTEGER,
+    last_error   TEXT
+  );
+  CREATE INDEX IF NOT EXISTS notifications_pending ON notifications (delivered_at, attempts);
 `);
 
 // Columns added after the table first shipped (M3). CREATE TABLE IF NOT EXISTS won't add them.
