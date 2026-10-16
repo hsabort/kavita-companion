@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 — 2026-10-16
 
 Added:
 - **Hardcover books adapter (phase 2, W6)**: Hardcover joins the provider framework as the books
