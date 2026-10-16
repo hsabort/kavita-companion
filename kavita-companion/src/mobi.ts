@@ -74,26 +74,31 @@ async function findEpub(dir: string): Promise<string | null> {
 }
 
 /**
- * Convert a Kindle ebook at `source` into an EPUB at `outFile`. Throws `MobiError` with an
- * uploader-facing message when the book is DRM-protected or can't be unpacked.
+ * Convert a Kindle ebook at `source` (stored without a file name) into an EPUB at `outFile`. Throws
+ * `MobiError` with an uploader-facing message when the book is DRM-protected or can't be unpacked.
  */
-export async function convertKindleToEpub(source: string, outFile: string): Promise<void> {
+export async function convertKindleToEpub(source: string, ext: string, outFile: string): Promise<void> {
   const work = await mkdtemp(join(tmpdir(), "kc-kindle-"));
   try {
-    const { code, output } = await run("mobiunpack", [source, work]);
-    if (/drm|encryption/i.test(output)) {
-      throw new MobiError("This book is DRM-protected, so it can't be converted to EPUB.");
-    }
-    if (code !== 0) throw new MobiError("This file couldn't be read as a Kindle book.");
+    // KindleUnpack picks the format from the file name, and uploads are stored without an extension.
+    const input = join(work, `book.${ext}`);
+    await copyFile(source, input);
+    const outDir = join(work, "unpacked");
+    const { output } = await run("mobiunpack", [input, outDir]);
 
     // KF8 books come out as a finished EPUB; older MOBI6 books come out as an HTML tree we assemble.
-    const emitted = await findEpub(work);
+    const emitted = await findEpub(outDir);
     if (emitted) {
       await copyFile(emitted, outFile);
       return;
     }
-    const root = bookRoot(work);
-    if (!root) throw new MobiError("This file couldn't be converted to EPUB.");
+    const root = bookRoot(outDir);
+    if (!root) {
+      if (/drm|encrypt/i.test(output)) {
+        throw new MobiError("This book is DRM-protected, so it can't be converted to EPUB.");
+      }
+      throw new MobiError("This file couldn't be converted to EPUB.");
+    }
 
     // EPUB needs a stored, first `mimetype` entry and a META-INF/container.xml that points at the OPF.
     await writeFile(join(root, "mimetype"), "application/epub+zip");
