@@ -307,7 +307,7 @@ async function checkCompletedUpload(id: string) {
       // Convert to EPUB now so review, approval and Kavita all see a normal book.
       storedPath = join(PENDING_DIR, `${id}.epub`);
       try {
-        await convertKindleToEpub(partial, storedPath);
+        await convertKindleToEpub(partial, row.ext, storedPath);
       } catch (err) {
         await discardPartial(id);
         const message = err instanceof MobiError ? err.message : "This file couldn't be converted to EPUB.";
