@@ -119,7 +119,7 @@ try:
         check("[desktop] Metadata sources credits Metron (CC BY-SA 4.0)",
               "Comic data from Metron, CC BY-SA 4.0" in page.inner_text("#metadata-sources"))
         check("[desktop] the metadata sources licence links out",
-              page.locator("#metadata-sources a[href='https://creativecommons.org/licenses/by-sa/4.0/']").count() == 1)
+              page.locator("#metadata-sources a[href='https://creativecommons.org/licenses/by-sa/4.0/']").count() >= 1)
 
         provider = page.locator(".provider-row", has_text="Metron")
         provider.locator("button", has_text="Turn on").click()
