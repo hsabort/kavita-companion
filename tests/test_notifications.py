@@ -127,8 +127,10 @@ uploader = login("UPLOADER")
 readonly = login("READONLY")
 
 # --- preferences ---
+# Prefs persist between runs, so start from a clean slate before checking the default.
+app("POST", "/api/notifications", uploader, {"channel": "off"})
 status, body = app("GET", "/api/notifications", uploader)
-check("a new user starts with notifications off",
+check("notifications default to off",
       status == 200 and body.get("channel") == "off" and set(body.get("events", [])) == set(EVENTS), str(body))
 
 status, _ = app("POST", "/api/notifications", readonly, {"channel": "webhook", "target": target, "events": ["rejected"]})
@@ -172,6 +174,9 @@ received.clear()
 upload(uploader, f"Notify Quiet {tag}.cbz", os.urandom(4096))
 time.sleep(4)
 check("an event the user did not select is not delivered", not delivered("invalid", within=1), str(received[:1]))
+
+# Leave the account clean for the next run.
+app("POST", "/api/notifications", uploader, {"channel": "off"})
 
 server.shutdown()
 print()
