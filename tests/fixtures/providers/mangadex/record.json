@@ -1,0 +1,33 @@
+{
+  "result": "ok",
+  "response": "entity",
+  "data": {
+    "id": "m-9001",
+    "type": "manga",
+    "attributes": {
+      "title": { "en": "Fixture Manga", "ja": "フィクスチャ" },
+      "altTitles": [{ "ja": "フィクスチャ" }],
+      "description": {
+        "en": "<b>Credit</b> to the scanner.\nA synthetic <b>summary</b> &amp; more.\nSupport the author by buying the official release."
+      },
+      "year": 2018,
+      "contentRating": "suggestive",
+      "originalLanguage": "ja",
+      "lastChapter": "12",
+      "lastVolume": "2",
+      "status": "ongoing",
+      "tags": [
+        { "id": "t1", "type": "tag", "attributes": { "name": { "en": "Action" }, "group": "genre" } },
+        { "id": "t2", "type": "tag", "attributes": { "name": { "en": "Adventure" }, "group": "genre" } },
+        { "id": "t3", "type": "tag", "attributes": { "name": { "en": "Music" }, "group": "theme" } },
+        { "id": "t4", "type": "tag", "attributes": { "name": { "en": "Oneshot" }, "group": "format" } }
+      ]
+    },
+    "relationships": [
+      { "id": "a1", "type": "author", "attributes": { "name": "A. Author" } },
+      { "id": "a2", "type": "author", "attributes": { "name": "B. Co-Author" } },
+      { "id": "p1", "type": "artist", "attributes": { "name": "P. Artist" } },
+      { "id": "c1", "type": "cover_art", "attributes": { "fileName": "cover.jpg" } }
+    ]
+  }
+}

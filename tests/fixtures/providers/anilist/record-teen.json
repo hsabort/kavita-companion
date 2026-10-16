@@ -1,0 +1,19 @@
+{
+  "data": {
+    "Media": {
+      "id": 9002,
+      "title": { "romaji": "Fixturesoft Manga", "english": "Fixturesoft Manga", "native": "フィクスチャ" },
+      "synonyms": [],
+      "description": "A synthetic all-ages tale.",
+      "startDate": { "year": 2020 },
+      "genres": ["Comedy"],
+      "tags": [{ "name": "Slapstick", "rank": 50, "category": "Theme" }],
+      "staff": { "edges": [{ "role": "Story & Art", "node": { "name": "S. Solo" } }] },
+      "isAdult": false,
+      "countryOfOrigin": "KR",
+      "chapters": null,
+      "volumes": null,
+      "format": "MANGA"
+    }
+  }
+}

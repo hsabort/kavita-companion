@@ -1,0 +1,57 @@
+{
+  "result": "ok",
+  "response": "collection",
+  "data": [
+    {
+      "id": "m-9001",
+      "type": "manga",
+      "attributes": {
+        "title": { "en": "Fixture Manga", "ja": "フィクスチャ" },
+        "altTitles": [{ "ja": "フィクスチャ" }],
+        "description": { "en": "A synthetic <b>summary</b> &amp; more." },
+        "year": 2018,
+        "contentRating": "suggestive",
+        "originalLanguage": "ja",
+        "lastChapter": "12",
+        "lastVolume": "2",
+        "status": "ongoing"
+      },
+      "relationships": []
+    },
+    {
+      "id": "m-9002",
+      "type": "manga",
+      "attributes": {
+        "title": { "en": "Fixture Manga" },
+        "altTitles": [],
+        "description": { "en": "A later synthetic volume." },
+        "year": 2019,
+        "contentRating": "safe",
+        "originalLanguage": "ja",
+        "lastChapter": "",
+        "lastVolume": "",
+        "status": "ongoing"
+      },
+      "relationships": []
+    },
+    {
+      "id": "m-9099",
+      "type": "manga",
+      "attributes": {
+        "title": { "en": "Entirely Different Manga" },
+        "altTitles": [],
+        "description": { "en": "Nothing to do with the query." },
+        "year": 1999,
+        "contentRating": "safe",
+        "originalLanguage": "ja",
+        "lastChapter": "",
+        "lastVolume": "",
+        "status": "completed"
+      },
+      "relationships": []
+    }
+  ],
+  "limit": 8,
+  "offset": 0,
+  "total": 3
+}

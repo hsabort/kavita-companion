@@ -7,8 +7,9 @@ of Service**. This is a plan; nothing here is built.
 
 **Status:** **M1 shipped in 0.3.0** — the provider framework (W1), the Metron comics adapter (W2) and the
 review card's Find metadata/apply + attribution (W8), with the fake-provider test scaffolding (W11).
-**M2 shipped in 0.3.1**: the GCD comics fallback (W3); the other media (M3–M4) and search/browse (M5) are
-next.
+**M2 shipped in 0.3.1**: the GCD comics fallback (W3). **M3 built (W4/W5)**: the MangaDex manga adapter
+and the AniList manga/light-novel fallback, both keyless and off by default, with their fake-provider
+tests. The light-novel/book adapters (M4) and search/browse (M5) are next.
 
 Integration is **direct** (not only via Kavita+), **human-reviewed**, **low-volume and cached**. Every
 provider must pass the Compliance gate (section 1) before it can be enabled; a provider that cannot be

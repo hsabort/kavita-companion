@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased
+
+Added:
+- **MangaDex manga adapter (phase 2, W4)**: MangaDex joins the provider framework as the manga primary
+  (ordered before AniList). Keyless and server-side only; **off by default**. It maps a manga's
+  localized title/description, year, author → Writer, artist → Penciller, genre tags vs other tags,
+  `originalLanguage` → LanguageISO and `contentRating` → AgeRating, and deliberately does **not** map
+  the series-level `lastChapter`/`lastVolume` as an issue number. Its Acceptable Usage Policy requires a
+  credit and forbids ads/paid use and image hotlinking, so the credit is the licence name and covers are
+  never fetched. Manga data from MangaDex. See
+  [docs/architecture.md](docs/architecture.md#mangadex-manga-primary-phase-2-w4).
+- **AniList manga/light-novel adapter (phase 2, W5)**: a keyless GraphQL fallback for manga (and light
+  novels); **off by default**. One query returns the full selection, mapped to Series (english‖romaji),
+  Summary, Year, staff roles → Writer/Penciller (cross-role de-duplicated), genres, tags,
+  `countryOfOrigin` → LanguageISO and the coarse `isAdult` → AgeRating. `chapters`/`volumes` are not
+  mapped as an issue number. AniList's strict no-data-storage terms are respected with a short cache
+  TTL. Manga/LN data from AniList. See
+  [docs/architecture.md](docs/architecture.md#anilist-mangalight-novel-fallback-phase-2-w5).
+- Both adapters register with the same admin surface (enable/key/probe) and are covered by the fast
+  tier: `tests/test_providers_mangadex.py` and `tests/test_providers_anilist.py` against the shared
+  `tests/provider_fake.py` (no network, no keys).
+
 ## 0.3.1 — 2026-10-16
 
 Added:
