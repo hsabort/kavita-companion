@@ -143,7 +143,8 @@ try:
               group.locator("button", has_text="Find metadata").count() == 1)
         group.locator("button", has_text="Find metadata").click()
 
-        dialog = page.locator(".metadata-dialog")
+        # Each card builds its own (hidden) dialog, so scope to this card's group.
+        dialog = group.locator(".metadata-dialog")
         dialog.wait_for(state="visible", timeout=20000)
         check("[desktop] Find metadata opens a dialog", dialog.is_visible())
         check("[desktop] the dialog is a labelled aria-modal",
@@ -205,7 +206,7 @@ try:
         phone_context, phone, phone_errors = signed_in_page(browser, {"width": 390, "height": 844}, phone=True)
         _, phone_group = open_card(phone)
         phone_group.locator("button", has_text="Find metadata").click()
-        phone_dialog = phone.locator(".metadata-dialog")
+        phone_dialog = phone_group.locator(".metadata-dialog")
         phone_dialog.wait_for(state="visible", timeout=20000)
         phone_dialog.locator(".candidate").first.wait_for(timeout=20000)
         phone.keyboard.press("Escape")
