@@ -481,6 +481,7 @@ function groupCard(items) {
     refreshUploads();
   });
 
+  const suggestNote = el("div", { className: "match-note" });
   card.append(...[
     el("div", { className: "group-head" },
       el("h3", { textContent: fixing ? `Fix ${first.filename}` : items.length > 1 ? `${first.defaults.Series}: ${items.length} files` : first.filename }),
@@ -490,11 +491,28 @@ function groupCard(items) {
       })),
     el("div", { className: "grid-2" }, field("Library", library), field("Series", series)),
     seriesNote,
+    suggestNote,
     el("div", { className: "grid-2" }, field("Year", year), field("Age rating", age)),
     moreBox,
     el("div", { className: "rows" }, ...rows.map((r) => r.node)),
     items.length > 1 ? el("div", { className: "actions group-actions" }, approveAll) : null,
   ].filter(Boolean));
+
+  // Metadata already on the matching Kavita series, offered as a one-click fill (src/review.ts /suggest).
+  api(`/api/review/${encodeURIComponent(first.id)}/suggest`).then(({ status, body }) => {
+    if (status !== 200 || !body.found) return;
+    const fields = body.fields ?? {};
+    const applied = ["Year", ...SHARED_MORE].filter((key) => fields[key]);
+    if (!applied.length) return;
+    const use = el("button", { type: "button", className: "link", textContent: `use Kavita's ${applied.join(", ")}` });
+    use.addEventListener("click", () => {
+      if (fields.Year) year.value = fields.Year;
+      for (const key of SHARED_MORE) if (fields[key] && more[key]) more[key].value = fields[key];
+      updateAll();
+    });
+    suggestNote.append(`Kavita's "${body.seriesName}" already has metadata — `, use);
+  }).catch(() => {});
+
   updateAll();
   return card;
 }

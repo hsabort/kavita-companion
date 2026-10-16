@@ -248,6 +248,8 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .series-note { font-size: 0.85rem; margin-top: 0.35rem; color: var(--muted); }
 .series-note .ok { color: var(--primary); }
 .series-note .warn { color: var(--warning-text); }
+.match-note { font-size: 0.85rem; margin-top: 0.35rem; color: var(--muted); }
+.match-note:empty { display: none; }
 .more { margin-top: 0.8rem; }
 .more summary { cursor: pointer; color: var(--muted); font-size: 0.9rem; }
 

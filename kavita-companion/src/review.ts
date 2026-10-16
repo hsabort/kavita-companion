@@ -160,6 +160,41 @@ async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: 
   return result;
 }
 
+/** Joined names from a Kavita metadata list (models use `title` or `name`). */
+const names = (list: unknown): string =>
+  (Array.isArray(list) ? list : [])
+    .map((item) => String((item as { title?: string; name?: string })?.title ?? (item as { name?: string })?.name ?? ""))
+    .filter(Boolean)
+    .join(", ");
+
+/** Metadata already on the matching Kavita series (same name, same library), as review-screen fields. */
+async function suggestFor(row: UploadRow, inspection: Inspection, libraryType: number) {
+  const { defaults } = await defaultsFor(row, inspection, libraryType);
+  if (!defaults.Series) return { found: false };
+  const wanted = normalizeSeries(defaults.Series);
+  const match = (await kavita.seriesInLibrary(row.library_id)).find((series) => normalizeSeries(series.name) === wanted);
+  if (!match) return { found: false };
+  const meta = await kavita.seriesMetadata(match.id);
+  const fields: Metadata = {};
+  const set = (field: MetadataField, value: unknown) => {
+    const text = typeof value === "string" ? value.trim() : "";
+    if (text) fields[field] = text;
+  };
+  set("Summary", meta.summary);
+  set("Genre", names(meta.genres));
+  set("Tags", names(meta.tags));
+  set("Writer", names(meta.writers));
+  set("Penciller", names(meta.pencillers));
+  set("Inker", names(meta.inkers));
+  set("Colorist", names(meta.colorists));
+  set("CoverArtist", names(meta.coverArtists));
+  set("Publisher", names(meta.publishers));
+  set("Imprint", names(meta.imprints));
+  if (typeof meta.releaseYear === "number" && meta.releaseYear > 0) fields.Year = String(meta.releaseYear);
+  if (typeof meta.language === "string" && /^[a-z]{2}(-[a-z]{2})?$/i.test(meta.language.trim())) fields.LanguageISO = meta.language.trim();
+  return { found: true, seriesId: match.id, seriesName: match.name, fields };
+}
+
 async function reviewItem(row: UploadRow, libraryTypes: Map<number, number>) {
   const inspection = row.inspection ? (JSON.parse(row.inspection) as Inspection) : null;
   if (!inspection) inspectInBackground(row.id);
@@ -609,6 +644,20 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     if (!match) return { exists: false };
     const contents = await kavita.seriesContents(match.id);
     return { exists: true, name: match.name, ...contents };
+  });
+
+  // Metadata Kavita already has for the matching series, offered as a one-click fill on the card.
+  app.get<{ Params: { id: string } }>("/api/review/:id/suggest", async (request, reply) => {
+    if (!requireReviewer(request, reply)) return;
+    const row = getUpload(request.params.id);
+    if (!row?.inspection) return reply.code(404).send({ error: "Nothing to suggest yet." });
+    const inspection = JSON.parse(row.inspection) as Inspection;
+    const libraryType = (await kavita.librariesCached()).find((library) => library.id === row.library_id)?.type ?? 0;
+    try {
+      return await suggestFor(row, inspection, libraryType);
+    } catch {
+      return { found: false };
+    }
   });
 
   app.get<{ Params: { id: string }; Querystring: { fix?: string } }>("/api/review/:id/cover", async (request, reply) => {

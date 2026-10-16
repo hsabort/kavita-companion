@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.7 — 2026-10-16
+
+Added:
+- **Metadata auto-fill**: when an upload's series already exists in Kavita, the review card offers
+  **use Kavita's …** to fill the shared fields (year, credits, publisher, genre, tags, language) from
+  that series' existing metadata. See [docs/user-guide.md](docs/user-guide.md).
+
 ## 0.2.6 — 2026-10-16
 
 Added:

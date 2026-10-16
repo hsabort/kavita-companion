@@ -169,6 +169,11 @@ export async function seriesFiles(seriesId: number): Promise<string[]> {
   return vols.flatMap((v) => v.chapters.flatMap((c) => (c.files ?? []).map((f) => f.filePath)));
 }
 
+/** A series' metadata (summary, credits, genre, ...), for the review screen's suggestions. */
+export async function seriesMetadata(seriesId: number): Promise<Record<string, unknown>> {
+  return (await adminGet(`/api/Series/metadata?seriesId=${seriesId}`)) as Record<string, unknown>;
+}
+
 /** Queue a scan of a whole library (picks up removed folders, unlike scan-folder). */
 export async function scanLibrary(libraryId: number): Promise<void> {
   const res = await kavitaFetch(`/api/Library/scan?libraryId=${libraryId}&force=false`, { method: "POST" });
