@@ -76,7 +76,7 @@ COMPOSE_ENV_FILES=.env KAVITA_ADMIN_USERNAME=admin KAVITA_ADMIN_PASSWORD='...' \
 
 It differs from live only through that `.env`: project `kavita-test`, ports 20006/20007/20008 (Kavita
 local 20002), Docker subnet `172.31.0.0/24`, `MEDIA_ROOT=/srv/media-test`, `DATA_ROOT=./data-test` and
-portal image `kavita-companion:test`. It loads `compose.test.yaml` and `caddy/Caddyfile.test`, which
+portal image `kavita-companion:test` (via `COMPANION_IMAGE`). It loads `compose.test.yaml` and `caddy/Caddyfile.test`, which
 **reuse the live stack's Let's Encrypt certificate** (the domain's HTTP-01 challenge can only reach one
 stack). Restart the test Caddy after the live certificate renews: `docker compose restart caddy`.
 
