@@ -57,8 +57,9 @@ Shared helpers live in `tests/harness.py` (`app()`, `kavita()`, `login()`, `uplo
 | `test_preview.py` | Reviewer page preview: pages served in order, bounds refused, reviewer-only |
 | `test_metadata_match.py` | Metadata auto-fill: a matching Kavita series' metadata is suggested for a new upload |
 | `test_sidebar_label.py` | The Kavita sidebar entry is named `Uploads ↗` (creates/repairs it on sign-in) |
+| `test_sidebar_connect.py` | `POST /api/sidebar/connect` reconnects a signed-in uploader's sidebar entry from their stored Kavita session (signed-out 401, Read Only 403, the entry comes back) |
 | `test_roles_and_limits.py` | Role changes in Kavita reach open sessions; general rate limit. **Changes test-uploader's roles for ~5 minutes** and therefore refuses to run if a real person signed in within the last hour or uploaded in the last 30 minutes (`--force` overrides). |
-| `browser/upload_page.py` | The upload page on desktop and phone sizes, no console errors |
+| `browser/upload_page.py` | The upload page on desktop and phone sizes, no console errors; the sidebar-reconnect button reports an outcome |
 | `browser/review_page.py` | The review screen, cover, destination preview, approval |
 | `browser/fix_page.py` | Recent decisions shows "In Kavita ✓", the link opens the right Kavita series page, Fix… editor saves |
 | `browser/kavita_integration.py` | Sign in to Kavita, click **Uploads** in its sidebar, land in the portal signed in; password sign-in adds the sidebar link |

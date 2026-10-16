@@ -179,6 +179,38 @@ $("logout").addEventListener("click", async () => {
   await refreshMe(); // back to the server's default theme
 });
 
+// ---------- Kavita sidebar link ----------
+// Creates or repairs the "Uploads" entry in the user's own Kavita sidebar (src/sidebar.ts). Signing
+// in with the Kavita password already does this; the button is for a signed-in session that arrived
+// through the sidebar link, or whose entry (or its key) was deleted in Kavita afterwards.
+
+const SIDEBAR_RESULT = {
+  added: "Added — Uploads ↗ is now in your Kavita sidebar. Refresh the Kavita page if you don't see it.",
+  repaired: "Reconnected — the Uploads link in your Kavita sidebar works again.",
+  renamed: "Updated — the Kavita sidebar entry is now labelled Uploads ↗.",
+  shown: "Back — Uploads is in your Kavita sidebar again.",
+  present: "Nothing to do — Uploads is already in your Kavita sidebar.",
+};
+
+async function connectSidebar() {
+  const button = $("sidebar-connect-btn");
+  const status = $("sidebar-connect-status");
+  button.disabled = true;
+  status.className = "muted";
+  status.textContent = "Talking to Kavita…";
+  const { status: code, body } = await api("/api/sidebar/connect", { method: "POST", body: "{}" });
+  button.disabled = false;
+  if (code !== 200) {
+    status.className = "muted error";
+    status.textContent = body.error ?? "Kavita couldn't be reached. Try again shortly.";
+    return;
+  }
+  status.textContent = SIDEBAR_RESULT[body.result] ?? "Done.";
+  button.textContent = "Reconnect it";
+}
+
+$("sidebar-connect-btn").addEventListener("click", connectSidebar);
+
 // ---------- Uploading ----------
 
 async function startUploader() {

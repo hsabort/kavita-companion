@@ -6,7 +6,12 @@
 - Or go to the portal's address directly and sign in with your Kavita username and password.
   Doing this once adds **Uploads** to your Kavita sidebar.
 
-Read Only Kavita accounts can sign in but can't upload.
+If the **Uploads** link in Kavita stops working — for example its auth key was deleted in Kavita — the
+portal can put it back without your password: on the **Upload** tab press **Add Uploads to your Kavita
+sidebar**. Signing in with your Kavita password once repairs it too.
+
+Read Only Kavita accounts can sign in but can't upload; Kavita won't give them a sidebar link, so the
+portal doesn't offer them one.
 
 The portal is split into tabs — **Upload**, **Review**, **Requests**, **Activity** and **Notifications** —
 and you only see the ones your Kavita role allows. The tab you're on is kept in the address (`#review`),
