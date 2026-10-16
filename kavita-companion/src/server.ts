@@ -9,6 +9,7 @@ import {
 } from "./auth.js";
 import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
+import { registerLibraryRoutes } from "./library.js";
 import { drainNotifications, registerNotifyRoutes } from "./notify.js";
 import { purgeExpiredCache } from "./providers/cache.js";
 import "./providers/index.js"; // register the real provider adapters (Metron) with the registry
@@ -216,6 +217,7 @@ app.get("/api/me", async (request) => {
 await registerUploadRoutes(app);
 await registerReviewRoutes(app);
 await registerActivityRoutes(app);
+await registerLibraryRoutes(app);
 await registerNotifyRoutes(app);
 await registerRequestRoutes(app);
 await registerSidebarRoutes(app);

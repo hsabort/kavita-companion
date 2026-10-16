@@ -56,6 +56,10 @@ function does not fit what they check:
 `test_roles_and_limits.py` also keeps its own `request()`/`kavita()`/`wait_for()` helpers: it changes
 test-uploader's roles and watches the live session refresh, which is outside the shared fast/slow tiers.
 
+`test_library.py` seeds and removes one tiny series with `tests/library_fixture.py` (a one-file CBZ
+with partial metadata written straight into the test comics library, then a Kavita folder scan), so the
+missing-field detection is checked against real Kavita state without the slow upload flow.
+
 | File | Covers |
 |---|---|
 | `test_auth.py` | Health, security headers, sign-in/out, session cookie flags, CSRF, permissions, rate limit |
@@ -65,6 +69,7 @@ test-uploader's roles and watches the live session refresh, which is outside the
 | `test_metadata.py` | Inspection (cover, pages, embedded metadata, warnings), metadata written into CBZ/EPUB, CB7→CBZ, PDF, unsafe archives |
 | `test_fix.py` | "In Kavita ✓" confirmation and links, Fix: move to another series, old series dropped by Kavita, fix in place, name clash refused, permissions, search |
 | `test_activity.py` | Admin Activity panel: reviewer-only access, action/username filters, paging, insights shape and counts |
+| `test_library.py` | Library view (phase 2, M5): reviewer-only browse/search and "needs metadata" queue, their envelope and pagination shapes, and missing-field detection (summary/writer/genre/year) against a real series seeded by `tests/library_fixture.py` — created with Writer+Year and no Summary/Genre, then completed in Kavita and re-checked with `refresh=1`. The fixture series is removed afterwards. |
 | `test_notifications.py` | Per-user notifications: preference rules, SSRF/target validation, and webhook delivery for the test/invalid/rejected events (runs a receiver on the host) |
 | `test_requests.py` | Request board: create/list/decline/fulfil, permissions, and a matching approval fulfilling a request automatically |
 | `test_preview.py` | Reviewer page preview: pages served in order, bounds refused, reviewer-only |
@@ -85,6 +90,7 @@ test-uploader's roles and watches the live session refresh, which is outside the
 | `browser/fix_page.py` | Recent decisions shows "In Kavita ✓", the link opens the right Kavita series page, Fix… editor saves |
 | `browser/kavita_integration.py` | Sign in to Kavita, click **Uploads** in its sidebar, land in the portal signed in; password sign-in adds the sidebar link |
 | `browser/activity_page.py` | The admin Activity panel renders (cards + entries) and is hidden from non-admins |
+| `browser/library_page.py` | The reviewer-only Library tab (phase 2, M5): Browse/Needs-metadata sub-views, the library filter and search controls (empty state for no match), phone layout and no console errors; hidden from non-admins |
 | `browser/notifications_page.py` | The Notifications panel is shown to uploaders (save works) and hidden from read-only accounts |
 | `browser/requests_page.py` | A user asks for a title; a reviewer sees it in the open queue and declines it |
 | `browser/suggestion_card.py` | The review card's **Find metadata** flow (phase 2, W8): the turned-off state, enabling Metron + key + Test on the About panel, candidates → apply → filled fields + source chips + *Applied from Metron (CC BY-SA 4.0)*, responsive on phone. `tests/run.sh` starts `tests/provider_fake.py` on the host for the browser tier (the portal reaches it through the Docker gateway); the upload is withdrawn and Metron left off |

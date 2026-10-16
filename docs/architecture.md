@@ -48,6 +48,7 @@ All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after sta
 | `kavita.ts` | Kavita REST API client |
 | `db.ts` | SQLite (Node's built-in `node:sqlite`): sessions, uploads, audit log |
 | `activity.ts` | Admin Activity panel: recent audit-log entries (filters, paging) and a few counts |
+| `library.ts` | Reviewer-only Library view (phase 2, M5): browse/search Kavita's catalogue and the "needs metadata" queue, with a bounded, cached metadata signal per series (read-only) |
 | `notify.ts` | Per-user notifications (webhook / ntfy / Discord): preferences, target checks and a delivery outbox |
 | `requests.ts` | Request board: users ask for titles, admins decide, and matching approvals fulfil requests |
 | `backup.ts` | Daily `VACUUM INTO` snapshot of the database |
@@ -360,3 +361,33 @@ Licence `Open Library (Internet Archive)` (<https://openlibrary.org/developers/a
   (`PROVIDER_OPENLIBRARY_MIN_INTERVAL_MS`); `429`/`Retry-After` handled by `http.ts`.
 - **Probe**: `POST /api/admin/providers/openlibrary/test` (one minimal search). Tests:
   `tests/test_providers_openlibrary.py`.
+
+## Library view (phase 2, M5)
+
+A thin, **reviewer-only** view over Kavita's own catalogue (`src/library.ts`, `web/main.js` **Library**
+tab) that makes thin metadata easy to find and fix. It is read-only — no file is opened and no Kavita
+metadata or scan is triggered (the write paths stay in the review/fix flow).
+
+- **Browse** — `GET /api/library/series?q=&libraryId=&page=&pageSize=&refresh=`. Free text runs through
+  Kavita's own `GET /api/Search/search?queryString=` (Kavita ranks the matches); an empty search lists a
+  page with `POST /api/Series/v2` (filter field 19 = libraryId), which is what `seriesInLibrary()` already
+  used. It returns `{ rows, page, pageSize, hasMore, count, cap, query, libraryId }`.
+- **Queue** — `GET /api/library/incomplete?libraryId=&page=&pageSize=&limit=&refresh=`. It inspects a
+  bounded page of series and returns those missing key fields, `{ rows, page, pageSize, limit, scanned,
+  cap, count, hasMore, libraryId }`.
+- **Row shape** — `{ seriesId, name, libraryId, libraryName, releaseYear, publicationStatus, hasSummary,
+  hasWriter, hasGenre, hasYear, missing[], metadataError, kavitaUrl, review }`. `missing` is `null` (not
+  `[]`) when Kavita could not describe a series, so the UI can say *unknown* rather than *clean*.
+  `review` carries `pendingUploadId`/`approvedUploadId` when the portal holds a file for that series
+  (matched by library + normalised name), so a row can jump into the review card or the "find an
+  approved file to fix" search.
+- **Cost.** A series' summary/writers/genres/year only exist on `GET /api/Series/metadata?seriesId=`, so
+  each row costs one Kavita call. To stay cheap a request inspects at most **50** series (`cap`,
+  `MAX_METADATA_LOOKUPS`; page size is capped at the same), runs them with a small concurrency, and caches
+  each series' signal for **60 s** (`refresh=1` bypasses it, which the UI's Refresh/Search buttons use).
+  Paging therefore never re-calls Kavita for a series it just saw. Everything else (search, the listing,
+  the portal-file match) is one or two calls.
+- **Not built (by design):** a reader, per-user library filtering (the tab is admin-only in v1),
+  sort-by-completeness, bulk fill and saved views.
+
+Tests: `tests/test_library.py` (API) and `tests/browser/library_page.py` (UI).

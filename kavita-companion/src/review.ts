@@ -128,7 +128,7 @@ const exists = (path: string) => stat(path).then(() => true, () => false);
 
 // ---------- What the review screen shows ----------
 
-const normalizeSeries = (s: string) =>
+export const normalizeSeries = (s: string) =>
   s.toLowerCase().replace(/\(\d{4}\)/g, "").replace(/^the\s+/, "").replace(/[^a-z0-9]+/g, "");
 
 /** A number Kavita's parser actually found (it uses large negative values for "none"). */

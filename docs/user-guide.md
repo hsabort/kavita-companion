@@ -13,9 +13,9 @@ sidebar**. Signing in with your Kavita password once repairs it too.
 Read Only Kavita accounts can sign in but can't upload; Kavita won't give them a sidebar link, so the
 portal doesn't offer them one.
 
-The portal is split into tabs — **Upload**, **Review**, **Requests**, **Activity**, **Notifications** and
-**About** — and you only see the ones your Kavita role allows. The tab you're on is kept in the address
-(`#review`), so a refresh or the back button returns to it.
+The portal is split into tabs — **Upload**, **Review**, **Library**, **Requests**, **Activity**,
+**Notifications** and **About** — and you only see the ones your Kavita role allows. The tab you're on is
+kept in the address (`#review`), so a refresh or the back button returns to it.
 
 The portal uses the same theme as your Kavita account (Settings → Theme in Kavita). If you change it,
 the portal follows as soon as you switch back to its tab.
@@ -131,6 +131,27 @@ failed sign-ins, uploads, approvals, rejections, fixes, withdrawals and discarde
 **Action** and **User** filters to narrow it down and **Show older** to page back. The cards at the top
 show what is waiting for review (and its total size), the last seven days of uploads/approvals/
 rejections, and the most active uploader of the last month.
+
+## Library (Kavita admins)
+
+**Library** is a thin, read-only view over Kavita's own catalogue, for finding series whose metadata is
+thin and fixing it. It never opens your files and does not replace Kavita's reader.
+
+It has two views:
+
+- **Browse** — search by title (Kavita's own search) or list a library, with a library filter. Each row
+  shows the series, its library, year and publication status, and a small **metadata** signal: which of
+  the key fields (summary, writer, genre, year) it has, as chips; **Complete** when all four are present.
+  *Open in Kavita* opens the series in Kavita.
+- **Needs metadata** — series missing one or more of those key fields, with the exact fields listed in
+  the **Missing** column.
+
+Where the portal has a file for a series, the row also links into the review flow: **Review file** when a
+file is still waiting for review, or **Fix in portal** to open that series in *Find an approved file to
+fix* on the Review tab (where **Find metadata** can fill it from a provider).
+
+To keep a large library quick, each Browse or Needs-metadata request checks a bounded number of series
+(at most 50) and caches the result for a minute; **Refresh** (and a search) re-checks straight away.
 
 ## About
 

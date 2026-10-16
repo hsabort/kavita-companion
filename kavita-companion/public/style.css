@@ -338,6 +338,33 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .subhead { font-size: 1rem; margin: 1rem 0 0.5rem; }
 .request-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0.5rem 0.9rem; align-items: end; margin-bottom: 0.5rem; }
 
+/* ---------- Library (reviewers, phase 2 M5) ---------- */
+
+.subviews { display: flex; gap: 0.15rem; }
+.subview {
+  padding: 0.25rem 0.7rem; font: inherit; font-size: 0.85rem; font-weight: 500;
+  color: var(--muted); background: transparent; border: 1px solid var(--border); border-radius: var(--radius);
+  cursor: pointer;
+}
+.subview:hover { background: transparent; color: var(--text); border-color: var(--border-strong); }
+.subview.is-active { color: var(--text); border-color: var(--primary); }
+.library-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 0.5rem 0.9rem; margin-bottom: 0.5rem; }
+.library-filters .field { margin: 0; }
+.library-filters .field input { min-width: 14rem; }
+.library-filters .field select { min-width: 11rem; }
+.library-table-wrap { overflow-x: auto; }
+.library-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.library-table th {
+  text-align: left; font-weight: 500; white-space: nowrap; color: var(--muted);
+  padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--border);
+}
+.library-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.library-table tr:last-child td { border-bottom: 0; }
+.library-name { font-weight: 500; min-width: 12rem; overflow-wrap: anywhere; }
+.library-actions { white-space: nowrap; }
+.library-actions a, .library-actions button { margin-right: 0.5rem; font-size: 0.85rem; }
+.chip-warn { color: var(--warning-text); border-color: color-mix(in srgb, var(--warning-text) 55%, transparent); }
+
 /* Page preview */
 .preview-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; padding: 1rem; }
 .preview-frame { display: flex; flex-direction: column; gap: 0.75rem; max-width: 100%; max-height: 100%; }

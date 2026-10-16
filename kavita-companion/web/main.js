@@ -101,6 +101,7 @@ function show(user, kavitaUrl) {
 const TABS = [
   { id: "upload", tab: "tab-upload", panels: ["upload-section", "my-uploads-section"], canSee: (user) => user.canUpload, onShow: () => {} },
   { id: "review", tab: "tab-review", panels: ["review-section"], canSee: (user) => user.isReviewer, onShow: () => refreshReview() },
+  { id: "library", tab: "tab-library", panels: ["library-section"], canSee: (user) => user.isReviewer, onShow: () => refreshLibrary() },
   { id: "requests", tab: "tab-requests", panels: ["requests-section"], canSee: () => true, onShow: () => { refreshRequests(); fillRequestLibraries(); } },
   { id: "activity", tab: "tab-activity", panels: ["activity-section"], canSee: (user) => user.isReviewer, onShow: () => refreshActivity(true) },
   { id: "notifications", tab: "tab-notifications", panels: ["notify-wrap"], canSee: (user) => user.canUpload, onShow: () => loadNotifications() },
@@ -1258,6 +1259,171 @@ $("activity-user").addEventListener("input", () => {
   clearTimeout(activityTimer);
   activityTimer = setTimeout(() => refreshActivity(true), 300);
 });
+
+// ---------- Library (reviewers, phase 2 M5) ----------
+// A thin, read-only view over Kavita's own catalogue (src/library.ts): Browse (search + library
+// filter) and a "Needs metadata" queue. Each row links back to Kavita and, where the portal has a
+// file for the series, into the existing review / fix flow. There is deliberately no reader here.
+
+const LIBRARY_PAGE_SIZE = 24;
+const PUBLICATION_STATUS = { 0: "Ongoing", 1: "Hiatus", 2: "Completed", 3: "Cancelled", 4: "Ended" };
+const libraryState = {
+  view: "browse",
+  browse: { q: "", libraryId: "", page: 1, rows: [], hasMore: false, loading: false },
+  incomplete: { libraryId: "", page: 1, rows: [], hasMore: false, loading: false },
+};
+
+function libraryStatus(id, text, problem = false) {
+  const node = $(id);
+  node.textContent = text ?? "";
+  node.classList.toggle("error", problem);
+}
+
+function fillLibraryFilter(select) {
+  if (select.options.length > 1) return;
+  api("/api/libraries").then(({ status, body }) => {
+    if (status !== 200) return;
+    for (const library of body.libraries ?? []) select.append(el("option", { value: String(library.id), textContent: library.name }));
+  });
+}
+
+/** Jump to the Review tab and prefill its "find an approved file to fix" search with this series. */
+function openReviewForSeries(name) {
+  selectTab("review");
+  const search = $("approved-search");
+  search.closest("details")?.setAttribute("open", "");
+  search.value = name;
+  search.dispatchEvent(new Event("input", { bubbles: true }));
+  search.scrollIntoView({ block: "center" });
+}
+
+function libraryRow(row) {
+  const meta = el("td");
+  if (row.metadataError) {
+    meta.append(el("span", { className: "chip chip-warn", textContent: "unavailable" }));
+  } else if (!row.missing || row.missing.length === 0) {
+    meta.append(el("span", { className: "chip chip-on", textContent: "complete" }));
+  } else {
+    meta.append(...row.missing.map((field) => el("span", { className: "chip chip-warn", textContent: field })));
+  }
+
+  const actions = el("td", { className: "library-actions" });
+  if (row.kavitaUrl) {
+    actions.append(el("a", { href: row.kavitaUrl, target: "_blank", rel: "noopener noreferrer", textContent: "Open in Kavita" }));
+  }
+  if (row.review?.pendingUploadId) {
+    const review = el("button", { type: "button", className: "link", textContent: "Review file" });
+    review.addEventListener("click", () => { selectTab("review"); notice(`A pending file for ${row.name} is waiting for review.`); });
+    actions.append(review);
+  } else if (row.review?.approvedUploadId) {
+    const fix = el("button", { type: "button", className: "link", textContent: "Fix in portal" });
+    fix.addEventListener("click", () => openReviewForSeries(row.name));
+    actions.append(fix);
+  }
+
+  return el("tr", {},
+    el("td", { className: "library-name", textContent: row.name }),
+    el("td", { className: "muted", textContent: row.libraryName || "—" }),
+    el("td", { className: "muted", textContent: row.releaseYear ? String(row.releaseYear) : "—" }),
+    el("td", { className: "muted", textContent: PUBLICATION_STATUS[row.publicationStatus] ?? "—" }),
+    meta,
+    actions);
+}
+
+function libraryTable(rows, incomplete) {
+  const head = el("thead", {}, el("tr", {},
+    el("th", { textContent: "Series" }),
+    el("th", { textContent: "Library" }),
+    el("th", { textContent: "Year" }),
+    el("th", { textContent: "Status" }),
+    el("th", { textContent: incomplete ? "Missing" : "Metadata" }),
+    el("th", { textContent: "" })));
+  return el("table", { className: "library-table" }, head,
+    el("tbody", {}, ...rows.map((row) => libraryRow(row))));
+}
+
+async function loadLibraryBrowse(reset, refresh = false) {
+  const st = libraryState.browse;
+  if (st.loading) return;
+  if (reset) { st.page = 1; st.rows = []; }
+  st.loading = true;
+  libraryStatus("library-status", "Loading…");
+  const params = new URLSearchParams({ page: String(st.page), pageSize: String(LIBRARY_PAGE_SIZE) });
+  if (st.q) params.set("q", st.q);
+  if (st.libraryId) params.set("libraryId", st.libraryId);
+  if (refresh && st.page === 1) params.set("refresh", "1");
+  const { status, body } = await api(`/api/library/series?${params}`);
+  st.loading = false;
+  if (status !== 200) {
+    libraryStatus("library-status", body.error ?? "Could not load the library.", true);
+    return;
+  }
+  st.rows.push(...(body.rows ?? []));
+  st.hasMore = !!body.hasMore;
+  $("library-results").replaceChildren(...(st.rows.length ? [libraryTable(st.rows, false)] : []));
+  $("library-empty").hidden = st.rows.length > 0;
+  $("library-empty").textContent = st.q ? `No series match "${st.q}".` : "No series in this library yet.";
+  $("library-more").hidden = !st.hasMore;
+  libraryStatus("library-status", st.rows.length ? `${st.rows.length} shown` : "");
+}
+
+async function loadLibraryIncomplete(reset, refresh = false) {
+  const st = libraryState.incomplete;
+  if (st.loading) return;
+  if (reset) { st.page = 1; st.rows = []; }
+  st.loading = true;
+  libraryStatus("library-inc-status", "Checking metadata…");
+  const params = new URLSearchParams({ page: String(st.page), pageSize: String(LIBRARY_PAGE_SIZE), limit: String(LIBRARY_PAGE_SIZE + 1) });
+  if (st.libraryId) params.set("libraryId", st.libraryId);
+  if (refresh && st.page === 1) params.set("refresh", "1");
+  const { status, body } = await api(`/api/library/incomplete?${params}`);
+  st.loading = false;
+  if (status !== 200) {
+    libraryStatus("library-inc-status", body.error ?? "Could not check the library.", true);
+    return;
+  }
+  st.rows.push(...(body.rows ?? []));
+  st.hasMore = !!body.hasMore;
+  $("library-inc-results").replaceChildren(...(st.rows.length ? [libraryTable(st.rows, true)] : []));
+  $("library-inc-empty").hidden = st.rows.length > 0;
+  $("library-inc-more").hidden = !st.hasMore;
+  const scanned = body.scanned ?? 0;
+  libraryStatus("library-inc-status",
+    `${st.rows.length} need${st.rows.length === 1 ? "s" : ""} metadata · checked ${scanned} series${st.hasMore ? "" : " · end of library"}`);
+}
+
+function showLibraryView(view) {
+  libraryState.view = view === "incomplete" ? "incomplete" : "browse";
+  const browse = libraryState.view === "browse";
+  $("library-browse").hidden = !browse;
+  $("library-incomplete").hidden = browse;
+  $("library-view-browse").classList.toggle("is-active", browse);
+  $("library-view-browse").setAttribute("aria-selected", browse ? "true" : "false");
+  $("library-view-incomplete").classList.toggle("is-active", !browse);
+  $("library-view-incomplete").setAttribute("aria-selected", !browse ? "true" : "false");
+  if (browse) loadLibraryBrowse(true);
+  else loadLibraryIncomplete(true);
+}
+
+async function refreshLibrary() {
+  fillLibraryFilter($("library-filter"));
+  fillLibraryFilter($("library-inc-filter"));
+  showLibraryView(libraryState.view);
+}
+
+let librarySearchTimer = null;
+$("library-view-browse").addEventListener("click", () => showLibraryView("browse"));
+$("library-view-incomplete").addEventListener("click", () => showLibraryView("incomplete"));
+$("library-search-go").addEventListener("click", () => { libraryState.browse.q = $("library-search").value.trim(); loadLibraryBrowse(true, true); });
+$("library-search").addEventListener("input", () => {
+  clearTimeout(librarySearchTimer);
+  librarySearchTimer = setTimeout(() => { libraryState.browse.q = $("library-search").value.trim(); loadLibraryBrowse(true); }, 300);
+});
+$("library-filter").addEventListener("change", () => { libraryState.browse.libraryId = $("library-filter").value; loadLibraryBrowse(true); });
+$("library-inc-filter").addEventListener("change", () => { libraryState.incomplete.libraryId = $("library-inc-filter").value; loadLibraryIncomplete(true); });
+$("library-inc-refresh").addEventListener("click", () => loadLibraryIncomplete(true, true));
+$("library-more").addEventListener("click", () => { libraryState.browse.page += 1; loadLibraryBrowse(false); });
+$("library-inc-more").addEventListener("click", () => { libraryState.incomplete.page += 1; loadLibraryIncomplete(false); });
 
 // ---------- Page preview (admins) ----------
 // Page through a pending comic before approving it (src/review.ts: GET /api/review/:id/page/:n).

@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+Added:
+- **Library view (phase 2, M5)**: a thin, **reviewer-only** tab over Kavita's own catalogue, for finding
+  and fixing thin metadata. **Browse** searches (Kavita's own search) or lists a library, with a library
+  filter and a per-series metadata signal (summary / writer / genre / year). **Needs metadata** lists
+  series missing any of those key fields, with the exact fields. Each row opens the series in Kavita and,
+  where the portal has a file for it, jumps into the review card or the "find an approved file to fix"
+  search. Read-only and bounded: a request checks at most 50 series (one cached
+  `Series/metadata` call each, cached for a minute; Refresh re-checks). Endpoints
+  `GET /api/library/series` and `GET /api/library/incomplete`. Tests: `tests/test_library.py` and
+  `tests/browser/library_page.py`. See [docs/architecture.md](docs/architecture.md#library-view-phase-2-m5)
+  and [docs/user-guide.md](docs/user-guide.md#library-kavita-admins).
+
 ## 0.5.0 — 2026-10-16
 
 Added:
