@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.1 — 2026-10-16
 
 Compliance polish and verification (phase 2, M6) — no new features, no version bump.
 
