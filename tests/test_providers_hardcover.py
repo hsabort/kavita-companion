@@ -67,7 +67,7 @@ try:
     check("hardcover is labelled Hardcover and book-only",
           hc and hc["label"] == "Hardcover" and hc["media"] == ["book"], str(hc))
     check("hardcover carries the Hardcover licence link",
-          hc and hc["licence"]["name"] == "Hardcover"
+          hc and hc["licence"]["name"] == "API Terms"
           and hc["licence"]["url"] == "https://hardcover.app/pages/policies", str(hc))
     check("hardcover never fetches covers (covers = none)", hc and hc["covers"] == "none", str(hc))
     check("hardcover is keyed and off by default",

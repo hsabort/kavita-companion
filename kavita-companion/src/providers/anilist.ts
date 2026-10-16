@@ -24,7 +24,7 @@ import type { Candidate, FetchedRecord, MatchQuery, Provider } from "./types.js"
 
 export const ANILIST_ID = "anilist";
 export const ANILIST_LABEL = "AniList";
-export const ANILIST_LICENCE = { name: "AniList", url: "https://docs.anilist.co/" };
+export const ANILIST_LICENCE = { name: "API Terms of Use", url: "https://docs.anilist.co/" };
 /** Documented 90/min but currently degraded to 30/min, so a 2 s spacing (the registry also uses it). */
 export const ANILIST_MIN_INTERVAL_MS = 2000;
 /** AniList terms forbid data-storage/hoarding; we never fetch any provider image. */

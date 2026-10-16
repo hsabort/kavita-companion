@@ -148,6 +148,7 @@ export function registerProviderRoutes(app: FastifyInstance) {
 
   // Diagnostic preview (used by the framework tests; also a dry-run for an admin). Either merge
   // synthetic records (no network), fetch one record by id (cache-aware), or search + fetch + merge.
+  // Admin-triggered and bounded: at most one search and one fetch per call (no-bulk safeguard, M6).
   app.post<{
     Params: { id: string };
     Body: {

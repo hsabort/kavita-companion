@@ -108,6 +108,28 @@ paths (`/data/...` inside the container) don't change, so nothing needs re-scann
 Hourly: expired sessions removed; uploads with no data for 24 h removed; rejected files deleted after
 7 days (the record and reason stay); daily database snapshot.
 
+## Metadata providers (phase 2)
+
+The portal can fill a reviewed file's metadata from external sources — comics **Metron → GCD**,
+manga/light novels **MangaDex → AniList**, books **Hardcover → Open Library**. This is **off by
+default**: with `METADATA_EXTERNAL_ENABLED=false` nothing is ever fetched, and each provider is off
+until an admin turns it on. Nothing is fetched in the background or in bulk; a source is called only
+when a reviewer presses **Find metadata** on a file. Obligations, caching and key handling are in
+[compliance.md](compliance.md).
+
+- **Turn a provider on/off:** the **About** tab → **Metadata sources** panel (reviewers/admins), or
+  `PROVIDER_<ID>_ENABLED=true` in `.env`. The panel also shows the cache size and a **Test** button.
+- **Keys:** supply your own per-install key — Metron bearer token (`PROVIDER_METRON_KEY` or the panel),
+  Hardcover personal access token (`PROVIDER_HARDCOVER_KEY`), or an optional GCD account
+  (`PROVIDER_GCD_KEY`, `user:pass`). MangaDex, AniList and Open Library need none. A key set in `.env`
+  wins over the panel; keys are sealed at rest and never shown again. Ship no keys.
+- **Politeness:** set `COMPANION_CONTACT_EMAIL` so the shared `User-Agent` identifies the instance (Open
+  Library's faster tier, and good manners generally). Rate limits and `Retry-After` are honoured.
+- **Turning a provider off** (or clearing its key) purges its cached records and series links and is
+  recorded in the activity log.
+- **Cache:** `metadata_cache` in `data/companion/companion.db`, with a per-provider TTL (Metron/GCD/
+  Hardcover/Open Library 30 d, MangaDex 7 d, AniList 3 d); expired rows are purged hourly.
+
 ## Troubleshooting
 
 | Symptom | Check |
@@ -119,5 +141,7 @@ Hourly: expired sessions removed; uploads with no data for 24 h removed; rejecte
 | Approval failed | The reason is on the review card and in `docker compose logs kavita-companion`; the upload stays in the queue. |
 | "Kavita hasn't listed this file" | Run a scan of that library in Kavita, then **Check again**. Kavita ignores files at a library's root and won't remove series while a library folder is empty. |
 | Wrong name/series/metadata on an approved file | Use **Fix…** (Recent decisions, or *Find an approved file to fix*). |
+| **Find metadata** shows nothing | Check **About → Metadata sources**: the source may be off, need a key, or be in a rate-limit cool-down ("On — needs a key"). Nothing is fetched automatically. |
+| A metadata provider can't be reached | The review card keeps working; the lookup just reports the failure. Check `docker compose logs kavita-companion` and the provider's status page. |
 | Every visitor has the same IP in the audit log | A TCP forwarder in front of the host hides client IPs; see "Special hosts" in docs/install.md. |
 | `setup.sh` says the portal key doesn't work | It makes a new one; have an admin's credentials ready. |

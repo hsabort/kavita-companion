@@ -29,7 +29,7 @@ import type { Candidate, FetchedRecord, MatchQuery, Provider } from "./types.js"
 
 export const HARDCOVER_ID = "hardcover";
 export const HARDCOVER_LABEL = "Hardcover";
-export const HARDCOVER_LICENCE = { name: "Hardcover", url: "https://hardcover.app/pages/policies" };
+export const HARDCOVER_LICENCE = { name: "API Terms", url: "https://hardcover.app/pages/policies" };
 /** Hardcover free tier: 60 requests/minute -> a 1 s spacing (the registry also uses it). */
 export const HARDCOVER_MIN_INTERVAL_MS = 1000;
 /** Hardcover image use needs a DMCA policy; the simplest compliant default is to never fetch covers. */

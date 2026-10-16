@@ -63,7 +63,7 @@ try:
     check("anilist is labelled AniList and manga-only",
           al and al["label"] == "AniList" and al["media"] == ["manga"], str(al))
     check("anilist carries the AniList licence",
-          al and al["licence"]["name"] == "AniList" and al["licence"]["url"] == "https://docs.anilist.co/", str(al))
+          al and al["licence"]["name"] == "API Terms of Use" and al["licence"]["url"] == "https://docs.anilist.co/", str(al))
     check("anilist never fetches covers (covers = none)", al and al["covers"] == "none", str(al))
     check("anilist is keyless and off by default",
           al and al["keyed"] is False and al["enabled"] is False, str(al))

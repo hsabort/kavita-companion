@@ -30,7 +30,7 @@ import type { Candidate, FetchedRecord, MatchQuery, Provider } from "./types.js"
 export const OPENLIBRARY_ID = "openlibrary";
 export const OPENLIBRARY_LABEL = "Open Library";
 export const OPENLIBRARY_LICENCE = {
-  name: "Open Library (Internet Archive)",
+  name: "Internet Archive (no new rights asserted)",
   url: "https://openlibrary.org/developers/api",
 };
 /** Open Library: 1 request/s anonymous -> a 1 s spacing (the registry also uses it). */

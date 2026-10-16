@@ -26,11 +26,12 @@ import { purgeAbandonedUploads, registerUploadRoutes } from "./uploads.js";
 const app = Fastify({
   logger: {
     level: "info",
-    // Kavita's sidebar link carries the user's auth key in the URL; never write it to logs.
+    // Kavita's sidebar link carries the user's auth key in the URL; never write it to logs. Provider
+    // keys travel in headers/bodies (not URLs), but redact the common query names too, defensively.
     serializers: {
       req: (req) => ({
         method: req.method,
-        url: req.url.replace(/([?&]apiKey=)[^&]*/gi, "$1[redacted]"),
+        url: req.url.replace(/([?&](?:apiKey|key|token|api_key|access_token)=)[^&]*/gi, "$1[redacted]"),
         host: req.host,
         remoteAddress: req.ip,
       }),

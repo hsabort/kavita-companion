@@ -13,9 +13,11 @@ fake-provider tests. **M4 built (W6/W7)**: the Hardcover book adapter (keyed) an
 fallback (keyless), with their fake-provider tests; **PRH is deferred** (an opt-in follow-up, the only
 source of a true Imprint/AgeRating). **M5 built (W9, Unreleased)**: the reviewer-only **Library** view —
 browse/search and the "needs metadata" queue over Kavita's own catalogue; per-series bulk-fill and
-saved views are deferred.
+saved views are deferred. **M6 (compliance polish, Unreleased)**: the compliance measures are documented
+in [compliance.md](compliance.md) and the **no-bulk / per-review safeguard is a fast-tier test**
+(`tests/test_providers_safeguard.py`); no legal pass is required to ship (see the Decisions below).
 
-Integration is **direct** (not only via Kavita+), **human-reviewed**, **low-volume and cached**. Every
+Integration is **direct** (no Kavita+ dependency), **human-reviewed**, **low-volume and cached**. Every
 provider must pass the Compliance gate (section 1) before it can be enabled; a provider that cannot be
 used safely is excluded or shipped off by default. Section 5 assigns the work to named agent roles with
 estimates.
@@ -68,13 +70,13 @@ External lookups are **off by default**: an admin turns a provider on and suppli
 5. **Project plan** — agent roles, work packages with person-day estimates, dependencies, milestones,
    RACI, risks and per-milestone definition of done.
 
-## Owner decisions still open
+## Owner decisions (resolved 2026-10-16)
 
-From section 5: (1) Kavita+ vs direct vs both — *recommend both* (prefer Kavita+ when licensed, direct
-otherwise); (2) provider enable-match defaults; (3) key storage (`.env` vs encrypted DB); (4) ComicVine
-opt-in and any persistence of Google Books data — **legal pass required**; (5) attribution copy; (6) the
-scope of search & browse. **Compliance holds a veto on enabling any provider.** No provider integration
-has been built.
+**See [Decisions](#decisions-agreed-2026-10-16) below.** The open questions were: (1) Kavita+ vs
+direct vs both; (2) provider enable-match defaults; (3) key storage (`.env` vs encrypted DB); (4)
+ComicVine and any persistence of Google Books data — **legal pass**; (5) attribution copy; (6) the scope
+of search & browse. **Compliance holds a veto on enabling any provider.** Six direct providers are now
+built (Metron, GCD, MangaDex, AniList, Hardcover, Open Library); the decisions settled the rest.
 
 ---
 
@@ -92,6 +94,15 @@ These supersede the open questions in the sections below.
 6. **Search & browse:** a metadata-completeness score + a **"needs metadata" queue** + a thin reviewer-only **Library** tab (search/filter/browse that feeds the fix flow); per-series bulk-fill and saved views are deferred. PRH stays opt-in (the only true imprint/age source).
 
 **Consequences for the sections below:** the Kavita+ delegation path (architecture §5; project §3/§4) is **out of scope**; the ComicVine adapter and the legal-pass gate (compliance §3; project §4/§5) are **dropped**; PRH remains opt-in; no legal sign-off is needed to ship.
+
+**Reconciliation:** everything below this line is the original plan, kept for history. Where a section
+still describes **Kavita+ delegation as a preferred path**, **ComicVine / Google Books as opt-in or
+"legal pass required"**, the **legal-pass gate**, or a **built PRH adapter**, these decisions win:
+Kavita+ is out of scope (decision 1), ComicVine and Google Books are **excluded** (decision 4), the
+legal-pass gate is dropped (no legal sign-off is needed to ship), and PRH is **deferred**, not built
+(decision 6). The shipped, current description lives in
+[docs/metadata-providers.md](metadata-providers.md), [docs/compliance.md](compliance.md) and
+[architecture.md](architecture.md#metadata-providers-phase-2).
 
 ---
 
@@ -463,8 +474,9 @@ runs in bulk (one lookup per human action).
 
 Chosen set (from `docs/metadata-providers.md`, decision 2): **Metron + GCD** (comics),
 **MangaDex + AniList** (manga / light novels), **Hardcover + Open Library** (books); **PRH** optional
-enrichment; **ComicVine** opt-in behind an explicit legal acknowledgement. **Kavita+ (R4) is offered as
-a preferred delegated path when a licence is present**, not as a separate data source.
+enrichment (deferred, not built); **ComicVine** opt-in behind an explicit legal acknowledgement.
+**Superseded by decision 1:** **Kavita+ (R4) is out of scope** — the Kavita+ delegation path below is
+*not* built; the portal integrates directly and leaves Kavita's own matching to Kavita.
 
 ---
 
@@ -798,7 +810,7 @@ to redact `token`/`key`/`apiKey` query parameters and request headers, matching 
   conflicts), `provider_key_set` / `provider_key_cleared`, `provider_error`. They appear in the existing
   Activity panel filters unchanged; labels are added to the panel's action list. Activity stays
   reviewer-only.
-- **Kavita+ delegation (R4) as a preferred path.** A `kavitaplus` adapter implements the same interface
+- **Kavita+ delegation (R4) as a preferred path — OUT OF SCOPE (decision 1); kept for history.** A `kavitaplus` adapter implements the same interface
   against Kavita's own REST API: detect with `GET /api/License/has-license` (and `/valid-license`),
   match with `POST /api/Series/match`, read richer fields from `GET /api/Metadata/series-detail-plus`
   and external IDs from `GET /api/Series/{id}`. When a licence is present and `KAVITA_PLUS_PREFER` is
@@ -831,7 +843,8 @@ adding breadth:
 5. **Hardcover (GraphQL) + PRH (opt-in ISBN enrichment).** Adds `graphql.ts`, the field-folding rule,
    and the only real Imprint/AgeRating source.
 6. **AniList (light novels + manga secondary).** Short TTL and the strict-ToS guardrails.
-7. **Kavita+ delegation adapter + `KAVITA_PLUS_PREFER`.** Wire R4 as the preferred path when licensed.
+7. **Kavita+ delegation adapter + `KAVITA_PLUS_PREFER` — OUT OF SCOPE (decision 1); not built.** Was:
+   wire R4 as the preferred path when licensed.
 8. **ComicVine opt-in** behind `PROVIDER_LEGAL_ACK_COMICVINE`; covers excluded from rehosting.
 
 Test tiering follows §6/tests: a fast, offline tier stubs `fetch` and asserts ranking + merge +
@@ -1467,7 +1480,7 @@ spikes first.
 | **M3 — Manga** (0.4.0) | W4 MangaDex, W5 AniList, W8 manga routing, tests+browser check | ~16 | ~2 wk |
 | **M4 — Books** (0.5.0) | W6 Hardcover, W7 Open Library; **PRH deferred** (opt-in follow-up); OPF/ISBN gap documented, tests | ~14 | ~2 wk |
 | **M5 — Search & browse** (0.6.0) | W9 completeness + "needs metadata" queue + companion search/browse | ~10 | ~1.5 wk |
-| **M6 — Compliance polish** (0.6.x → 1.0) | W10 final, W12 full docs, legal sign-off, harden | ~12 | 1.5–2 wk |
+| **M6 — Compliance polish** (0.6.x → 1.0) | W10 final, W12 full docs, harden (**no legal pass** — ComicVine/Google Books excluded) | ~12 | 1.5–2 wk |
 
 \*Calendar assumes ~4–5 agents working in parallel plus the human reviewer; **overall ~11–14 weeks
 (≈3 months)** end-to-end, confidence **L**. Sequential execution would be the raw/realistic sum.
@@ -1489,16 +1502,16 @@ R = does the work · A = accountable (orchestrator unless noted) · C = consulte
 | W7 | Adapter Eng (books) | Orchestrator | Compliance, QA | — | PRH opt-in; OL fallback |
 | W8 | Frontend Engineer | Orchestrator | all adapters, Compliance, QA | Owner | **Attribution UX wording** |
 | W9 | Frontend Engineer | Orchestrator | Platform, QA | Owner | Scope of search/browse |
-| W10 | **Compliance Reviewer** | **Owner** | Platform, Frontend, Orchestrator | all | **Legal pass; ComicVine/Google Books** |
+| W10 | **Compliance Reviewer** | **Owner** | Platform, Frontend, Orchestrator | all | **Compliance review; ComicVine/Google Books excluded (no legal pass)** |
 | W11 | QA Engineer | Orchestrator | all | — | — |
 | W12 | Tech Writer | Orchestrator | all | Owner | Release notes/version |
 
-**The human owner must decide or sign off:** (1) **Kavita+ vs direct vs both** (recommend both:
-prefer Kavita+ when present, direct otherwise) — *kickoff, gates W1 config*; (2) **provider enable
-defaults** (recommended: Metron+GCD comics, MangaDex+AniList manga, Hardcover+Open Library books);
-(3) **key storage**; (4) **ComicVine opt-in and any persistence of Google Books data — legal pass
-required**; (5) **attribution UX**; (6) **each release** (tag/merge to `main`). Compliance holds a
-veto on enabling any provider.
+**The human owner must decide or sign off:** (1) **Kavita+ vs direct vs both** — *resolved: direct only,
+Kavita+ out of scope* (decision 1); (2) **provider enable defaults** (Metron+GCD comics, MangaDex+AniList
+manga, Hardcover+Open Library books); (3) **key storage** — *resolved: sealed in `provider_config`, with
+an optional `.env` override* (decision 3); (4) **ComicVine and Google Books** — *resolved: excluded, no
+legal pass required* (decision 4); (5) **attribution UX**; (6) **each release** (tag/merge to `main`).
+Compliance holds a veto on enabling any provider.
 
 ---
 
@@ -1506,7 +1519,7 @@ veto on enabling any provider.
 
 | Risk | Mitigation |
 |---|---|
-| **Licence/ToS breach** (ComicVine "no reproduction", Google Books no permanent copy, AniList no hoarding) | Opt-in + admin-key only; transient cache only where required; Compliance gate + legal pass before enabling; central attribution registry. |
+| **Licence/ToS breach** (AniList no hoarding; Metron/GCD covers and ShareAlike) | Compliance gate before enabling (ComicVine/Google Books are excluded, not opt-in); transient cache only where required; central attribution registry; no-bulk safeguard test. |
 | **GCD has no stable REST API** (W3) | Timeboxed spike at start of M2; consider dump/CSV ingest; if unworkable, GCD ships as thin fallback or defers — never blocks M1. |
 | **Bad matches / polluted files** | Match+rank, show candidate + source, **human confirms every field**; persist provider IDs; never auto-apply. |
 | **Provider outage / rate limits** | W1 timeouts, retries, `Retry-After`, token bucket; degrade to blank fields; review never blocks on a lookup. |
@@ -1533,5 +1546,5 @@ veto on enabling any provider.
 - **M5:** "needs metadata" queue lists files missing fields; companion search/browse by title,
   creator and provider ID; links into the review card; Kavita-consistent styling.
 - **M6:** attribution text/links on card + About; caching and key-handling policies documented and
-  tested; no-bulk-mirror safeguard test green; owner legal sign-off recorded in `docs/decisions.md`;
-  all docs current; version tagged and live-update path verified.
+  tested; no-bulk-mirror safeguard test green; **no legal sign-off is required to ship** (ComicVine and
+  Google Books are excluded); compliance measures documented in `docs/compliance.md`; all docs current.

@@ -142,7 +142,7 @@ switches back to the portal tab.
 
 The portal can fetch metadata from external providers and write it into a file at approval. **Off by
 default**: `METADATA_EXTERNAL_ENABLED` is false and every provider is off until an admin turns it on
-(Activity → Metadata sources).
+(About → Metadata sources).
 
 - **Contract** (`providers/types.ts`): each adapter implements `search(key, query)` → candidates and
   `fetch(key, externalId)` → one `FetchedRecord` already mapped to our ComicInfo field names, with its
@@ -245,7 +245,7 @@ HTTP Basic and raises GCD's anonymous 30 requests/hour to 2,000/day. Licence `CC
 **keyless** — enabling it is enough. MangaDex's Acceptable Usage Policy requires a **credit**, forbids
 using the data for ads/paid services, forbids hotlinking images, and requires a truthful User-Agent and
 **server-side** calls (the API has no third-party CORS, so the browser never calls it). The adapter
-therefore declares the credit as its licence name, `covers: "none"` (no image is ever fetched, proxied
+therefore declares the credit requirement as its licence name, `covers: "none"` (no image is ever fetched, proxied
 or written) and the shared UA. Base: `PROVIDER_MANGADEX_BASE` (default `https://api.mangadex.org`).
 
 - **Search** (`search(key, query)`): `GET {base}/manga?title=<title>&limit=8&order[relevance]=desc` →
@@ -305,8 +305,8 @@ so `enabledFor("book")` is tried primary-then-fallback. It is **off by default**
 per-install personal access token, resolved by the registry from `PROVIDER_HARDCOVER_KEY` or the sealed
 `provider_config` value (never shipped), sent as `Authorization: Bearer <token>`. Hardcover's terms
 forbid using its data for LLM training and forbid commercial/public products using user-owned data;
-the public catalogue may be shown with attribution. We therefore declare the credit as the licence name
-and `covers: "none"` (no image is ever fetched, proxied or written). Base: `PROVIDER_HARDCOVER_BASE`
+the public catalogue may be shown with attribution. We therefore declare its API terms as the licence
+name and `covers: "none"` (no image is ever fetched, proxied or written). Base: `PROVIDER_HARDCOVER_BASE`
 (default `https://api.hardcover.app/v1/graphql` — the base includes the endpoint path).
 
 - **Search** (`search(key, query)`): a GraphQL `search(query:, query_type: "Book", per_page: 8) { results }`
@@ -336,7 +336,7 @@ after Hardcover. It is **off by default** and **keyless** — but Open Library's
 identifying `User-Agent`, which the shared client already sends (a generic browser UA is not acceptable;
 `COMPANION_CONTACT_EMAIL` is the identified-tier contact). IA "does not assert any new copyright" and
 warns existing rights may apply; we pass records through with attribution and declare `covers: "none"`.
-Licence `Open Library (Internet Archive)` (<https://openlibrary.org/developers/api>). Base:
+Licence `Internet Archive (no new rights asserted)` (<https://openlibrary.org/developers/api>). Base:
 `PROVIDER_OPENLIBRARY_BASE` (default `https://openlibrary.org`).
 
 - **Search** (`search(key, query)`): `GET {base}/search.json?q=<title|isbn:…>&limit=8&fields=…` →

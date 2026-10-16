@@ -63,7 +63,7 @@ try:
     check("mangadex is labelled MangaDex and manga-only",
           md and md["label"] == "MangaDex" and md["media"] == ["manga"], str(md))
     check("mangadex carries the MangaDex credit licence",
-          md and md["licence"]["name"] == "MangaDex (credit required)"
+          md and md["licence"]["name"] == "Acceptable Usage Policy (credit required)"
           and md["licence"]["url"] == "https://api.mangadex.org/docs/", str(md))
     check("mangadex never hotlinks covers (covers = none)", md and md["covers"] == "none", str(md))
     check("mangadex is keyless and off by default",
