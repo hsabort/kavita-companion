@@ -321,6 +321,12 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .notify-events label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
 #notify-status.error { color: var(--error-text); }
 
+/* Tabs */
+.tabs { display: flex; gap: 0.15rem; overflow-x: auto; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+.tab { background: transparent; color: var(--muted); border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 0.5rem 0.9rem; white-space: nowrap; cursor: pointer; font: inherit; }
+.tab:hover { background: transparent; color: var(--text); }
+.tab.is-active { color: var(--text); border-bottom-color: var(--primary); }
+
 /* Requests */
 .subhead { font-size: 1rem; margin: 1rem 0 0.5rem; }
 .request-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0.5rem 0.9rem; align-items: end; margin-bottom: 0.5rem; }

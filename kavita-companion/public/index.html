@@ -43,6 +43,13 @@
     </section>
 
     <div id="home-view" hidden>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Sections" hidden>
+        <button class="tab" role="tab" id="tab-upload" type="button">Upload</button>
+        <button class="tab" role="tab" id="tab-review" type="button">Review</button>
+        <button class="tab" role="tab" id="tab-requests" type="button">Requests</button>
+        <button class="tab" role="tab" id="tab-activity" type="button">Activity</button>
+        <button class="tab" role="tab" id="tab-notifications" type="button">Notifications</button>
+      </nav>
       <p id="notice" class="notice" role="status" hidden></p>
 
       <section id="review-section" hidden>
@@ -113,7 +120,7 @@
           file again and it continues where it stopped. An admin reviews every upload before it appears in Kavita.</p>
       </section>
 
-      <section>
+      <section id="my-uploads-section">
         <h2>Your uploads</h2>
         <p id="uploads-empty" class="empty">You haven't uploaded anything yet.</p>
         <ul id="uploads" class="uploads"></ul>
