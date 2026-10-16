@@ -26,6 +26,7 @@ register({
 register({
   provider: createGcdProvider(),
   keyed: false,
+  optionalKey: true, // a free comics.org account (`user:pass`, HTTP Basic) raises 30/hour to 2,000/day
   minIntervalMs: GCD_MIN_INTERVAL_MS,
   priority: 20,
   probe: gcdProbe,

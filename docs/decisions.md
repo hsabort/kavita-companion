@@ -51,12 +51,13 @@ Short records of choices that shape this project, newest last. Each says what wa
   volume the folder doesn't encode as a *different series*; a folder scan then silently drops the file
   and removes its chapters. Comics never emit `Volume` now, and a fix clears any an older write left
   behind — Kavita derives volume from the folder/filename.
-- **GCD: enable with a free account, and only after the throttler fix.** The API takes HTTP Basic
-  `user:pass` (verified: bad credentials → `401 Invalid username/password`), raising the limit from
-  30/hour to 2,000/day. Steps: create a free account at comics.org, then supply `username:password`
-  (stored encrypted in the DB, or via `.env`). It stays **off** until then, and until `providerFetch`
-  *skips* a long wait and reports a cooldown instead of sleeping through it (a 120 s anonymous spacing
-  currently holds the HTTP request open — see `docs/metadata-providers.md`).
+- **GCD: enabled with an account key (0.6.7).** A free comics.org account's `user:pass` is stored
+  encrypted in the DB and sent as HTTP Basic (verified live: `200 OK`; raises the limit from 30/hour to
+  2,000/day, and the adapter's spacing drops from 120 s to 5 s). Its optional key is now managed in
+  About → Metadata providers (the `optionalKey` registration flag; the admin API reports `hasKey` for
+  any provider that has one). Still worth doing: make `providerFetch` *skip* a long wait and report a
+  cooldown instead of sleeping through it, so the anonymous 120 s case can never hold a request open
+  (see `docs/metadata-providers.md`).
 - **Review UX — the "Find metadata" click flow.** The candidate list, "Apply selected fields" and the
   per-field source chips all live inside the wide review card; consider a focused dialog for the
   choose-and-apply step (raised after fixing Star Wars #076/#077).
