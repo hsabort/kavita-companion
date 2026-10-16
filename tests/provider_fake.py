@@ -9,8 +9,10 @@ header, and can be scripted per path to return 429 + Retry-After, 500s, oversize
 Default paths: `/stub/*` for the built-in test stub (W1) and `/api/issue/` (search list) plus
 `/api/issue/<id>/` (issue detail) for the Metron adapter (W2), served from
 `tests/fixtures/providers/<provider>/`. A fake constructed with `provider="gcd"` serves GCD's paths
-(`/api/series/name/…`, `/api/issue/<id>/`), `provider="mangadex"` serves `/manga` + `/manga/<id>`, and
-`provider="anilist"` serves the single GraphQL endpoint `/` (routed on the query body).
+(`/api/series/name/…`, `/api/issue/<id>/`), `provider="mangadex"` serves `/manga` + `/manga/<id>`,
+`provider="anilist"` serves the single GraphQL endpoint `/` (routed on the query body),
+`provider="hardcover"` serves the single GraphQL endpoint (routed on the query body: search vs by-id),
+and `provider="openlibrary"` serves `/search.json`, `/isbn/…`, `/books/…`, `/works/…` and `/authors/…`.
 
 Used by tests/test_providers_framework.py and tests/test_providers_metron.py (started/stopped there).
 The portal reaches it through the Docker gateway: PROVIDER_STUB_BASE=http://<DOCKER_GATEWAY>:<port>
@@ -103,6 +105,28 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             if b"9002" in body:
                 return {"fixture": "record-teen", "provider": "anilist"}
             return {"fixture": "record", "provider": "anilist"}
+        if provider == "hardcover":
+            # Hardcover is a single GraphQL endpoint; route on the query body (search vs by-id).
+            if b'"query_type"' in body or b"search(" in body:
+                return {"fixture": "search", "provider": "hardcover"}
+            if b'"id":9002' in body:
+                return {"fixture": "record-minimal", "provider": "hardcover"}
+            return {"fixture": "record", "provider": "hardcover"}
+        if provider == "openlibrary":
+            # Open Library is REST: /search.json, /isbn/…, /books/…, /works/… and /authors/….
+            if path.startswith("/search"):
+                return {"fixture": "search", "provider": "openlibrary"}
+            if path.endswith("/editions.json"):
+                return {"fixture": "editions", "provider": "openlibrary"}
+            if path.startswith("/isbn/") or path.startswith("/books/"):
+                return {"fixture": "edition", "provider": "openlibrary"}
+            if path.startswith("/works/"):
+                return {"fixture": "work", "provider": "openlibrary"}
+            if path.startswith("/authors/"):
+                if "OL9002A" in path:
+                    return {"fixture": "author-2", "provider": "openlibrary"}
+                return {"fixture": "author", "provider": "openlibrary"}
+            return {"status": 404, "json": {"error": "not found"}}
         if provider == "gcd":
             if path.startswith("/api/series/name/") or path in ("/api/series", "/api/series/"):
                 return {"fixture": "search", "provider": "gcd"}

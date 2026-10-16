@@ -1,0 +1,32 @@
+{
+  "data": {
+    "books": [
+      {
+        "id": 9001,
+        "title": "Fixture Book",
+        "subtitle": null,
+        "description": "A synthetic <b>summary</b> &amp; more.",
+        "release_date": "2018-03-01",
+        "release_year": 2018,
+        "pages": 320,
+        "book_series": [
+          { "position": 1, "featured": false, "series": { "name": "Companion Tales" } },
+          { "position": 2, "featured": true, "series": { "name": "Fixture Series" } }
+        ],
+        "contributions": [
+          { "contribution": "Author", "author": { "name": "A. Author" } },
+          { "contribution": "Author", "author": { "name": "B. Co-Author" } },
+          { "contribution": "Illustrator", "author": { "name": "I. Artist" } },
+          { "contribution": "Author", "author": { "name": "A. Author" } }
+        ],
+        "default_ebook_edition": {
+          "isbn_13": "9780000000001",
+          "isbn_10": "0000000001",
+          "pages": 320,
+          "publisher": { "name": "Fixture Press" },
+          "language": { "language": "eng" }
+        }
+      }
+    ]
+  }
+}

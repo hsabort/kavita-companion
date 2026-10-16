@@ -1,0 +1,35 @@
+{
+  "numFound": 3,
+  "docs": [
+    {
+      "key": "/works/OL9001W",
+      "title": "Fixture Book",
+      "author_name": ["A. Author"],
+      "first_publish_year": 2018,
+      "publisher": ["Fixture Press"],
+      "isbn": ["9780000000001"],
+      "edition_key": ["OL9001M"],
+      "language": ["eng"]
+    },
+    {
+      "key": "/works/OL9002W",
+      "title": "Fixture Book",
+      "author_name": ["A. Author"],
+      "first_publish_year": 2020,
+      "publisher": ["Fixture Press"],
+      "isbn": [],
+      "edition_key": ["OL9002M"],
+      "language": ["eng"]
+    },
+    {
+      "key": "/works/OL9099W",
+      "title": "Different Book",
+      "author_name": ["Z. Author"],
+      "first_publish_year": 2015,
+      "publisher": [],
+      "isbn": [],
+      "edition_key": [],
+      "language": []
+    }
+  ]
+}

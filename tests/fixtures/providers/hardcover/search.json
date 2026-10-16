@@ -1,0 +1,35 @@
+{
+  "data": {
+    "search": {
+      "results": [
+        {
+          "id": 9001,
+          "title": "Fixture Book",
+          "author_names": ["A. Author", "B. Co-Author"],
+          "featured_series": { "name": "Fixture Series" },
+          "featured_series_position": 2,
+          "release_year": 2018,
+          "isbns": ["9780000000001"]
+        },
+        {
+          "id": 9002,
+          "title": "Fixture Book",
+          "author_names": ["A. Author"],
+          "featured_series": { "name": "Fixture Series" },
+          "featured_series_position": 3,
+          "release_year": 2020,
+          "isbns": []
+        },
+        {
+          "id": 9099,
+          "title": "Different Book",
+          "author_names": ["Z. Author"],
+          "featured_series": null,
+          "featured_series_position": null,
+          "release_year": 2015,
+          "isbns": []
+        }
+      ]
+    }
+  }
+}

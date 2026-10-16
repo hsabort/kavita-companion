@@ -1,0 +1,16 @@
+{
+  "size": 1,
+  "entries": [
+    {
+      "key": "/books/OL9001M",
+      "title": "Fixture Book",
+      "publishers": ["Fixture Press", "Fixture House"],
+      "publish_date": "2018",
+      "isbn_10": ["0000000001"],
+      "isbn_13": ["9780000000001"],
+      "languages": [{ "key": "/languages/eng" }],
+      "number_of_pages": 320,
+      "works": [{ "key": "/works/OL9001W" }]
+    }
+  ]
+}

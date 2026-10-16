@@ -1,0 +1,18 @@
+{
+  "data": {
+    "books": [
+      {
+        "id": 9002,
+        "title": "Fixture Book",
+        "subtitle": null,
+        "description": null,
+        "release_date": null,
+        "release_year": 2020,
+        "pages": null,
+        "book_series": [],
+        "contributions": [],
+        "default_ebook_edition": null
+      }
+    ]
+  }
+}

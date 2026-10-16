@@ -98,6 +98,16 @@ export const config = {
   anilistBaseUrl: (process.env.PROVIDER_ANILIST_BASE || "https://graphql.anilist.co"),
   // AniList 90/min documented but degraded to 30/min -> a 2 s spacing; overridable for the tests.
   anilistMinIntervalMs: Number(process.env.PROVIDER_ANILIST_MIN_INTERVAL_MS ?? 2_000),
+  // Hardcover (books) GraphQL endpoint. Keyed (a free per-install personal access token). The base
+  // includes the path, as Hardcover's GraphQL lives at /v1/graphql; the test stack points this at a fake.
+  hardcoverBaseUrl: (process.env.PROVIDER_HARDCOVER_BASE || "https://api.hardcover.app/v1/graphql"),
+  // Hardcover free tier: 60 requests/minute -> a 1 s spacing; overridable for the tests.
+  hardcoverMinIntervalMs: Number(process.env.PROVIDER_HARDCOVER_MIN_INTERVAL_MS ?? 1_000),
+  // Open Library (books) REST base URL. Keyless, but a truthful User-Agent is required. The test stack
+  // points this at a local fake.
+  openlibraryBaseUrl: (process.env.PROVIDER_OPENLIBRARY_BASE || "https://openlibrary.org"),
+  // Open Library: 1 request/s anonymous (3/s identified) -> a 1 s spacing; overridable for the tests.
+  openlibraryMinIntervalMs: Number(process.env.PROVIDER_OPENLIBRARY_MIN_INTERVAL_MS ?? 1_000),
 };
 
 // ---- Per-provider settings ----------------------------------------------------------------

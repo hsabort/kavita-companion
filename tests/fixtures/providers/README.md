@@ -33,3 +33,24 @@ For the AniList adapter (`PROVIDER_ANILIST_BASE`, W5) — served for the single 
 - `anilist/record.json` — the same by-id media: `title`/`description`, `startDate`, `genres`,
   ranked `tags`, `staff.edges[]` with `role`, `isAdult`, `countryOfOrigin`, `chapters`/`volumes`.
 - `anilist/record-teen.json` — a second media (`isAdult: false`) for the other AgeRating bucket.
+
+For the Hardcover adapter (`PROVIDER_HARDCOVER_BASE`, W6) — served for the single GraphQL endpoint
+(`/v1/graphql`), routed on the request body (Typesense search vs by-id `books(where:…)`):
+
+- `hardcover/search.json` — a `{ data: { search: { results: […] } } }` Typesense "Book" response (three
+  documents differing by year/title so ranking is deterministic).
+- `hardcover/record.json` — the by-id `{ data: { books: [ … ] } }` golden book: a `description` with
+  HTML, two `book_series` relations (only one `featured`), `contributions` (authors + an illustrator),
+  and a `default_ebook_edition` (publisher, language `eng`, ISBN, pages).
+- `hardcover/record-minimal.json` — a sparse book (null summary/series/edition) to prove nulls are skipped.
+
+For the Open Library adapter (`PROVIDER_OPENLIBRARY_BASE`, W7) — served for `/search.json`,
+`/isbn/…`, `/books/…`, `/works/…` and `/authors/…`:
+
+- `openlibrary/search.json` — a `search.json` response (`docs[]` of work docs with `author_name`,
+  `first_publish_year`, `edition_key`, `language`).
+- `openlibrary/work.json` — one work: `description` as an object, `first_publish_date`, `subjects`
+  (genre-like + messy), and `authors` as keys.
+- `openlibrary/edition.json` / `openlibrary/editions.json` — one edition (`publishers`, `isbn_10`/`isbn_13`,
+  `languages` as `/languages/eng`, `works` back-reference); the `editions.json` wraps it in `entries[]`.
+- `openlibrary/author.json` / `openlibrary/author-2.json` — the two authors a work resolves by key.
