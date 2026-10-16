@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.6.8 — 2026-10-16
+
+Changed:
+- **"Find metadata" is now a focused modal dialog** instead of an inline panel inside the review card:
+  candidates, per-field source chips, conflicts, attribution/licence and a "N fields will change"
+  summary, with an explicit Apply (and a note in fix mode). It closes on Escape/Close/click-outside,
+  keeps focus inside the dialog and returns it to the trigger, and fits a phone. Applied values still
+  flow through the same card / `reviewDrafts` path, so nothing else changed.
+- **A long provider rate-limit is skipped, not slept through.** The token bucket now refuses to hold an
+  HTTP request for a wait over 3 s: it records a cooldown and reports it ("rate-limited — try again in
+  ~N min") to the match list and the apply route instead of blocking. Short intervals (MangaDex 250 ms,
+  AniList 2 s, …) still wait exactly as before. Removes the hang with GCD's 120 s anonymous spacing.
+
+Fixed:
+- **A valid EPUB is no longer discarded as "a zip file".** The upload check required the spec's exact
+  canonical layout (a stored `mimetype` entry first); real EPUBs that differ — an extra field on that
+  entry, a deflated member, or a different first entry — were misread as plain zips and thrown away. It
+  now falls back to the archive's required `META-INF/container.xml`, matching what Kavita can read. (A
+  plain zip renamed `.epub` is still rejected.) Regression test added.
+- **Comics are Kavita LibraryType 5**, so the 0.6.6 "never offer a comic a Volume" filter now actually
+  fires (it compared against 1 and never matched). The write path already dropped the tag, so no file
+  was harmed, but the apply panel no longer offers a Volume for comics. Regression test added.
+
 ## 0.6.7 — 2026-10-16
 
 Changed:

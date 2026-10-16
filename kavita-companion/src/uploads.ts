@@ -12,6 +12,7 @@ import { pipeline } from "node:stream/promises";
 import { FileStore } from "@tus/file-store";
 import { EVENTS, Server } from "@tus/server";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { listEntries } from "./archive.js";
 import { currentUser } from "./auth.js";
 import { config } from "./config.js";
 import { audit, db } from "./db.js";
@@ -201,6 +202,16 @@ tus.on(EVENTS.POST_TERMINATE, (_req, _res, id) => {
   if (row) audit("upload_cancelled", row.owner_name, null, { id, filename: row.filename });
 });
 
+/** True when the archive carries an EPUB's required META-INF/container.xml (see detectType). */
+async function hasEpubContainer(path: string): Promise<boolean> {
+  try {
+    const entries = await listEntries(path);
+    return entries.some((e) => !e.isDir && e.path.toLowerCase() === "meta-inf/container.xml");
+  } catch {
+    return false; // not a readable archive
+  }
+}
+
 async function detectType(path: string): Promise<DetectedType | null> {
   const handle = await open(path, "r");
   try {
@@ -208,10 +219,14 @@ async function detectType(path: string): Promise<DetectedType | null> {
     const { bytesRead } = await handle.read(head, 0, head.length, 0);
     const b = head.subarray(0, bytesRead);
     if (b.subarray(0, 4).equals(Buffer.from("PK\x03\x04", "binary"))) {
-      // EPUB: a zip whose first entry is an uncompressed "mimetype" file saying application/epub+zip.
+      // EPUB is a zip whose first entry is an uncompressed "mimetype" file saying application/epub+zip
+      // (the spec's canonical layout). Many real EPUBs don't follow it exactly — an extra field on the
+      // mimetype entry, a deflated member, or a different first entry — and Kavita reads those fine, so
+      // fall back to the archive's required container instead of wrongly calling them plain zips.
       const firstName = b.subarray(30, 38).toString("latin1");
       const mimetype = b.subarray(38, 58).toString("latin1");
-      return firstName === "mimetype" && mimetype === "application/epub+zip" ? "epub" : "zip";
+      if (firstName === "mimetype" && mimetype === "application/epub+zip") return "epub";
+      return (await hasEpubContainer(path)) ? "epub" : "zip";
     }
     if (b.subarray(0, 6).equals(Buffer.from("Rar!\x1a\x07", "binary"))) return "rar";
     if (b.subarray(0, 6).equals(Buffer.from([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]))) return "7z";
