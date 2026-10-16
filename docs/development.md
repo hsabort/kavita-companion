@@ -90,9 +90,11 @@ Acceptance tests run against the stack described by the checkout's `.env` (the t
 See [tests/README.md](../tests/README.md).
 
 ```bash
-tests/run.sh             # API tests
+tests/run.sh             # the API tests (fast + slow)
+tests/run.sh --fast      # the quick tier (no library writes) — the one to use while developing
 tests/run.sh --browser   # plus headless-browser tests
 tests/run.sh --roles     # plus test_roles_and_limits.py (safe on the test stack)
+tests/run.sh --repeat 3  # run the fast tier 3 times and report anything that failed
 ```
 
 ## Admin helper

@@ -84,8 +84,8 @@ export function endSession(request: FastifyRequest, reply: FastifyReply) {
 // removing Admin in Kavita takes effect promptly, a session's roles are re-read from Kavita when
 // they're older than ROLE_RECHECK_MS. One Kavita call serves every session (USERS_CACHE_MS).
 
-const ROLE_RECHECK_MS = 2 * 60_000;
-const USERS_CACHE_MS = 30_000;
+const ROLE_RECHECK_MS = config.roleRecheckMs;
+const USERS_CACHE_MS = Math.min(30_000, config.roleRecheckMs);
 let usersCache: { at: number; byId: Map<number, KavitaUser> } | null = null;
 
 async function kavitaUsersById(): Promise<Map<number, KavitaUser>> {
