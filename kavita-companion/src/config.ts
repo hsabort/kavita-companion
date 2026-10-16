@@ -24,6 +24,10 @@ export const config = {
   // Requests are only trusted for X-Forwarded-For when they come from Caddy on the compose network.
   trustedProxy: process.env.TRUSTED_PROXY ?? "172.30.0.0/24",
 
+  // Let notification targets point at private/LAN addresses (e.g. a self-hosted ntfy). Off by default
+  // because the target is user-supplied and the portal calls it server-side (SSRF). See notify.ts.
+  notifyAllowPrivate: process.env.NOTIFY_ALLOW_PRIVATE === "true",
+
   // ~/media on the host, read-write. Kavita mounts only its library subfolders (read-only) as /data/<lib>.
   mediaDir: process.env.MEDIA_DIR ?? "/media",
   // How Kavita's paths start; /data/comics in Kavita is <mediaDir>/comics here.

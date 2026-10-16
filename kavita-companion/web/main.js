@@ -94,6 +94,8 @@ function show(user, kavitaUrl) {
   if (!user.canUpload) notice("Your Kavita account is read-only, so uploading isn't available.");
   $("upload-section").hidden = !user.canUpload;
   if (user.canUpload) startUploader();
+  $("notify-wrap").hidden = !user.canUpload;
+  if (user.canUpload) loadNotifications();
   refreshUploads();
   refreshTimer = setInterval(refreshUploads, 10_000);
 }
@@ -867,6 +869,49 @@ $("activity-user").addEventListener("input", () => {
   clearTimeout(activityTimer);
   activityTimer = setTimeout(() => refreshActivity(true), 300);
 });
+
+// ---------- Notifications ----------
+// Where to tell a user about their uploads (src/notify.ts). Off by default.
+
+const NOTIFY_EVENT_IDS = {
+  approved: "notify-approved",
+  rejected: "notify-rejected",
+  fixed: "notify-fixed",
+  invalid: "notify-invalid",
+  duplicate: "notify-duplicate",
+};
+
+function notifyStatus(text, problem = false) {
+  $("notify-status").textContent = text ?? "";
+  $("notify-status").classList.toggle("error", problem);
+}
+
+async function loadNotifications() {
+  const { status, body } = await api("/api/notifications");
+  if (status !== 200) return;
+  $("notify-channel").value = body.channel || "off";
+  $("notify-target").value = body.target || "";
+  const events = new Set(body.events || []);
+  for (const [event, id] of Object.entries(NOTIFY_EVENT_IDS)) $(id).checked = events.has(event);
+}
+
+async function saveNotifications() {
+  const events = Object.entries(NOTIFY_EVENT_IDS).filter(([, id]) => $(id).checked).map(([event]) => event);
+  const { status, body } = await api("/api/notifications", {
+    method: "POST",
+    body: JSON.stringify({ channel: $("notify-channel").value, target: $("notify-target").value.trim(), events }),
+  });
+  notifyStatus(status === 200 ? "Saved." : body.error || "Could not save.", status !== 200);
+}
+
+async function testNotification() {
+  notifyStatus("Sending…");
+  const { status, body } = await api("/api/notifications/test", { method: "POST" });
+  notifyStatus(status === 200 ? "Test sent." : body.error || "Could not send.", status !== 200);
+}
+
+$("notify-save").addEventListener("click", saveNotifications);
+$("notify-test").addEventListener("click", testNotification);
 
 // Coming from Kavita's sidebar link (GET /login) when it didn't work.
 const signin = new URLSearchParams(location.search).get("signin");

@@ -17,6 +17,7 @@ import { config } from "./config.js";
 import { audit, db } from "./db.js";
 import { inspectInBackground, removeCover } from "./inspect.js";
 import * as kavita from "./kavita.js";
+import { notifyUploader } from "./notify.js";
 
 const GB = 1024 ** 3;
 const PARTIAL_DIR = join(config.incomingDir, "partial");
@@ -242,8 +243,10 @@ async function checkCompletedUpload(id: string) {
     if (!detected || !ACCEPTED[row.ext]?.includes(detected)) {
       await discardPartial(id);
       const what = detected ? `a ${detected} file` : "not a recognised comic, book or archive file";
-      q.setStatus.run("invalid", `This file is ${what}, which doesn't match .${row.ext}. It was discarded.`, Date.now(), id);
+      const message = `This file is ${what}, which doesn't match .${row.ext}. It was discarded.`;
+      q.setStatus.run("invalid", message, Date.now(), id);
       audit("upload_invalid", row.owner_name, null, { id, filename: row.filename, detected });
+      notifyUploader(row.owner_id, "invalid", `Couldn't accept: ${row.filename}`, message);
       return;
     }
 
@@ -263,8 +266,10 @@ async function checkCompletedUpload(id: string) {
       await discardPartial(id);
       const when = new Date(dup.created_at).toISOString().slice(0, 10);
       const state = dup.status === "approved" ? "already in the library" : "already waiting for review";
-      q.setStatus.run("duplicate", `This exact file is ${state} (uploaded as "${dup.filename}" on ${when}). It was discarded.`, Date.now(), id);
+      const message = `This exact file is ${state} (uploaded as "${dup.filename}" on ${when}). It was discarded.`;
+      q.setStatus.run("duplicate", message, Date.now(), id);
       audit("upload_duplicate", row.owner_name, null, { id, filename: row.filename, sha256 });
+      notifyUploader(row.owner_id, "duplicate", `Duplicate: ${row.filename}`, message);
       return;
     }
 

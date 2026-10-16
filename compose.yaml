@@ -82,6 +82,7 @@ services:
       - MAX_PENDING_GB_PER_USER=${MAX_PENDING_GB_PER_USER:-50}
       - MAX_CONCURRENT_UPLOADS_PER_USER=${MAX_CONCURRENT_UPLOADS_PER_USER:-3}
       - MIN_FREE_DISK_GB=${MIN_FREE_DISK_GB:-25}
+      - NOTIFY_ALLOW_PRIVATE=${NOTIFY_ALLOW_PRIVATE:-false}
     volumes:
       - ${DATA_ROOT:-./data}/companion:/data
       # Read-write: approved uploads are moved into the library folders. Upload staging lives in

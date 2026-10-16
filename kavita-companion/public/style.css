@@ -314,3 +314,9 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .activity-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; margin-bottom: 0.75rem; }
 .activity-filters label { color: var(--muted); font-size: 0.85rem; }
 .activity-filters select, .activity-filters input { max-width: 14rem; }
+
+/* Notifications preferences */
+.notify-events { border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem 0.75rem; margin: 0.5rem 0 0; display: grid; gap: 0.25rem; }
+.notify-events legend { color: var(--muted); font-size: 0.85rem; padding: 0 0.25rem; }
+.notify-events label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+#notify-status.error { color: var(--error-text); }

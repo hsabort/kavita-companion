@@ -36,6 +36,15 @@ again and it continues where it stopped.
 | Duplicate | The exact same file is already waiting or in the library; it was discarded |
 | Cancelled / Expired / Withdrawn | Stopped by you, or abandoned for 24 hours |
 
+## Notifications
+
+Under **Your uploads** there is a **Notifications** panel. Choose where to be told when your uploads are
+approved or rejected, when one of your files already in the library is corrected, when a file is
+discarded because it isn't what its name says, or when a duplicate is found: a **Webhook** (JSON POST),
+an **ntfy** topic URL, or a **Discord** webhook. Paste the address, tick the events you want and press
+**Save**; **Send test** checks it works. Notifications are off until you set one up. On some servers,
+addresses on the local network are refused (see [security.md](security.md)).
+
 ## Reviewing (Kavita admins)
 
 Uploads waiting for review appear at the top of the portal, grouped: several issues of the same

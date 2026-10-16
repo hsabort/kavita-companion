@@ -9,6 +9,7 @@ import {
 } from "./auth.js";
 import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
+import { drainNotifications, registerNotifyRoutes } from "./notify.js";
 import { ensureSidebarLink } from "./sidebar.js";
 import { portalTheme, userThemeId } from "./themes.js";
 import { config } from "./config.js";
@@ -211,12 +212,14 @@ app.get("/api/me", async (request) => {
 await registerUploadRoutes(app);
 await registerReviewRoutes(app);
 await registerActivityRoutes(app);
+await registerNotifyRoutes(app);
 
 async function hourlyJobs() {
   purgeExpiredSessions();
   for (const [name, job] of [
     ["purge abandoned uploads", purgeAbandonedUploads],
     ["purge old rejections", purgeOldRejections],
+    ["deliver notifications", drainNotifications],
     ["database backup", backupDatabase],
   ] as const) {
     await job().catch((err: unknown) => app.log.error({ err }, `${name} failed`));
