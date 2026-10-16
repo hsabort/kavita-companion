@@ -101,6 +101,13 @@ services:
       - PROVIDER_METRON_BASE=${PROVIDER_METRON_BASE:-}
       - PROVIDER_METRON_KEY=${PROVIDER_METRON_KEY:-}
       - PROVIDER_METRON_ENABLED=${PROVIDER_METRON_ENABLED:-false}
+      # Grand Comics Database (comics fallback): keyless; an optional user:pass account key raises the
+      # anonymous 30/hour limit to 2,000/day. Fixed HTTPS base (test fake).
+      - PROVIDER_GCD_BASE=${PROVIDER_GCD_BASE:-}
+      - PROVIDER_GCD_KEY=${PROVIDER_GCD_KEY:-}
+      - PROVIDER_GCD_ENABLED=${PROVIDER_GCD_ENABLED:-false}
+      - PROVIDER_GCD_MIN_INTERVAL_MS=${PROVIDER_GCD_MIN_INTERVAL_MS:-120000}
+      - PROVIDER_GCD_MIN_INTERVAL_MS_AUTHED=${PROVIDER_GCD_MIN_INTERVAL_MS_AUTHED:-5000}
     volumes:
       - ${DATA_ROOT:-./data}/companion:/data
       # Read-write: approved uploads are moved into the library folders. Upload staging lives in

@@ -19,6 +19,11 @@ export interface ProviderRegistration {
   keyed: boolean;
   /** Minimum spacing between calls to this provider (the token bucket, capacity 1). 0 = unlimited. */
   minIntervalMs: number;
+  /**
+   * Ordering within a media class: lower is tried first (the fallback order). Defaults to 100, so a
+   * provider registered without one (e.g. the test stub) sorts after the real primaries.
+   */
+  priority?: number;
   /** Cheap validity probe for the admin test route. */
   probe?: (provider: Provider, key: string | null) => Promise<{ ok: boolean; detail?: string }>;
 }
@@ -88,17 +93,20 @@ export function isConfigured(reg: ProviderRegistration): boolean {
 
 /**
  * Providers usable for a media class right now: external metadata on, enabled, configured, and
- * able to serve that media. Ordered as registered.
+ * able to serve that media. Ordered by `priority` (lower first) so the primary comics provider is
+ * tried before its fallback; registration order breaks ties.
  */
 export function enabledFor(media: MediaKind): ProviderRegistration[] {
   if (!config.metadataExternalEnabled) return [];
-  return all().filter((reg) => reg.provider.capabilities.media.includes(media) && isEnabled(reg) && isConfigured(reg));
+  return all()
+    .filter((reg) => reg.provider.capabilities.media.includes(media) && isEnabled(reg) && isConfigured(reg))
+    .sort((a, b) => (a.priority ?? 100) - (b.priority ?? 100));
 }
 
 /** Register the built-in test stub when its flag is set. Called once, at module load. */
 export function registerBuiltins(): void {
   if (config.providersStub) {
-    register({ provider: createStubProvider(), keyed: true, minIntervalMs: 0, probe: stubProbe });
+    register({ provider: createStubProvider(), keyed: true, minIntervalMs: 0, priority: 100, probe: stubProbe });
   }
 }
 

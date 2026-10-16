@@ -6,8 +6,9 @@ serves becomes **clean, searchable and browsable** — **without violating any p
 of Service**. This is a plan; nothing here is built.
 
 **Status:** **M1 shipped in 0.3.0** — the provider framework (W1), the Metron comics adapter (W2) and the
-review card's Find metadata/apply + attribution (W8), with the fake-provider test scaffolding (W11). GCD
-and the other media (M2–M4) are next.
+review card's Find metadata/apply + attribution (W8), with the fake-provider test scaffolding (W11).
+**M2 shipped in 0.3.1**: the GCD comics fallback (W3); the other media (M3–M4) and search/browse (M5) are
+next.
 
 Integration is **direct** (not only via Kavita+), **human-reviewed**, **low-volume and cached**. Every
 provider must pass the Compliance gate (section 1) before it can be enabled; a provider that cannot be

@@ -83,6 +83,13 @@ export const config = {
   // Metron (comics) base URL. Real adapters use a fixed HTTPS host; the test stack points this at a
   // local fake (PROVIDERS_ALLOW_PRIVATE). An empty env value falls back to the default.
   metronBaseUrl: (process.env.PROVIDER_METRON_BASE || "https://metron.cloud"),
+  // Grand Comics Database (comics fallback) base URL. Same reasoning as Metron.
+  gcdBaseUrl: (process.env.PROVIDER_GCD_BASE || "https://www.comics.org"),
+  // GCD rate limiting: anonymous is only 30/hour (a 120 s spacing), an account key (HTTP Basic,
+  // user:pass) raises it to 2,000/day. Both spacings are overridable so an operator (or the tests)
+  // can tighten/loosen them without a rebuild; the defaults match the documented limits.
+  gcdMinIntervalMs: Number(process.env.PROVIDER_GCD_MIN_INTERVAL_MS ?? 120_000),
+  gcdMinIntervalMsAuthed: Number(process.env.PROVIDER_GCD_MIN_INTERVAL_MS_AUTHED ?? 5_000),
 };
 
 // ---- Per-provider settings ----------------------------------------------------------------

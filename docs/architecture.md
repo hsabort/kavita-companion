@@ -214,3 +214,25 @@ never fetched, proxied or written) and the `CC BY-SA 4.0` licence. Base URL: `PR
   to the shared client; `429`/`Retry-After` are handled by `http.ts`.
 - **Probe**: `POST /api/admin/providers/metron/test` fetches one known issue detail through the shared
   client. Tests: `tests/test_providers_metron.py` against `tests/provider_fake.py` (no network, no keys).
+
+### Grand Comics Database (GCD) (comics fallback, phase 2 W3)
+
+`providers/gcd.ts` is the comics **fallback**: `providers/index.ts` registers it with `priority: 20`
+(Metron is `10`), so `enabledFor("comic")` is tried primary-then-fallback. It is **off by default** and
+**keyless** — enabling it is enough; an optional free-account key of the form `user:pass` is sent as
+HTTP Basic and raises GCD's anonymous 30 requests/hour to 2,000/day. Licence `CC BY-SA 4.0`;
+`covers: "none"` (GCD cover art belongs to the rights holders, never fetched/proxied/written). Base:
+`PROVIDER_GCD_BASE` (default `https://www.comics.org`).
+
+- **Search** (`search(key, query)`): `GET {base}/api/series/name/<name>/issue/<n>/[year/<y>/]` (an issue
+  number is required — without one GCD can't return fetchable issues) → `Candidate[]`; alternate-cover
+  variants (`variant_of`) are dropped; bands/scores as for Metron.
+- **Fetch** (`fetch(key, externalId)`): `GET {base}/api/issue/{id}/` → Series (`series_name`, minus the
+  "(2012 series)" disambiguator), Number, Volume, Title (first interior story), Summary (joined
+  synopses), Year (`key_date`), Publisher (`indicia_publisher`), Imprint (`brand_emblem`), Genre/Tags
+  (aggregated from `story_set[]`), AgeRating (mapped onto our list), and the credits split from GCD's
+  **free-text**, `;`-separated `script`/`pencils`/`inks`/`colors` (dropping `None`/`?` placeholders;
+  the cover story gives CoverArtist). All text via `plainText`; records read through `metadata_cache`.
+- **Rate limit**: anonymous 30/hour → `minIntervalMs: 120000`; with a key the adapter narrows it
+  (`PROVIDER_GCD_MIN_INTERVAL_MS[_AUTHED]`). `429`/`Retry-After` handled by `http.ts`.
+- **Probe**: `POST /api/admin/providers/gcd/test`. Tests: `tests/test_providers_gcd.py`.

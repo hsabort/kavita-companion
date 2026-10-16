@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1 — 2026-10-16
+
+Added:
+- **GCD comics-fallback adapter (phase 2, W3)**: the Grand Comics Database joins Metron as the comics
+  fallback (ordered by priority). Keyless; an optional free-account `user:pass` key raises the anonymous
+  30/hour limit to 2,000/day and is sent as HTTP Basic. It maps GCD's free-text, `;`-separated credits
+  into Writer/Penciller/Inker/Colorist/CoverArtist, strips `None`/`?` placeholders and HTML, and never
+  fetches GCD's cover art. Data from the Grand Comics Database (GCD), CC BY-SA 4.0. See
+  [docs/architecture.md](docs/architecture.md). A reviewer can enable it under About → Metadata providers.
+
 ## 0.3.0 — 2026-10-16
 
 Added:

@@ -1,0 +1,43 @@
+{
+  "count": 4,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "api_url": "https://www.comics.org/api/issue/8001/",
+      "series_name": "Fixture Saga (2012 series)",
+      "descriptor": "1",
+      "number": "1",
+      "publication_date": "March 2012",
+      "variant_of": null,
+      "series": "https://www.comics.org/api/series/900/"
+    },
+    {
+      "api_url": "https://www.comics.org/api/issue/8002/",
+      "series_name": "Fixture Saga (2012 series)",
+      "descriptor": "2",
+      "number": "2",
+      "publication_date": "April 2012",
+      "variant_of": null,
+      "series": "https://www.comics.org/api/series/900/"
+    },
+    {
+      "api_url": "https://www.comics.org/api/issue/8099/",
+      "series_name": "Entirely Different Thing (1999 series)",
+      "descriptor": "9",
+      "number": "9",
+      "publication_date": "September 1999",
+      "variant_of": null,
+      "series": "https://www.comics.org/api/series/901/"
+    },
+    {
+      "api_url": "https://www.comics.org/api/issue/8001v/",
+      "series_name": "Fixture Saga (2012 series)",
+      "descriptor": "1 [Variant]",
+      "number": "1",
+      "publication_date": "March 2012",
+      "variant_of": "https://www.comics.org/api/issue/8001/",
+      "series": "https://www.comics.org/api/series/900/"
+    }
+  ]
+}
