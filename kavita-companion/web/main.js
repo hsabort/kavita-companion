@@ -550,8 +550,56 @@ function groupCard(items) {
     return (meta.providers ?? []).some((provider) => provider.media.includes(media)) ? media : null;
   };
   const findButton = el("button", { type: "button", className: "btn btn-outline small", textContent: "Find metadata" });
-  const findBody = el("div", { className: "match-panel", hidden: true });
-  const metadataBlock = el("div", { className: "metadata-finder" }, findButton, findBody);
+  const metadataBlock = el("div", { className: "metadata-finder" }, findButton);
+  // The whole Find metadata step lives in a modal dialog (role=dialog) so the reviewer sees the
+  // candidates, the field selection and the effect of applying them without scrolling the card.
+  // Applying still goes through applyMerged -> updateAll -> reviewDrafts (the one existing path);
+  // the dialog only changes where the controls are rendered.
+  const dialogTitleId = `metadata-dialog-title-${first.id}`;
+  const dialogRefresh = el("button", { type: "button", className: "btn btn-outline small", textContent: "Look up again" });
+  const dialogClose = el("button", { type: "button", className: "btn btn-outline small", textContent: "Close" });
+  const dialogProviders = el("div", { className: "metadata-dialog-providers" });
+  const dialogNote = el("p", { className: "metadata-dialog-note muted" });
+  if (fixing) dialogNote.textContent = "Applying fills the card's fields; choose “Save changes” on the card to write them to the file.";
+  else dialogNote.hidden = true;
+  const dialogBody = el("div", { className: "metadata-dialog-body" });
+  const dialog = el("div", { className: "metadata-dialog", tabIndex: -1 },
+    el("div", { className: "metadata-dialog-head" },
+      el("h3", { id: dialogTitleId, textContent: "Find metadata" }),
+      el("div", { className: "metadata-dialog-head-actions" }, dialogRefresh, dialogClose)),
+    dialogProviders,
+    dialogNote,
+    dialogBody);
+  // el() sets properties, so hyphenated ARIA attributes must be set explicitly.
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.setAttribute("aria-labelledby", dialogTitleId);
+  const dialogOverlay = el("div", { className: "metadata-dialog-overlay", hidden: true }, dialog);
+  const focusables = () => [...dialog.querySelectorAll("button, a[href], input, select, textarea")]
+    .filter((node) => !node.disabled && node.getClientRects().length > 0);
+  const closeDialog = () => {
+    dialogOverlay.hidden = true;
+    findButton.focus(); // return focus to the trigger
+  };
+  const openDialog = () => {
+    dialogOverlay.hidden = false;
+    dialog.focus();
+    runLookup();
+  };
+  dialogClose.addEventListener("click", closeDialog);
+  dialogRefresh.addEventListener("click", () => runLookup());
+  dialogOverlay.addEventListener("click", (event) => { if (event.target === dialogOverlay) closeDialog(); });
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") { event.stopPropagation(); closeDialog(); return; }
+    if (event.key !== "Tab") return; // keep Tab inside the dialog
+    const items = focusables();
+    if (!items.length) return;
+    const firstItem = items[0];
+    const lastItem = items[items.length - 1];
+    if (document.activeElement === dialog) { event.preventDefault(); (event.shiftKey ? lastItem : firstItem).focus(); return; }
+    if (event.shiftKey && document.activeElement === firstItem) { event.preventDefault(); lastItem.focus(); }
+    else if (!event.shiftKey && document.activeElement === lastItem) { event.preventDefault(); firstItem.focus(); }
+  });
   const providerById = new Map();
   const labelOf = (id) => providerById.get(id)?.label ?? id;
   const sharedValues = () => {
@@ -603,11 +651,19 @@ function groupCard(items) {
       }
       out.append(el("p", { className: "muted", textContent: "Kept your values (choose Overwrite existing values to replace them):" }), list);
     }
-    return out;
+    return { node: out, changed: pairs.length };
+  };
+  const attributionLine = (provider) => {
+    const line = el("p", { className: "metadata-dialog-attribution" });
+    line.append(provider.attribution ?? `Data from ${provider.label ?? provider.id}`);
+    const licence = provider.licence;
+    if (licence?.url) line.append(" — ", el("a", { href: licence.url, target: "_blank", rel: "noopener noreferrer", textContent: licence.name ?? licence.url.replace(/^https?:\/\//, "") }));
+    return line;
   };
   const renderCandidates = (body, status) => {
     if (status !== 200) {
-      findBody.replaceChildren(el("p", { className: "row-status error", textContent: body.error ?? "The lookup failed." }));
+      dialogProviders.replaceChildren();
+      dialogBody.replaceChildren(el("p", { className: "row-status error", textContent: body.error ?? "The lookup failed." }));
       return;
     }
     // A provider that hit its rate limit is skipped, not failed: say when it can be tried again.
@@ -618,6 +674,7 @@ function groupCard(items) {
     };
     providerById.clear();
     for (const provider of body.providers ?? []) providerById.set(provider.id, provider);
+    dialogProviders.replaceChildren(...(body.providers ?? []).filter((provider) => !provider.skipped).map(attributionLine));
     const candidates = body.candidates ?? [];
     if (!candidates.length) {
       const lines = [el("p", { className: "muted", textContent: `No candidates found for "${body.query?.title ?? "this file"}".` })];
@@ -631,13 +688,20 @@ function groupCard(items) {
                   : "is turned off";
         lines.push(el("p", { className: "muted", textContent: `${provider.label} ${why}.` }));
       }
-      findBody.replaceChildren(...lines);
+      dialogBody.replaceChildren(...lines);
       return;
     }
     const candidateGroup = `cand-${first.id}`;
     const modeGroup = `mode-${first.id}`;
     let chosen = candidates[0];
     const fieldsBox = el("div", { className: "field-picker" });
+    const summary = el("p", { className: "apply-summary", role: "status" });
+    const selectedFields = () => [...fieldsBox.querySelectorAll("input[type=checkbox]:checked")].map((box) => box.value);
+    const updateSummary = () => {
+      const count = selectedFields().length;
+      summary.classList.toggle("error", count === 0);
+      summary.textContent = count ? `${count} field${count === 1 ? "" : "s"} selected` : "Choose at least one field.";
+    };
     const renderFields = () => {
       const provider = providerById.get(chosen.provider) ?? {};
       const available = (provider.fields ?? []).filter((field) => APPLY_FIELDS.includes(field));
@@ -646,9 +710,11 @@ function groupCard(items) {
         ...available.map((field) => {
           const box = el("input", { type: "checkbox", value: field });
           box.checked = true;
+          box.addEventListener("change", updateSummary);
           return el("label", { className: "check" }, box, field);
         }),
       );
+      updateSummary();
     };
     const list = el("div", { className: "candidates" });
     candidates.forEach((candidate, index) => {
@@ -666,10 +732,10 @@ function groupCard(items) {
     const modeFill = el("input", { type: "radio", name: modeGroup, value: "fill" });
     modeFill.checked = true;
     const modeOverwrite = el("input", { type: "radio", name: modeGroup, value: "overwrite" });
-    const applyButton = el("button", { type: "button", className: "btn btn-outline-primary small", textContent: "Apply selected fields" });
+    const applyButton = el("button", { type: "button", className: "btn btn-outline-primary", textContent: "Apply selected fields" });
     const resultBox = el("div", { className: "apply-result-box" });
     applyButton.addEventListener("click", async () => {
-      const fields = [...fieldsBox.querySelectorAll("input[type=checkbox]:checked")].map((box) => box.value);
+      const fields = selectedFields();
       if (!fields.length) { resultBox.replaceChildren(el("p", { className: "row-status error", textContent: "Choose at least one field." })); return; }
       applyButton.disabled = true;
       resultBox.replaceChildren(el("p", { className: "muted", textContent: "Applying…" }));
@@ -685,23 +751,28 @@ function groupCard(items) {
         resultBox.replaceChildren(el("p", { className: "row-status error", textContent: applied.error ?? "Could not apply." }));
         return;
       }
-      resultBox.replaceChildren(applyMerged(applied, chosen));
+      const { node, changed } = applyMerged(applied, chosen);
+      resultBox.replaceChildren(node);
+      summary.classList.remove("error");
+      summary.textContent = changed
+        ? `${changed} field${changed === 1 ? "" : "s"} will change on the card`
+        : "Nothing will change — your values are already set.";
     });
     renderFields();
-    findBody.replaceChildren(
+    dialogBody.replaceChildren(
       list,
       el("div", { className: "match-actions" },
         el("label", { className: "check" }, modeFill, "Fill blanks"),
         el("label", { className: "check" }, modeOverwrite, "Overwrite existing values")),
       fieldsBox,
-      applyButton,
+      el("div", { className: "metadata-dialog-actions" }, applyButton, summary),
       resultBox,
     );
   };
-  findButton.addEventListener("click", async () => {
-    findBody.hidden = false;
-    findButton.disabled = true;
-    findBody.replaceChildren(el("p", { className: "muted", textContent: "Searching the metadata sources…" }));
+  const runLookup = async () => {
+    dialogProviders.replaceChildren();
+    dialogBody.replaceChildren(el("p", { className: "muted", textContent: "Searching the metadata sources…" }));
+    dialogRefresh.disabled = true;
     const params = new URLSearchParams();
     const name = series.value.trim();
     if (name) params.set("series", name);
@@ -709,9 +780,10 @@ function groupCard(items) {
     if (yr) params.set("year", yr);
     if (rows.length === 1) { const n = rows[0].inputs.number.value.trim(); if (n) params.set("number", n); }
     const { status, body } = await api(`/api/review/${encodeURIComponent(first.id)}/match?${params.toString()}`);
-    findButton.disabled = false;
+    dialogRefresh.disabled = false;
     renderCandidates(body, status);
-  });
+  };
+  findButton.addEventListener("click", openDialog);
 
   card.append(...[
     el("div", { className: "group-head" },
@@ -726,6 +798,7 @@ function groupCard(items) {
     el("div", { className: "grid-2" }, field("Year", year), field("Age rating", age)),
     moreBox,
     metadataFor() ? metadataBlock : null,
+    metadataFor() ? dialogOverlay : null,
     el("div", { className: "rows" }, ...rows.map((r) => r.node)),
     items.length > 1 ? el("div", { className: "actions group-actions" }, approveAll) : null,
   ].filter(Boolean));
