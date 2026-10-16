@@ -1,0 +1,33 @@
+# Keep dependencies current: the portal's npm packages, the container base images and the workflow
+# actions. Weekly so a burst of updates lands as a handful of reviewable PRs rather than a stream;
+# routine bumps are grouped, while anything major is left on its own.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /kavita-companion
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /kavita-companion
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      docker-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
