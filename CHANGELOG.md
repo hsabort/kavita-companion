@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.6.0 — 2026-10-16
 
 Added:
 - **Library view (phase 2, M5)**: a thin, **reviewer-only** tab over Kavita's own catalogue, for finding
