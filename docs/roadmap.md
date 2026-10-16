@@ -208,13 +208,72 @@ fields; an unknown title leaves fields blank; a provider outage doesn't break re
 
 ---
 
+## 6. Test harness refactor — planned
+
+Make the acceptance tests shorter to write, faster to run, and clearer about what tends to break.
+
+- **Shared harness** (`tests/harness.py`): one `app()/kavita()/login(role)` (with a cached session
+  cookie), `upload()` (tus), `wait_until()` polling instead of fixed sleeps, `wait_pending/approved`, and
+  a `check()`/`finish()` summary. The nine API files and seven browser files stop re-implementing these
+  (which is how copy-paste bugs like the CSP `wait_for_function` and `Cookie: None` slips happened).
+- **Speed**: a test-only `ROLE_RECHECK_MS` setting (default stays 2 minutes; small in the test `.env`)
+  cuts the roles test from ~4 minutes to seconds. `run.sh` gains tiers: `--fast` (auth, activity, preview,
+  notifications, requests — no library writes), `--slow` (uploads, review, metadata, fix, themes),
+  `--browser`, `--roles`, `--all` (default).
+- **Repeated failure points**: run `test_auth` alone (its deliberate failed logins count against the
+  per-address limit); restart the portal at the start of a run to clear the counters; a selector-based
+  `wait_for_text` helper that documents the "CSP blocks eval-based waits" rule in one place; and a
+  `--repeat N` mode that runs the fast tier N times and lists anything that failed at least once.
+- **Cleanup on failure**: each test removes the series/files it created even when an assertion fails.
+
+**Effort.** M.
+
+## 7. Tabbed companion UI — planned
+
+The page stacks everything today (login → review → activity → upload → your uploads → requests →
+notifications). Split it into tabs with a bar under the navbar (`role="tablist"`):
+
+| Tab | Shown to | Contents |
+|---|---|---|
+| Upload | anyone who can upload | upload panel + Your uploads |
+| Review | admins | queue + Recent decisions + fix search |
+| Requests | everyone | ask + my requests (+ open queue for admins) |
+| Activity | admins | insights + activity log |
+| Notifications | anyone who can upload | settings panel |
+
+- The current tab lives in `location.hash` (`#review`), so refresh and back/forward work; the default is
+  Review for admins, Upload otherwise.
+- Proper `role="tab"`/`aria-selected`/tabpanel, arrow-key navigation and visible focus from the existing
+  Kavita tokens; the tab bar scrolls horizontally on phones.
+- Front end only (`index.html`, `web/main.js`, `style.css`); the element ids stay, so the JS wiring barely
+  changes, and the page-preview overlay stays global.
+
+**Effort.** M.
+
+## 8. Kavita sidebar label — planned
+
+Mark the "Uploads" sidebar entry as opening in a new tab. Kavita renders an external source as a
+`target="_blank"` link with a fixed `fa-server` icon, and uses one string (`SideNavStream.name`) for both
+its label and its hover tooltip, so the indicator has to live in the text: set the name to **`Uploads ↗`**
+with `POST /api/Stream/update-sidenav-stream`, idempotently at sign-in (existing links are renamed the
+next time the user signs in). See [decisions.md](decisions.md) #15 for why nothing is injected into
+Kavita's page.
+
+**Effort.** S.
+
+---
+
 ## Suggested order
 
-1. **Admin activity page (§4)** — smallest, exercises the reviewer-only API + admin-UI pattern.
-2. **Notifications (§1)** — highest felt value; Phase 1 needs no new dependency.
-3. **Requests board (§2)** — pairs with notifications (auto-fulfil → notify).
-4. **Reviewer preview (§3)** — improves the core review step.
-5. **Metadata auto-fill (§5)** — largest; benefits from the preview and the editor changes above.
+Already shipped: Admin activity page (§4, 0.2.2), Notifications (§1, 0.2.3), Requests board (§2, 0.2.4),
+Reviewer preview (§3, 0.2.5).
+
+Next:
+
+1. **Test harness refactor (§6)** — speeds up verifying everything after it.
+2. **Sidebar label (§8)** — tiny and independent.
+3. **Tabbed UI (§7)** — user-visible; §5 composes into the new Review tab.
+4. **Metadata auto-fill (§5)** — largest; benefits from the review UI.
 
 Not chosen this round but cheap and complementary: a **supply-chain bundle** (Dependabot/Renovate, a
 Trivy image scan and SBOM/provenance in `.github/workflows/image.yml`), and a **"connect your Kavita
