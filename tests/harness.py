@@ -60,7 +60,10 @@ def kavita(method, path, body=None, token=None):
     headers = {"Content-Type": "application/json"}
     headers["Authorization" if token else "x-api-key"] = ("Bearer " + token) if token else env["COMPANION_KAVITA_AUTH_KEY"]
     status, _, out = request(method, KAVITA_LOCAL + path, json.dumps(body).encode() if body is not None else None, headers)
-    return status, (json.loads(out) if out else None)
+    try:
+        return status, (json.loads(out) if out else None)
+    except ValueError:
+        return status, out
 
 
 def login(role):

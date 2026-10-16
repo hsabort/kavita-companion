@@ -24,6 +24,7 @@ import urllib.request
 import zipfile
 
 from settings import KAVITA_LOCAL as KAVITA, MEDIA, ORIGIN, env, library_ids
+from harness import app, kavita, login, request
 
 _libs = library_ids()
 COMICS, BOOKS = _libs["Comics"], _libs["Books"]
@@ -39,42 +40,6 @@ uploaded = []
 def check(name, ok, detail=""):
     results.append(bool(ok))
     print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""), flush=True)
-
-
-def request(method, url, body=None, headers=None):
-    req = urllib.request.Request(url, body, headers or {}, method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            return r.status, r.headers, r.read()
-    except urllib.error.HTTPError as e:
-        return e.code, e.headers, e.read()
-
-
-def app(method, path, cookie, body=None, raw=False):
-    headers = {"Origin": ORIGIN, "Cookie": cookie}
-    data = None
-    if body is not None:
-        headers["Content-Type"] = "application/json"
-        data = json.dumps(body).encode()
-    status, _, out = request(method, ORIGIN + path, data, headers)
-    if raw:
-        return status, out
-    try:
-        return status, json.loads(out or b"{}")
-    except ValueError:
-        return status, {"raw": out[:200]}
-
-
-def kavita(method, path, body=None):
-    status, _, out = request(method, KAVITA + path, json.dumps(body).encode() if body is not None else None,
-                             {"x-api-key": env["COMPANION_KAVITA_AUTH_KEY"], "Content-Type": "application/json"})
-    return status, (json.loads(out) if out else None)
-
-
-def login(key):
-    body = json.dumps({"username": env[f"TEST_{key}_USERNAME"], "password": env[f"TEST_{key}_PASSWORD"]}).encode()
-    _, headers, _ = request("POST", ORIGIN + "/api/login", body, {"Content-Type": "application/json", "Origin": ORIGIN})
-    return next(v for v in headers.get_all("Set-Cookie") if v.startswith("__Host-")).split(";", 1)[0]
 
 
 def b64(s):
