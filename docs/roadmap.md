@@ -184,6 +184,8 @@ language) as review-screen fields, which the card offers with a one-click fill. 
 research (which external sources to add, free vs paid, licensing) is in
 [metadata-providers.md](metadata-providers.md) — documented, not built. A concrete implementation plan
 (compliance, architecture, search/browse, QA, project schedule) is in [roadmap-phase2.md](roadmap-phase2.md).
+**M1 shipped in 0.3.0**: the provider framework, the Metron adapter and the review card's **Find
+metadata** (fill/apply + attribution); GCD, the other media and search/browse follow in M2–M5.
 
 **Goal.** Prefill the review editor with the best matching metadata so admins type less and files land
 with correct names and tags.

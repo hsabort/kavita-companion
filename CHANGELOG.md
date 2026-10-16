@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 — 2026-10-16
 
 Added:
 - **Metadata-provider framework (phase 2, W1)**: the portal can now talk to external metadata
