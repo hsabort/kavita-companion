@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Drives the review card's external-metadata flow in headless Chromium (Playwright) as test-admin:
 upload a comic with no year, try Find metadata while the provider is off (the disabled state), enable
-Metron and set a key and Test it on the About tab, then Find metadata again, pick the candidate, apply
-the fields and check the filled values, per-field source chips and the attribution line.
+Metron and set a key and Test it on the About tab, then Find metadata again to open the dialog, pick
+the candidate, apply the fields and check the filled values, per-field source chips, the "N fields will
+change" summary and the attribution line in the dialog; the dialog closes and the applied values
+survive a card re-render.
 
 The Metron adapter is pointed at the in-process fake (tests/provider_fake.py). tests/run.sh starts that
 fake on the host for the browser tier, because the portal (another container) reaches it through the
@@ -132,7 +134,7 @@ try:
         check("[desktop] the provider Test button reports the provider answered", True)
         provider.screenshot(path=f"{shots}/providers-panel.png")
 
-        # --- Find metadata returns candidates; apply fills the blanks with attribution ---
+        # --- Find metadata opens a focused dialog; apply fills the blanks with attribution ---
         card, group = open_card(page)
         # Enabling Metron on the About tab doesn't re-render the review card; open_card re-renders it,
         # but that is async, so wait for the button before asserting.
@@ -140,27 +142,52 @@ try:
         check("[desktop] Find metadata appears once a provider is on",
               group.locator("button", has_text="Find metadata").count() == 1)
         group.locator("button", has_text="Find metadata").click()
-        group.locator(".candidate").first.wait_for(timeout=20000)
-        check("[desktop] candidates list their source",
-              group.locator(".candidate .chip-source", has_text="Metron").count() >= 1)
-        check("[desktop] the matching candidate is listed",
-              "Fixture Saga" in group.locator(".candidate").first.inner_text()
-              and "2012" in group.locator(".candidate").first.inner_text(),
-              group.locator(".candidate").first.inner_text())
-        page.screenshot(path=f"{shots}/suggestion-candidates.png", full_page=True)
 
-        group.locator("button", has_text="Apply selected fields").click()
-        group.locator(".attribution", has_text="Applied from Metron").wait_for(timeout=20000)
-        attribution = group.locator(".attribution").inner_text()
+        dialog = page.locator(".metadata-dialog")
+        dialog.wait_for(state="visible", timeout=20000)
+        check("[desktop] Find metadata opens a dialog", dialog.is_visible())
+        check("[desktop] the dialog is a labelled aria-modal",
+              dialog.get_attribute("role") == "dialog" and dialog.get_attribute("aria-modal") == "true",
+              f"role={dialog.get_attribute('role')} aria-modal={dialog.get_attribute('aria-modal')}")
+        dialog.locator(".metadata-dialog-attribution", has_text="Metron").first.wait_for(timeout=20000)
+        attribution_top = dialog.locator(".metadata-dialog-attribution").first.inner_text()
+        check("[desktop] the dialog credits the provider and its licence",
+              "Metron" in attribution_top and "CC BY-SA 4.0" in attribution_top, attribution_top)
+        dialog.locator(".candidate").first.wait_for(timeout=20000)
+        check("[desktop] candidates list their source",
+              dialog.locator(".candidate .chip-source", has_text="Metron").count() >= 1)
+        check("[desktop] the matching candidate is listed",
+              "Fixture Saga" in dialog.locator(".candidate").first.inner_text()
+              and "2012" in dialog.locator(".candidate").first.inner_text(),
+              dialog.locator(".candidate").first.inner_text())
+        page.screenshot(path=f"{shots}/suggestion-dialog-candidates.png", full_page=True)
+
+        dialog.locator("button", has_text="Apply selected fields").click()
+        dialog.locator(".attribution", has_text="Applied from Metron").wait_for(timeout=20000)
+        attribution = dialog.locator(".attribution").inner_text()
         check("[desktop] the attribution line names the provider and licence",
               "Applied from Metron" in attribution and "CC BY-SA 4.0" in attribution, attribution)
         check("[desktop] a per-field source chip is shown",
-              group.locator(".apply-result .chip", has_text="Year").count() >= 1)
+              dialog.locator(".apply-result .chip", has_text="Year").count() >= 1)
+        summary = dialog.locator(".apply-summary").inner_text()
+        check("[desktop] the dialog sums up how many fields will change",
+              "will change" in summary, summary)
         year_value = group.locator("label.field", has_text="Year").locator("input").input_value()
-        check("[desktop] the blank Year is filled from the provider", year_value == "2012", year_value)
+        check("[desktop] the blank Year on the card is filled from the provider", year_value == "2012", year_value)
         writer = group.locator("label.field", has_text="Writer").locator("input")
-        check("[desktop] the credits are filled from the provider", "A. Writer" in writer.input_value(), writer.input_value())
+        check("[desktop] the credits on the card are filled from the provider", "A. Writer" in writer.input_value(), writer.input_value())
         page.screenshot(path=f"{shots}/suggestion-applied.png", full_page=True)
+
+        # --- the dialog closes (click outside, then the Close button) and hands focus back ---
+        page.mouse.click(4, 4)
+        check("[desktop] clicking outside the dialog closes it", not dialog.is_visible())
+        group.locator("button", has_text="Find metadata").click()
+        dialog.wait_for(state="visible", timeout=20000)
+        dialog.locator(".candidate").first.wait_for(timeout=20000)
+        dialog.locator("button", has_text="Close").click()
+        check("[desktop] the Close button closes the dialog", not dialog.is_visible())
+        focused = page.evaluate("document.activeElement && document.activeElement.textContent")
+        check("[desktop] focus returns to the Find metadata button", focused == "Find metadata", str(focused))
 
         # --- applied metadata must survive a re-render (switching tabs, Refresh) ---
         page.click("#tab-about")
@@ -174,17 +201,23 @@ try:
               group.locator("label.field", has_text="Writer").locator("input").input_value())
         check("[desktop] no browser console errors", not errors, " | ".join(errors)[:300])
 
-        # --- responsive: the panel fits a phone without horizontal scrolling ---
+        # --- responsive: the dialog fits a phone and Escape closes it ---
         phone_context, phone, phone_errors = signed_in_page(browser, {"width": 390, "height": 844}, phone=True)
         _, phone_group = open_card(phone)
         phone_group.locator("button", has_text="Find metadata").click()
-        phone_group.locator(".candidate").first.wait_for(timeout=20000)
-        phone_group.locator("button", has_text="Apply selected fields").click()
-        phone_group.locator(".attribution", has_text="Applied from Metron").wait_for(timeout=20000)
-        phone_group.scroll_into_view_if_needed()
+        phone_dialog = phone.locator(".metadata-dialog")
+        phone_dialog.wait_for(state="visible", timeout=20000)
+        phone_dialog.locator(".candidate").first.wait_for(timeout=20000)
+        phone.keyboard.press("Escape")
+        check("[phone] Escape closes the dialog", not phone_dialog.is_visible())
+        phone_group.locator("button", has_text="Find metadata").click()
+        phone_dialog.wait_for(state="visible", timeout=20000)
+        phone_dialog.locator(".candidate").first.wait_for(timeout=20000)
+        phone_dialog.locator("button", has_text="Apply selected fields").click()
+        phone_dialog.locator(".attribution", has_text="Applied from Metron").wait_for(timeout=20000)
         phone.screenshot(path=f"{shots}/suggestion-phone.png", full_page=True)
         width = phone.evaluate("document.documentElement.scrollWidth")
-        check("[phone] the suggestion panel fits without horizontal scrolling", width <= 390, f"scrollWidth={width}")
+        check("[phone] the dialog fits without horizontal scrolling", width <= 390, f"scrollWidth={width}")
         check("[phone] no browser console errors", not phone_errors, " | ".join(phone_errors)[:300])
         phone_context.close()
 

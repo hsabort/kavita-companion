@@ -94,7 +94,7 @@ missing-field detection is checked against real Kavita state without the slow up
 | `browser/library_page.py` | The reviewer-only Library tab (phase 2, M5): Browse/Needs-metadata sub-views, the library filter and search controls (empty state for no match), phone layout and no console errors; hidden from non-admins |
 | `browser/notifications_page.py` | The Notifications panel is shown to uploaders (save works) and hidden from read-only accounts |
 | `browser/requests_page.py` | A user asks for a title; a reviewer sees it in the open queue and declines it |
-| `browser/suggestion_card.py` | The review card's **Find metadata** flow (phase 2, W8): the turned-off state, enabling Metron + key + Test on the About panel, candidates → apply → filled fields + source chips + *Applied from Metron (CC BY-SA 4.0)*, responsive on phone. `tests/run.sh` starts `tests/provider_fake.py` on the host for the browser tier (the portal reaches it through the Docker gateway); the upload is withdrawn and Metron left off |
+| `browser/suggestion_card.py` | The review card's **Find metadata** flow (phase 2, W8): the turned-off state, enabling Metron + key + Test on the About panel, then the *Find metadata* dialog — provider credit + licence, candidates → apply → filled fields + source chips + *Applied from Metron (CC BY-SA 4.0)* + the "N fields will change" summary; the dialog closes (Close/Escape) and the applied values survive a card re-render; responsive on phone. `tests/run.sh` starts `tests/provider_fake.py` on the host for the browser tier (the portal reaches it through the Docker gateway); the upload is withdrawn and Metron left off |
 
 `settings.py` reads `.env`; library ids are looked up by name (Manga, Comics, Books).
 
