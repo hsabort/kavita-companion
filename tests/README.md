@@ -41,7 +41,20 @@ Requirements on the host: `python3` (standard library only) and Docker. `test_me
 `.cb7` archives with the 7-Zip inside the `kavita-companion:local` image.
 
 Shared helpers live in `tests/harness.py` (`app()`, `kavita()`, `login()`, `upload()`, `wait_until()`,
-`check()`, `finish()`), so each test file holds only its own setup and assertions.
+`wait_pending()`, `wait_approved()`, `check()`, `finish()`), so each test file holds only its own setup
+and assertions. Three files keep genuinely bespoke helpers alongside the harness, because the harness
+function does not fit what they check:
+
+- `test_auth.py` — needs the raw response headers (`call()`), a header-based `login()` and
+  `session_cookie()` for the cookie-flag, CSRF and permission checks, and drives the deliberate
+  failed-login loop that trips the rate limit.
+- `test_uploads.py` — steps the resumable tus protocol itself (`request()`, `tus_create/patch/head/upload()`,
+  `interrupted_patch()`) to send chunks, drop a connection mid-PATCH and resume from the reported offset.
+- `test_themes.py` — a cookie-jar `portal_session()` for the password and sidebar sign-in flows, where the
+  harness's cached session cookie is the wrong shape.
+
+`test_roles_and_limits.py` also keeps its own `request()`/`kavita()`/`wait_for()` helpers: it changes
+test-uploader's roles and watches the live session refresh, which is outside the shared fast/slow tiers.
 
 | File | Covers |
 |---|---|

@@ -10,7 +10,6 @@ import http.client
 import io
 import json
 import os
-import pathlib
 import secrets
 import ssl
 import sys
@@ -19,19 +18,13 @@ import urllib.error
 import urllib.request
 import zipfile
 
-from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, env, library_ids
+from harness import check, finish, login
+from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, library_ids
 
 _libs = library_ids()
 COMICS, BOOKS = _libs["Comics"], _libs["Books"]
 
-
-results = []
 created = []  # (cookie, upload id) to withdraw at the end
-
-
-def check(name, ok, detail=""):
-    results.append(bool(ok))
-    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""))
 
 
 def request(method, path, body=None, headers=None, cookie=None, origin=ORIGIN):
@@ -46,16 +39,6 @@ def request(method, path, body=None, headers=None, cookie=None, origin=ORIGIN):
             return r.status, r.headers, r.read()
     except urllib.error.HTTPError as e:
         return e.code, e.headers, e.read()
-
-
-def login(key):
-    body = json.dumps({"username": env[f"TEST_{key}_USERNAME"], "password": env[f"TEST_{key}_PASSWORD"]}).encode()
-    status, headers, _ = request("POST", "/api/login", body, {"Content-Type": "application/json"})
-    assert status == 200, f"login {key} failed: {status}"
-    for v in headers.get_all("Set-Cookie"):
-        if v.startswith("__Host-kc_session="):
-            return v.split(";", 1)[0]
-    raise AssertionError("no session cookie")
 
 
 def b64(s):
@@ -245,5 +228,4 @@ for cookie, uid in created:
 leftover = [uid for _, uid in created if uid and my_uploads(uploader).get(uid, {}).get("status") == "pending"]
 check("test uploads cleaned up", not leftover, str(leftover))
 
-print(f"\n{sum(results)}/{len(results)} passed")
-sys.exit(0 if all(results) else 1)
+sys.exit(finish())
