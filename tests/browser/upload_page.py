@@ -53,6 +53,11 @@ with sync_playwright() as p:
         check(f"[{label}] Uppy upload panel rendered", page.is_visible(".uppy-Dashboard"))
 
         if label == "desktop":
+            # The sidebar reconnect control answers with a plain-word outcome (POST /api/sidebar/connect).
+            page.click("#sidebar-connect-btn")
+            page.wait_for_selector("#sidebar-connect-status:not(:empty)", timeout=15000)
+            check("[desktop] the sidebar link button reports an outcome",
+                  len(page.inner_text("#sidebar-connect-status")) > 0, page.inner_text("#sidebar-connect-status"))
             page.set_input_files(".uppy-Dashboard-input", cbz_path)
             page.wait_for_selector(".uppy-StatusBar-actionBtn--upload", timeout=10000)
             # Trying to upload before choosing a library must be blocked with a message.

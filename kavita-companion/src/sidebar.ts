@@ -1,8 +1,12 @@
 // Puts an "Uploads" entry in the user's Kavita sidebar. Kavita's sidebar supports "external
 // source" entries, which open `<host>login?apiKey=<key>` in a new tab; GET /login below accepts
 // that and signs the user in. The entry belongs to the user, so it can only be created with their
-// own Kavita session, i.e. right after they sign in here with their password.
+// own Kavita session: at password sign-in, or on demand from the portal's "Reconnect" control, which
+// uses the Kavita session the portal keeps (encrypted) with the portal session.
+import type { FastifyInstance } from "fastify";
+import { currentUser, sessionKavitaToken } from "./auth.js";
 import { config } from "./config.js";
+import { audit } from "./db.js";
 import { asUser } from "./kavita.js";
 
 // Shown in Kavita's sidebar. Kavita stores the entry's name when it is created and uses it for both
@@ -81,4 +85,31 @@ export async function ensureSidebarLink(token: string): Promise<"added" | "repai
     if (result === "present") result = "shown";
   }
   return result;
+}
+
+export function registerSidebarRoutes(app: FastifyInstance) {
+  // (Re)connect the user's own Kavita sidebar entry on demand. It is normally created at password
+  // sign-in, but that only happens then: someone who always arrives through Kavita, or who deleted
+  // the entry's key in Kavita, would otherwise be stuck. This uses the Kavita session the portal
+  // keeps for them, so it works without their password.
+  app.post("/api/sidebar/connect", async (request, reply) => {
+    const user = currentUser(request);
+    if (!user) return reply.code(401).send({ error: "Not signed in" });
+    // Kavita won't create auth keys for Read Only accounts; they can't upload anyway.
+    if (!user.canUpload) return reply.code(403).send({ error: "Read-only accounts don't upload." });
+    const token = await sessionKavitaToken(request);
+    if (!token) {
+      return reply.code(409).send({
+        error: "The portal has no Kavita session stored for this sign-in. Sign out and sign in with your Kavita password, then try again.",
+      });
+    }
+    try {
+      const result = await ensureSidebarLink(token);
+      if (result !== "present") audit("sidebar_link", user.username, request.ip, { result, via: "portal" });
+      return { result };
+    } catch (err) {
+      request.log.warn({ err }, "could not add the Kavita sidebar link");
+      return reply.code(502).send({ error: "Kavita couldn't reconnect the sidebar link right now. Try again shortly." });
+    }
+  });
 }

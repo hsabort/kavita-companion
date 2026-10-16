@@ -170,6 +170,34 @@ export async function sessionThemeId(request: FastifyRequest): Promise<number | 
   }
 }
 
+/**
+ * The signed-in user's own Kavita session token, for a one-off call to Kavita as them (e.g. repairing
+ * their sidebar link). The stored token is unsealed and, if Kavita rejects it with 401, renewed once
+ * with the stored refresh token and the new pair persisted. Returns null when the session has no
+ * Kavita token (e.g. it was sealed with a different COMPANION_SECRET), so callers can ask the user to
+ * sign in again instead of failing obscurely.
+ */
+export async function sessionKavitaToken(request: FastifyRequest): Promise<string | null> {
+  const cookie = request.cookies[SESSION_COOKIE];
+  if (!cookie) return null;
+  const tokenHash = hash(cookie);
+  const row = selectThemeState.get(tokenHash, Date.now()) as
+    | { kavita_token: string | null; kavita_refresh: string | null }
+    | undefined;
+  if (!row) return null;
+  const token = unseal(row.kavita_token);
+  if (!token) return null;
+  let res = await kavita.asUser(token, "GET", "/api/Users/get-preferences");
+  if (res.status !== 401) return token; // OK, or a failure worth surfacing as-is
+  const refreshToken = unseal(row.kavita_refresh);
+  if (!refreshToken) return null;
+  res = await kavita.asUser(token, "POST", "/api/Account/refresh-token", { token, refreshToken });
+  if (!res.ok) return null;
+  const renewed = (await res.json()) as { token: string; refreshToken: string };
+  updateTokens.run(seal(renewed.token), seal(renewed.refreshToken), tokenHash);
+  return renewed.token;
+}
+
 export function purgeExpiredSessions() {
   deleteExpired.run(Date.now());
 }

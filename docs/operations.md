@@ -99,7 +99,9 @@ paths (`/data/...` inside the container) don't change, so nothing needs re-scann
   **Admins** review. Role changes reach open portal sessions within about 2 minutes, and removing a
   user's Login role or deleting them signs them out.
 - If someone's "Uploads" sidebar link stops working (e.g. they deleted its key in Kavita), they sign in
-  to the portal with their password once and it is repaired.
+  to the portal with their password once and it is repaired, or — if they are already signed in — they
+  press **Add Uploads to your Kavita sidebar** on the portal's **Upload** tab. Either way the portal
+  uses their own Kavita session (the endpoint is `POST /api/sidebar/connect`).
 
 ## Housekeeping (automatic)
 

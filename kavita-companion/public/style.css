@@ -199,6 +199,11 @@ button.link:hover { background: none; color: var(--primary-hover); }
 
 /* ---------- Upload ---------- */
 
+/* Kavita sidebar link (Upload tab): a compact row above the uploader. */
+.sidebar-connect { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin-bottom: 0.9rem; }
+.sidebar-connect .muted { font-size: 0.85rem; }
+#sidebar-connect-status.error { color: var(--error-text); }
+
 .upload-library { max-width: 22rem; margin-bottom: 0.9rem; }
 #uploader { margin-bottom: 0.75rem; }
 

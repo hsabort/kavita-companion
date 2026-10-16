@@ -11,7 +11,7 @@ import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
 import { drainNotifications, registerNotifyRoutes } from "./notify.js";
 import { registerRequestRoutes } from "./requests.js";
-import { ensureSidebarLink } from "./sidebar.js";
+import { ensureSidebarLink, registerSidebarRoutes } from "./sidebar.js";
 import { portalTheme, userThemeId } from "./themes.js";
 import { config } from "./config.js";
 import { audit } from "./db.js";
@@ -215,6 +215,7 @@ await registerReviewRoutes(app);
 await registerActivityRoutes(app);
 await registerNotifyRoutes(app);
 await registerRequestRoutes(app);
+await registerSidebarRoutes(app);
 
 async function hourlyJobs() {
   purgeExpiredSessions();
