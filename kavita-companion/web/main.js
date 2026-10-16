@@ -463,6 +463,15 @@ function common(items, key) {
   return values.size === 1 ? [...values][0] : "";
 }
 
+// In-progress review edits, keyed by upload id (the single-file fields) and by the group's first
+// upload id (the shared fields). Kept across re-renders — switching tabs, Refresh, a poll — so a
+// reviewer's typing or applied metadata is never silently discarded; cleared when a decision is made.
+const reviewDrafts = new Map();
+const draftId = (kind, id) => `${kind}:${id}`;
+const loadDraft = (kind, id) => reviewDrafts.get(draftId(kind, id)) ?? null;
+const saveDraft = (kind, id, values) => reviewDrafts.set(draftId(kind, id), values);
+const clearFileDraft = (id) => reviewDrafts.delete(draftId("file", id));
+
 function groupCard(items) {
   const first = items[0];
   const fixing = first.mode === "fix";
@@ -485,9 +494,17 @@ function groupCard(items) {
     moreBox.append(field(LABELS[key] ?? key, more[key]));
   }
 
+  const sharedDraft = loadDraft("shared", first.id);
+  if (sharedDraft) {
+    if (sharedDraft.Series !== undefined) series.value = sharedDraft.Series;
+    if (sharedDraft.Year !== undefined) year.value = sharedDraft.Year;
+    if (sharedDraft.AgeRating !== undefined) age.value = sharedDraft.AgeRating;
+    for (const key of SHARED_MORE) if (sharedDraft[key] !== undefined) more[key].value = sharedDraft[key];
+  }
   const libraryType = () => libraries.find((l) => String(l.id) === library.value)?.type ?? 0;
   const rows = items.map((item) => itemRow(item, { library, series, year, age, more, libraryType }));
   const updateAll = async () => {
+    saveDraft("shared", first.id, sharedValues());
     for (const row of rows) row.update(); // immediately; refined below once Kavita's series list is in
     series.setAttribute("list", await ensureDatalist(Number(library.value)));
     const existing = await seriesFor(Number(library.value));
@@ -737,6 +754,16 @@ function itemRow(item, shared) {
   // A fix keeps the current file name unless it is changed by hand.
   let filenameTouched = fixing;
   if (fixing) filename.value = item.currentFilename;
+  // Restore any in-progress edits for this file (see reviewDrafts).
+  const fileDraft = loadDraft("file", item.id);
+  if (fileDraft) {
+    number.value = fileDraft.Number ?? number.value;
+    volume.value = fileDraft.Volume ?? volume.value;
+    title.value = fileDraft.Title ?? title.value;
+    summary.value = fileDraft.Summary ?? summary.value;
+    if (fileDraft.filename !== undefined) filename.value = fileDraft.filename;
+    filenameTouched = fileDraft.filenameTouched ?? filenameTouched;
+  }
   filename.addEventListener("input", () => { filenameTouched = true; update(); });
   const destination = el("p", { className: "destination muted" });
   const warnings = el("ul", { className: "warnings" });
@@ -770,6 +797,7 @@ function itemRow(item, shared) {
     if (item.kind === "comic" && !number.value.trim()) list.push("No issue/chapter number: Kavita may treat this as a special.");
     if (shared.year.value && !/^\d{4}$/.test(shared.year.value)) list.push("Year must be four digits.");
     warnings.replaceChildren(...list.map((w) => el("li", { textContent: w })));
+    saveDraft("file", item.id, { Number: number.value, Volume: volume.value, Title: title.value, Summary: summary.value, filename: filename.value, filenameTouched });
   }
   for (const input of [number, volume, title, summary]) input.addEventListener("input", () => update());
 
@@ -800,6 +828,7 @@ function itemRow(item, shared) {
       return false;
     }
     done = true;
+    clearFileDraft(item.id);
     node.classList.add("is-approving");
     status.className = "row-status";
     status.textContent = `${fixing ? "Saving" : "Approving"}… → ${body.destination}`;
@@ -826,6 +855,7 @@ function itemRow(item, shared) {
       return;
     }
     done = true;
+    clearFileDraft(item.id);
     node.classList.add("is-done");
     status.className = "row-status";
     status.textContent = "Rejected.";
@@ -960,6 +990,9 @@ async function refreshReview() {
   const { status, body } = await api("/api/review");
   if (status !== 200) return;
   review = body;
+  // Forget drafts whose upload is no longer awaiting review (approved, rejected or withdrawn).
+  const live = new Set(body.pending.map((p) => p.id));
+  for (const key of [...reviewDrafts.keys()]) if (!live.has(key.slice(key.indexOf(":") + 1))) reviewDrafts.delete(key);
   $("review-count").textContent = body.pending.length || "";
   $("review-count").hidden = !body.pending.length;
   $("review-empty").hidden = body.pending.length > 0;
