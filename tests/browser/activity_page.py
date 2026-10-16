@@ -35,6 +35,7 @@ with sync_playwright() as p:
     page.click("#tab-activity")
     page.wait_for_selector("#activity-section:not([hidden])", timeout=15000)
     page.wait_for_selector("#activity-list li", timeout=15000)
+    page.wait_for_selector("#activity-insights .insight", timeout=15000)
     check("Activity panel is shown to an admin", page.is_visible("#activity-section"))
     check("summary cards render", page.locator("#activity-insights .insight").count() >= 4,
           str(page.locator("#activity-insights .insight").count()))
@@ -42,7 +43,11 @@ with sync_playwright() as p:
     page.screenshot(path=f"{shots}/activity-desktop.png", full_page=True)
 
     page.select_option("#activity-action", "login_failed")
-    page.wait_for_timeout(1000)
+    # Wait for the filtered list to settle (refreshActivity re-renders after the change).
+    try:
+        page.wait_for_selector("#activity-list li:has-text('failed to sign in')", timeout=10000)
+    except Exception:
+        pass
     text = page.inner_text("#activity-list").lower()
     check("filtering by action narrows the list", "approved an upload" not in text and "finished an upload" not in text)
 
