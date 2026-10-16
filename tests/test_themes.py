@@ -11,32 +11,10 @@ import http.cookiejar
 import json
 import sys
 import time
-import urllib.error
 import urllib.request
 
-from settings import KAVITA_LOCAL as KAVITA, ORIGIN, env
-
-results = []
-
-
-def check(name, ok, detail=""):
-    results.append(bool(ok))
-    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""), flush=True)
-
-
-def kavita(method, path, body=None, token=None):
-    headers = {"Content-Type": "application/json"}
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-    else:
-        headers["x-api-key"] = env["COMPANION_KAVITA_AUTH_KEY"]
-    req = urllib.request.Request(KAVITA + path, json.dumps(body).encode() if body is not None else None, headers, method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            raw = r.read()
-            return r.status, (json.loads(raw) if raw[:1] in (b"{", b"[") else raw.decode())
-    except urllib.error.HTTPError as e:
-        return e.code, e.read().decode()[:200]
+from harness import check, finish, kavita
+from settings import ORIGIN, env
 
 
 def portal_session():
@@ -153,5 +131,4 @@ finally:
           sorted(t["name"] for t in after) == sorted(t["name"] for t in installed if t["name"] not in added)
           and kavita("GET", "/api/Users/get-preferences", token=token)[1]["theme"]["id"] == original_theme["id"], str([t["name"] for t in after]))
 
-print(f"\n{sum(results)}/{len(results)} passed")
-sys.exit(0 if all(results) else 1)
+sys.exit(finish())

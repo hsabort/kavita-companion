@@ -7,21 +7,13 @@ usernames so no real Kavita account gets locked out.
 Run: python3 tests/test_auth.py
 """
 import json
-import pathlib
 import secrets
 import sys
 import urllib.error
 import urllib.request
 
+from harness import check, finish
 from settings import ORIGIN, env
-
-
-results = []
-
-
-def check(name, ok, detail=""):
-    results.append(ok)
-    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""))
 
 
 def call(method, path, body=None, cookie=None, origin=ORIGIN):
@@ -118,5 +110,4 @@ check("11th failed login for one username is rate-limited (429)", codes[:10] == 
 status, _, _ = login("UPLOADER")
 check("rate limit on one username does not block other users", status == 200, str(status))
 
-print(f"\n{sum(results)}/{len(results)} passed")
-sys.exit(0 if all(results) else 1)
+sys.exit(finish())

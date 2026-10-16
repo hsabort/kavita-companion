@@ -215,22 +215,28 @@ fields; an unknown title leaves fields blank; a provider outage doesn't break re
 
 ---
 
-## 6. Test harness refactor — in progress
+## 6. Test harness refactor — built
 
 Done: the `ROLE_RECHECK_MS` knob (with the users-cache capped at it) cuts the roles test from ~4 minutes
 to ~30 seconds; `run.sh` gained `--fast/--slow/--browser/--roles/--all`, `--repeat N` and a first-run
-restart; `tests/harness.py` provides the shared helpers, which most API files now use (`test_activity`,
-`test_sidebar_label`, `test_preview`, `test_notifications`, `test_requests`, `test_review`,
-`test_metadata`, `test_fix`). Three keep genuinely bespoke helpers — `test_auth` (rate limits and raw
-headers), `test_uploads` (resumable tus), `test_themes` (cookie-jar sessions) — and the browser tests
-share `tests/browser_helpers.py`'s `sign_in`.
+restart; `tests/harness.py` provides the shared helpers, which every API file now imports for the common
+`app`/`kavita`/`login`/`check`/`finish` and (where it applies) `upload`/`wait_until`/`wait_pending`/
+`wait_approved`. The three files that once kept everything bespoke now use the harness too, and keep only
+the helpers it cannot express: `test_auth` (raw response headers, cookie flags, CSRF, and the deliberate
+failed-login loop that trips the rate limit), `test_uploads` (stepping the resumable tus protocol —
+chunks, a dropped connection, offsets — rather than the harness's single-PATCH `upload`), and
+`test_themes` (cookie-jar sessions for the password and sidebar sign-in flows). The browser tests share
+`tests/browser_helpers.py`'s `sign_in`, and `test_roles_and_limits` stays fully bespoke (it changes
+test-uploader's roles and watches the live session refresh).
 
 Make the acceptance tests shorter to write, faster to run, and clearer about what tends to break.
 
 - **Shared harness** (`tests/harness.py`): one `app()/kavita()/login(role)` (with a cached session
   cookie), `upload()` (tus), `wait_until()` polling instead of fixed sleeps, `wait_pending/approved`, and
-  a `check()`/`finish()` summary. The nine API files and seven browser files stop re-implementing these
-  (which is how copy-paste bugs like the CSP `wait_for_function` and `Cookie: None` slips happened).
+  a `check()`/`finish()` summary. Every API file imports these; the three that need more than they offer
+  (`test_auth`: raw headers and rate-limit probes; `test_uploads`: resumable tus stepping; `test_themes`:
+  cookie-jar sessions) keep only those additions. The browser files share `browser_helpers.py`'s
+  `sign_in`. This is what stops copy-paste bugs like the CSP `wait_for_function` and `Cookie: None` slips.
 - **Speed**: a test-only `ROLE_RECHECK_MS` setting (default stays 2 minutes; small in the test `.env`)
   cuts the roles test from ~4 minutes to seconds. `run.sh` gains tiers: `--fast` (auth, activity, preview,
   notifications, requests — no library writes), `--slow` (uploads, review, metadata, fix, themes),
