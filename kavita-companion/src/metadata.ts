@@ -68,8 +68,9 @@ export function readComicInfo(xml: string): Metadata {
   return out;
 }
 
-/** Apply non-empty `updates` to an existing ComicInfo.xml (or a new one), keeping everything else. */
-export function writeComicInfo(existingXml: string | null, updates: Metadata): string {
+/** Apply non-empty `updates` to an existing ComicInfo.xml (or a new one), keeping everything else.
+ *  Fields named in `drop` are removed even when the file already carries them. */
+export function writeComicInfo(existingXml: string | null, updates: Metadata, drop: readonly string[] = []): string {
   const doc: Node[] = existingXml ? parse(existingXml) : [];
   let root = doc.find((n) => tagOf(n) === "ComicInfo");
   if (!root) {
@@ -82,6 +83,11 @@ export function writeComicInfo(existingXml: string | null, updates: Metadata): s
   const kids = childrenOf(root);
   const order = (tag: string) => (COMICINFO_FIELDS as readonly string[]).indexOf(tag);
   for (const field of COMICINFO_FIELDS) {
+    if (drop.includes(field)) {
+      const i = kids.findIndex((k) => tagOf(k) === field);
+      if (i !== -1) kids.splice(i, 1);
+      continue;
+    }
     const value = updates[field]?.trim();
     if (!value) continue;
     const existing = kids.find((k) => tagOf(k) === field);

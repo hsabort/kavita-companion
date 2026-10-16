@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.6 — 2026-10-16
+
+Fixed:
+- **Applying provider metadata could make a comic vanish from Kavita.** Kavita treats a comic whose
+  ComicInfo carries a `<Volume>` that the folder doesn't encode as a *different series*; a folder scan
+  can't create that series, so it silently drops the file and removes its chapters. The comic write path
+  now never emits `<Volume>` and clears any that an older write left behind, and a comic no longer offers
+  one in the apply panel (Kavita derives volume from the folder/filename). Found when fixing Star Wars
+  #076/#077 on the live server; regression tests added to `tests/test_fix.py`.
+
 ## 0.6.5 — 2026-10-16
 
 Fixed:

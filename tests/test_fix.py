@@ -82,6 +82,19 @@ def comicinfo(path):
     return {m.group(1): m.group(2) for m in re.finditer(r"<(\w+)>([^<]*)</\1>", xml)}
 
 
+def inject(path, xml_fragment):
+    """Add a tag to a CBZ's ComicInfo.xml, simulating a file written by an older version."""
+    with zipfile.ZipFile(path) as z:
+        entries = [(i, z.read(i.filename)) for i in z.infolist()]
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as out:
+        for info, data in entries:
+            if info.filename == "ComicInfo.xml":
+                data = data.decode().replace("</ComicInfo>", f"{xml_fragment}</ComicInfo>").encode()
+            out.writestr(info, data)
+    path.write_bytes(buf.getvalue())
+
+
 def kavita_series_in_comics(name):
     status, _, out = request("POST", KAVITA + "/api/Series/v2?PageNumber=1&PageSize=500",
                              json.dumps({"statements": [{"comparison": 0, "field": 19, "value": str(COMICS)}], "combination": 1}).encode(),
@@ -136,10 +149,19 @@ check("the old series disappears from Kavita", gone)
 # --- Fix in place: same name, new title ---
 size_before = new_path.stat().st_size
 status, _ = app("POST", f"/api/review/{first}/fix", admin,
-                {"libraryId": COMICS, "seriesName": after, "filename": f"{after} #001", "metadata": {"Title": "Fixed Again"}})
+                {"libraryId": COMICS, "seriesName": after, "filename": f"{after} #001", "metadata": {"Title": "Fixed Again", "Volume": "1"}})
 item = wait_state(admin, first, lambda i: i["status"] == "approved")
 check("fix in place rewrites the same file", status == 202 and comicinfo(new_path).get("Title") == "Fixed Again"
       and len(list(new_path.parent.iterdir())) == 1, str(item))
+check("a Volume on a comic is not written to ComicInfo (Kavita would fork the series)",
+      "Volume" not in comicinfo(new_path), str(comicinfo(new_path)))
+
+# --- An existing <Volume> (e.g. left by an older write) is removed by the next fix ---
+inject(new_path, "<Volume>1</Volume>")
+status, _ = app("POST", f"/api/review/{first}/fix", admin,
+                {"libraryId": COMICS, "seriesName": after, "filename": f"{after} #001", "metadata": {"Title": "Fixed Again"}})
+wait_state(admin, first, lambda i: i["status"] == "approved")
+check("an existing comic <Volume> is cleared by a fix", "Volume" not in comicinfo(new_path), str(comicinfo(new_path)))
 
 # --- Name clash is refused and changes nothing ---
 second = upload_and_approve(uploader, admin, f"Kc6 Fix {tag} 02.cbz", after, f"{after} #002")
