@@ -134,6 +134,9 @@ try:
 
         # --- Find metadata returns candidates; apply fills the blanks with attribution ---
         card, group = open_card(page)
+        # Enabling Metron on the About tab doesn't re-render the review card; open_card re-renders it,
+        # but that is async, so wait for the button before asserting.
+        group.locator("button", has_text="Find metadata").first.wait_for(timeout=20000)
         check("[desktop] Find metadata appears once a provider is on",
               group.locator("button", has_text="Find metadata").count() == 1)
         group.locator("button", has_text="Find metadata").click()
