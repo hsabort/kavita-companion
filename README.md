@@ -69,6 +69,7 @@ docker compose up -d` does the same). Any other compose file can use the image d
 | [docs/roadmap.md](docs/roadmap.md) | Planned features (design only, not built yet) |
 | [docs/metadata-providers.md](docs/metadata-providers.md) | External metadata-provider research (roadmap §5 phase 2) |
 | [docs/roadmap-phase2.md](docs/roadmap-phase2.md) | Concrete plan for direct metadata integration (roadmap §5 phase 2) |
+| [docs/product-review-plan.md](docs/product-review-plan.md) | Baseline product-review plan (UI/UX, QA, compliance, security) |
 | [host/README.md](host/README.md) | Notes for running inside an unprivileged Incus/LXC container |
 | [CHANGELOG.md](CHANGELOG.md) | What changed |
 | [NOTICE.md](NOTICE.md) | Licences of included third-party material |
