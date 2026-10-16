@@ -250,16 +250,12 @@ notifications). Split it into tabs with a bar under the navbar (`role="tablist"`
 
 **Effort.** M.
 
-## 8. Kavita sidebar label — planned
+## 8. Kavita sidebar label — built
 
-Mark the "Uploads" sidebar entry as opening in a new tab. Kavita renders an external source as a
-`target="_blank"` link with a fixed `fa-server` icon, and uses one string (`SideNavStream.name`) for both
-its label and its hover tooltip, so the indicator has to live in the text: set the name to **`Uploads ↗`**
-with `POST /api/Stream/update-sidenav-stream`, idempotently at sign-in (existing links are renamed the
-next time the user signs in). See [decisions.md](decisions.md) #15 for why nothing is injected into
-Kavita's page.
-
-**Effort.** S.
+Shipped unreleased (0.2.5+): the sidebar entry is named **`Uploads ↗`**. Kavita stores the entry's name
+when it is created and uses it for both the label and the tooltip, so an older entry is renamed by
+deleting and recreating the external source with the same auth key (`src/sidebar.ts`). Test in
+`tests/test_sidebar_label.py`.
 
 ---
 

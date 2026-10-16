@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run the acceptance tests against the running stack described by ../.env.
 #
-#   tests/run.sh              API tests (auth, uploads, review, metadata, themes, fix, activity, notifications, requests, preview)
+#   tests/run.sh              API tests (auth, uploads, review, metadata, themes, fix, activity, notifications, requests, preview, sidebar label)
 #   tests/run.sh --browser    also the browser tests (Playwright in Docker; screenshots in tests/screenshots/)
 #   tests/run.sh --roles      also test_roles_and_limits.py (changes test-uploader's roles for ~5 min;
 #                             refuses to run while real people are using the portal)
@@ -13,7 +13,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright/python:v1.62.0-noble"
 PLAYWRIGHT_VERSION="1.62.0"
-api_tests=(test_auth test_uploads test_review test_metadata test_themes test_fix test_activity test_notifications test_requests test_preview)
+api_tests=(test_auth test_uploads test_review test_metadata test_themes test_fix test_activity test_notifications test_requests test_preview test_sidebar_label)
 browser_tests=(upload_page review_page fix_page kavita_integration activity_page notifications_page requests_page)
 run_browser=0 run_roles=0 only=""
 while [ $# -gt 0 ]; do

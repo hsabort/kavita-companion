@@ -68,6 +68,12 @@ Kavita's Swagger UI is only served in Development builds.
   `POST /api/Stream/update-external-source`, `POST /api/Stream/add-sidenav-stream-from-external-source?externalSourceId=<id>`,
   `GET /api/Stream/sidenav?visibleOnly=false` (stream type 6 = external source). All act on the signed-in user.
   Kavita does not validate the host.
+- The entry's visible text **and** its hover tooltip are both the side-nav stream's `name`, which Kavita
+  copies from the external source when the entry is created. `POST /api/Stream/update-sidenav-stream`
+  changes **visibility only** (it ignores `name`), so to rename an entry: `DELETE /api/Stream/delete-external-source?externalSourceId=<id>`
+  (200 with an empty body) and recreate the source with the new name, reusing the same auth key, then
+  re-add the stream. The icon is Kavita's fixed `fa-server`; there is no icon field.
+- `POST /api/Account/create-auth-key` key names must be unique per account (HTTP 400 otherwise).
 
 ## Themes
 
