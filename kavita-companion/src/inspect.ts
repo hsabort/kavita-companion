@@ -5,6 +5,7 @@ import { extname, join } from "node:path";
 import { listEntries, pageImages, readEntry } from "./archive.js";
 import { config } from "./config.js";
 import { db } from "./db.js";
+import { KINDLE_EXTENSIONS } from "./mobi.js";
 import { type Metadata, opfPathFromContainer, readComicInfo, readEpubMetadata } from "./metadata.js";
 
 export const COVERS_DIR = join(config.incomingDir, "covers");
@@ -23,7 +24,8 @@ export interface Inspection {
 }
 
 export function kindOf(ext: string): FileKind {
-  if (ext === "epub") return "epub";
+  // Kindle formats are converted to EPUB on upload, so downstream they are EPUBs.
+  if (ext === "epub" || KINDLE_EXTENSIONS.has(ext)) return "epub";
   if (ext === "pdf") return "pdf";
   return "comic";
 }
