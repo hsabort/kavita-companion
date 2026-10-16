@@ -10,6 +10,7 @@ import sys
 
 from playwright.sync_api import sync_playwright
 
+from browser_helpers import sign_in
 from settings import ORIGIN, env
 
 shots = sys.argv[2]
@@ -22,14 +23,6 @@ def check(name, ok, detail=""):
     print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""), flush=True)
     if not ok:
         failures.append(name)
-
-
-def sign_in(page, key):
-    page.goto(ORIGIN)
-    page.fill("input[name=username]", env[f"TEST_{key}_USERNAME"])
-    page.fill("input[name=password]", env[f"TEST_{key}_PASSWORD"])
-    page.click("#login-form button[type=submit]")
-    page.wait_for_selector("#home-view:not([hidden])", timeout=15000)
 
 
 with sync_playwright() as p:

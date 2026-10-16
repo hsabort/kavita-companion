@@ -215,8 +215,8 @@ to ~30 seconds; `run.sh` gained `--fast/--slow/--browser/--roles/--all`, `--repe
 restart; `tests/harness.py` provides the shared helpers, which most API files now use (`test_activity`,
 `test_sidebar_label`, `test_preview`, `test_notifications`, `test_requests`, `test_review`,
 `test_metadata`, `test_fix`). Three keep genuinely bespoke helpers — `test_auth` (rate limits and raw
-headers), `test_uploads` (resumable tus), `test_themes` (cookie-jar sessions) — and a shared browser
-`sign_in` helper is still to come.
+headers), `test_uploads` (resumable tus), `test_themes` (cookie-jar sessions) — and the browser tests
+share `tests/browser_helpers.py`'s `sign_in`.
 
 Make the acceptance tests shorter to write, faster to run, and clearer about what tends to break.
 
