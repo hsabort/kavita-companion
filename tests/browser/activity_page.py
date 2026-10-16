@@ -32,6 +32,7 @@ with sync_playwright() as p:
     page.on("pageerror", lambda e: errors.append(str(e)))
 
     sign_in(page, "ADMIN")
+    page.click("#tab-activity")
     page.wait_for_selector("#activity-section:not([hidden])", timeout=15000)
     page.wait_for_selector("#activity-list li", timeout=15000)
     check("Activity panel is shown to an admin", page.is_visible("#activity-section"))

@@ -8,6 +8,10 @@
 
 Read Only Kavita accounts can sign in but can't upload.
 
+The portal is split into tabs — **Upload**, **Review**, **Requests**, **Activity** and **Notifications** —
+and you only see the ones your Kavita role allows. The tab you're on is kept in the address (`#review`),
+so a refresh or the back button returns to it.
+
 The portal uses the same theme as your Kavita account (Settings → Theme in Kavita). If you change it,
 the portal follows as soon as you switch back to its tab.
 

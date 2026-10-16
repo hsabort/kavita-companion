@@ -1,10 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.2.6 — 2026-10-16
+
+Added:
+- The portal is now tabbed — **Upload**, **Review**, **Requests**, **Activity** and **Notifications** —
+  showing only the tabs your Kavita role allows. The current tab is kept in the address (`#review`), so
+  refresh and back/forward work, and the tab bar can be driven with the arrow keys.
 
 Changed:
-- The Kavita sidebar entry is now labelled **Uploads ↗**: Kavita uses one string for both the entry's
-  label and its hover tooltip and adds no icon of its own, so the arrow marks that it opens in a new tab.
+- The Kavita sidebar entry is labelled **Uploads ↗**: Kavita uses one string for both the entry's label
+  and its hover tooltip and adds no icon of its own, so the arrow marks that it opens in a new tab.
 
 ## 0.2.5 — 2026-10-16
 

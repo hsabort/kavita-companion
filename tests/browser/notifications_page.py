@@ -31,6 +31,7 @@ with sync_playwright() as p:
     page.on("pageerror", lambda e: errors.append(str(e)))
 
     sign_in(page, "UPLOADER")
+    page.click("#tab-notifications")
     page.wait_for_selector("#notify-wrap:not([hidden])", timeout=15000)
     check("Notifications panel is shown to an uploader", page.is_visible("#notify-wrap"))
 

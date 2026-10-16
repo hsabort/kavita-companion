@@ -51,7 +51,8 @@ with sync_playwright() as p:
     portal.wait_for_selector("#home-view:not([hidden])", timeout=20000)
     check("portal opened in a new tab, already signed in as test-uploader",
           portal.inner_text("#who") == env["TEST_UPLOADER_USERNAME"], portal.inner_text("#who"))
-    check("the key is gone from the address bar", "apiKey" not in portal.url and portal.url.rstrip("/") == PORTAL, portal.url)
+    check("the key is gone from the address bar",
+          "apiKey" not in portal.url and portal.url.split("#")[0].rstrip("/") == PORTAL, portal.url)
     check("'Back to Kavita' points at Kavita", portal.get_attribute("#back-to-kavita", "href") == KAVITA)
     font = portal.evaluate("getComputedStyle(document.body).fontFamily")
     bg = portal.evaluate("getComputedStyle(document.body).backgroundColor")

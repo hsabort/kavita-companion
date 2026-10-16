@@ -236,7 +236,12 @@ Make the acceptance tests shorter to write, faster to run, and clearer about wha
 
 **Effort.** M.
 
-## 7. Tabbed companion UI — planned
+## 7. Tabbed companion UI — built
+
+Shipped in 0.2.6: sections are shown on tabs — **Upload**, **Review**, **Requests**, **Activity** and
+**Notifications** — shown by Kavita role, with the current tab in `location.hash` and arrow-key
+navigation (`public/index.html`, `web/main.js`, `public/style.css`). The browser tests click the tab
+they need.
 
 The page stacks everything today (login → review → activity → upload → your uploads → requests →
 notifications). Split it into tabs with a bar under the navbar (`role="tablist"`):

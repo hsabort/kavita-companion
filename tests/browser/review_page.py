@@ -68,11 +68,13 @@ with sync_playwright() as p:
     desktop_ctx, page, desktop_errors = signed_in_page(browser, {"width": 1280, "height": 900})
     check("[desktop] admin sees the review section", page.is_visible("#review-section"))
 
+    page.click("#tab-upload")
     page.wait_for_selector(".uppy-Dashboard", timeout=15000)
     page.select_option("#library", label="Comics")
     page.set_input_files(".uppy-Dashboard-input", path)
     page.click(".uppy-StatusBar-actionBtn--upload")
     page.wait_for_selector(f"#uploads li:has-text('{filename}'):has-text('Waiting for review')", timeout=60000)
+    page.click("#tab-review")
     page.click("#review-refresh")
     # The file is read in the background first; the card replaces its placeholder when ready.
     card = page.locator(".review-row", has_text=filename)
@@ -118,6 +120,7 @@ with sync_playwright() as p:
     page.click("#review-recent-wrap summary")
     check("[desktop] decision listed under recent decisions",
           page.locator("#review-recent li", has_text=filename).filter(has_text="Approved by").count() == 1)
+    page.click("#tab-upload")
     page.wait_for_selector(f"#uploads li:has-text('{filename}'):has-text('In the library')", timeout=15000)
     check("[desktop] My uploads shows it as in the library", True)
     page.screenshot(path=f"{shots}/m3-desktop-after.png", full_page=True)

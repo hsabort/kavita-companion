@@ -34,6 +34,7 @@ with sync_playwright() as p:
     page.on("pageerror", lambda e: errors.append(str(e)))
 
     sign_in(page, "UPLOADER")
+    page.click("#tab-requests")
     page.wait_for_selector("#requests-section:not([hidden])", timeout=15000)
     check("Requests section is shown", page.is_visible("#requests-section"))
     page.fill("#request-title", title)
@@ -49,6 +50,7 @@ with sync_playwright() as p:
     context = browser.new_context(viewport={"width": 1280, "height": 900})
     page = context.new_page()
     sign_in(page, "ADMIN")
+    page.click("#tab-requests")
     page.wait_for_selector(f"#requests-open li:has-text('{title}')", timeout=15000)
     check("a reviewer sees the request in the open queue", True)
     entry = page.locator(f"#requests-open li:has-text('{title}')").first

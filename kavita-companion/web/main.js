@@ -82,26 +82,70 @@ function show(user, kavitaUrl) {
   if (!user) {
     uppy?.destroy();
     uppy = null;
+    $("tabs").hidden = true;
     return;
   }
   $("who").textContent = user.username;
-  $("review-section").hidden = !user.isReviewer;
-  $("activity-section").hidden = !user.isReviewer;
-  if (user.isReviewer) {
-    refreshReview();
-    refreshActivity(true);
-  }
   if (!user.canUpload) notice("Your Kavita account is read-only, so uploading isn't available.");
-  $("upload-section").hidden = !user.canUpload;
   if (user.canUpload) startUploader();
-  $("notify-wrap").hidden = !user.canUpload;
-  if (user.canUpload) loadNotifications();
   refreshUploads();
-  $("requests-section").hidden = false;
-  refreshRequests();
-  fillRequestLibraries();
   refreshTimer = setInterval(refreshUploads, 10_000);
+  setupTabs(user);
 }
+
+// ---------- Tabs ----------
+// Each section is shown on its own tab; which tabs exist depends on the user's Kavita roles.
+
+const TABS = [
+  { id: "upload", tab: "tab-upload", panels: ["upload-section", "my-uploads-section"], canSee: (user) => user.canUpload, onShow: () => {} },
+  { id: "review", tab: "tab-review", panels: ["review-section"], canSee: (user) => user.isReviewer, onShow: () => refreshReview() },
+  { id: "requests", tab: "tab-requests", panels: ["requests-section"], canSee: () => true, onShow: () => { refreshRequests(); fillRequestLibraries(); } },
+  { id: "activity", tab: "tab-activity", panels: ["activity-section"], canSee: (user) => user.isReviewer, onShow: () => refreshActivity(true) },
+  { id: "notifications", tab: "tab-notifications", panels: ["notify-wrap"], canSee: (user) => user.canUpload, onShow: () => loadNotifications() },
+];
+let activeTab = null;
+
+function selectTab(id) {
+  const chosen = TABS.find((tab) => tab.id === id);
+  if (!chosen || $(chosen.tab).hidden) return;
+  activeTab = id;
+  for (const tab of TABS) {
+    const selected = tab === chosen;
+    $(tab.tab).setAttribute("aria-selected", selected ? "true" : "false");
+    $(tab.tab).classList.toggle("is-active", selected);
+    for (const panel of tab.panels) $(panel).hidden = !selected;
+  }
+  if (location.hash !== `#${id}`) history.replaceState(null, "", `#${id}`);
+  chosen.onShow();
+}
+
+function setupTabs(user) {
+  const available = TABS.filter((tab) => tab.canSee(user));
+  for (const tab of TABS) $(tab.tab).hidden = !available.includes(tab);
+  $("tabs").hidden = available.length <= 1; // nothing to switch between
+  const wanted = location.hash.slice(1);
+  const start = available.find((tab) => tab.id === wanted)
+    || available.find((tab) => tab.id === (user.isReviewer ? "review" : "upload"))
+    || available[0];
+  if (start) selectTab(start.id);
+}
+
+for (const tab of TABS) $(tab.tab).addEventListener("click", () => selectTab(tab.id));
+$("tabs").addEventListener("keydown", (event) => {
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  const visible = TABS.filter((tab) => !$(tab.tab).hidden);
+  const step = event.key === "ArrowRight" ? 1 : -1;
+  const next = visible[visible.findIndex((tab) => tab.id === activeTab) + step];
+  if (next) {
+    selectTab(next.id);
+    $(next.tab).focus();
+    event.preventDefault();
+  }
+});
+window.addEventListener("hashchange", () => {
+  const id = location.hash.slice(1);
+  if (TABS.some((tab) => tab.id === id)) selectTab(id);
+});
 
 $("login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
