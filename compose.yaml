@@ -63,9 +63,10 @@ services:
 
   # Upload portal. Not published: reached only through Caddy.
   kavita-companion:
+    # Built from source unless COMPANION_IMAGE names a prebuilt image to run instead
+    # (e.g. ghcr.io/hsabort/kavita-companion:0.2.1; see docs/operations.md).
     build: ./kavita-companion
-    # COMPANION_IMAGE_TAG lets the test stack build its own image beside the live one (docs/development.md).
-    image: kavita-companion:${COMPANION_IMAGE_TAG:-local}
+    image: ${COMPANION_IMAGE:-kavita-companion:local}
     user: "${PUID}:${PGID}"
     depends_on:
       - kavita

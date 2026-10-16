@@ -119,7 +119,13 @@ info "Data: $DATA_ROOT   Media: $MEDIA_ROOT"
 # ---------------------------------------------------------------- images
 bold "Building and pulling images"
 docker compose pull --quiet kavita caddy
-docker compose build --quiet kavita-companion
+if [ -n "${COMPANION_IMAGE:-}" ] && [ "${COMPANION_IMAGE%%/*}" != "$COMPANION_IMAGE" ]; then
+  # COMPANION_IMAGE is a registry reference (it contains a "/"): pull it instead of building.
+  info "Pulling $COMPANION_IMAGE"
+  docker compose pull --quiet kavita-companion
+else
+  docker compose build --quiet kavita-companion
+fi
 
 # ---------------------------------------------------------------- Kavita first run
 bold "Starting Kavita"

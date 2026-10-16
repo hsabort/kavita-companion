@@ -50,8 +50,41 @@ Versions are pinned in `.env` so upgrades are deliberate.
   (`tests/run.sh` if test accounts are set up): it relies on the Kavita API behaviour listed in
   [kavita-api.md](kavita-api.md), and its look copies Kavita's theme.
 - **Caddy:** change `CADDY_IMAGE_TAG`, then `docker compose pull caddy && docker compose up -d`.
-- **kavita-companion:** `git pull`, then `./setup.sh` (adds any new settings to `.env`, rebuilds, restarts).
-  The portal's database migrates itself on start.
+- **kavita-companion (built from source):** `git pull`, then `./setup.sh` (adds any new settings to `.env`,
+  rebuilds, restarts). The portal's database migrates itself on start.
+- **kavita-companion (released image):** change `COMPANION_IMAGE` in `.env` to a published tag (see
+  [kavita-companion images](#kavita-companion-images-ghcr) below), then `./setup.sh` to pull and restart.
+
+## kavita-companion images (GHCR)
+
+CI publishes the portal image to `ghcr.io/hsabort/kavita-companion`:
+
+| Trigger | Tags pushed |
+|---|---|
+| a version tag `vX.Y.Z` | `X.Y.Z`, `X.Y`, `latest` |
+| a push to `main` | `edge` (and `sha-<short>`) |
+| a pull request | none (build check only) |
+
+The package is **private**, so pulling needs a one-off login on the host with a GitHub token that can
+read packages (a classic token with the `read:packages` scope, or a fine-grained token with *Packages:
+read*):
+
+```bash
+docker login ghcr.io -u hsabort     # paste the token as the password; stored in ~/.docker/config.json
+```
+
+To run a released image instead of building from source, set it in `.env` and apply:
+
+```bash
+# .env
+COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:0.2.1
+```
+```bash
+./setup.sh                       # or: docker compose pull kavita-companion && docker compose up -d
+```
+
+Roll back by pointing `COMPANION_IMAGE` at an earlier tag and pulling again. Leave `COMPANION_IMAGE`
+empty to build from `./kavita-companion` (the default, and what the test environment does).
 
 ## Moving the media library
 

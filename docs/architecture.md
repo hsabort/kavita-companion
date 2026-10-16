@@ -26,7 +26,7 @@
 |---|---|---|
 | `kavita` | `lscr.io/linuxserver/kavita` (pinned) | The reader. Library folders are mounted read-only. Its plain HTTP port is published only on the Docker network gateway for local admin tools. |
 | `caddy` | `caddy` (pinned) | The only public entry point. HTTPS for both apps, certificates via Let's Encrypt HTTP-01. |
-| `kavita-companion` | built from `kavita-companion/` | The upload portal. Not published; reached through Caddy. |
+| `kavita-companion` | built from `kavita-companion/`, or `ghcr.io/hsabort/kavita-companion` | The upload portal. Not published; reached through Caddy. |
 
 All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after start-up).
 
