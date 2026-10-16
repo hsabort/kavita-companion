@@ -21,6 +21,19 @@ Added:
   Metron's fair-use cover images. Data from Metron, CC BY-SA 4.0
   (<https://creativecommons.org/licenses/by-sa/4.0/>). See
   [docs/architecture.md](docs/architecture.md#metron-comics-adapter-phase-2-w2).
+- **Find metadata on the review card (phase 2, W8/M1)**: a reviewer can now search the enabled
+  external providers for a pending file and fill its fields, without leaving the queue.
+  **Find metadata** lists ranked candidates (source, title, year, publisher, match band); picking one
+  and pressing **Apply selected fields** fills the blanks by default (an explicit **Overwrite existing
+  values** is opt-in), showing a per-field source chip and an *Applied from Metron (CC BY-SA 4.0)* line.
+  Values the file already has are never replaced silently — they come back under *Kept your values*.
+  A new **About** tab has **Metadata sources** (every provider's required credit and licence, rendered
+  from the adapters so it cannot drift) and, for admins, a **Metadata providers** panel to turn a
+  provider on, set or clear its key and **Test** it (keys are write-only). Reviewer-only
+  `GET|POST /api/review/:id/match` and `POST /api/review/:id/apply`, cache-first, one lookup per
+  action, nothing auto-applied. See
+  [docs/architecture.md](docs/architecture.md#metadata-providers-phase-2) and
+  [docs/user-guide.md](docs/user-guide.md).
 
 ## 0.2.8 — 2026-10-16
 

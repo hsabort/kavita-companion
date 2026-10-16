@@ -343,3 +343,68 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .preview-frame { display: flex; flex-direction: column; gap: 0.75rem; max-width: 100%; max-height: 100%; }
 #preview-img { max-width: 100%; max-height: 78vh; object-fit: contain; background: #000; border-radius: var(--radius); }
 .preview-bar { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+
+/* ---------- Metadata providers (phase 2, W8) ---------- */
+
+/* Find metadata (review card) */
+.metadata-finder { margin-top: 0.8rem; }
+.match-panel { margin-top: 0.6rem; padding: 0.75rem 0.85rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
+.match-panel[hidden] { display: none; }
+.match-panel .row-status { margin: 0; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.05rem 0.45rem; font-size: 0.75rem; line-height: 1.6;
+  color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 999px;
+  white-space: nowrap;
+}
+.chip-source { color: var(--on-primary); background: var(--primary); border-color: var(--primary); font-weight: 500; }
+.chip-on { color: var(--primary); border-color: var(--primary); }
+.chip:empty { display: none; }
+
+.candidates { display: grid; gap: 0.3rem; margin-bottom: 0.6rem; }
+.candidate {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  padding: 0.4rem 0.55rem; margin: 0; cursor: pointer;
+  color: var(--text); font-size: 0.9rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.candidate:hover { border-color: var(--border-strong); }
+.candidate input { width: auto; margin: 0; }
+.cand-title { font-weight: 500; overflow-wrap: anywhere; }
+.cand-meta { color: var(--muted); font-size: 0.85rem; }
+.band { margin-left: auto; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.band-exact { color: var(--primary); }
+.band-near { color: var(--text); }
+.band-loose { color: var(--muted); }
+
+.match-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; margin-bottom: 0.5rem; }
+label.check { display: inline-flex; align-items: center; gap: 0.35rem; margin: 0; color: var(--text); font-size: 0.9rem; cursor: pointer; }
+label.check input { width: auto; margin: 0; }
+.field-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.9rem; margin-bottom: 0.6rem; }
+.picker-label { flex-basis: 100%; color: var(--muted); font-size: 0.8rem; }
+.field-picker label.check { font-size: 0.85rem; color: var(--muted); }
+
+.apply-result { margin-top: 0.6rem; }
+.apply-result .chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.apply-result p { margin: 0.4rem 0 0; font-size: 0.85rem; }
+.attribution { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+.attribution a { color: var(--primary); }
+.conflicts { margin: 0.3rem 0 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--muted); }
+.row-status.ok { color: var(--primary); }
+
+/* About -> Metadata sources */
+.source-list { display: grid; gap: 0.5rem; margin-bottom: 0.6rem; }
+.source-row { padding: 0.6rem 0.8rem; background: var(--surface); border-radius: var(--radius); }
+.source-head { display: flex; align-items: center; gap: 0.5rem; }
+.source-head strong { font-weight: 500; }
+.source-attribution { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; overflow-wrap: anywhere; }
+.source-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; margin-top: 0.3rem; font-size: 0.8rem; color: var(--muted); }
+
+/* About -> Metadata providers (admins) */
+.providers-panel { display: grid; gap: 0.6rem; }
+.provider-row { padding: 0.7rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.provider-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.provider-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.6rem; }
+.provider-actions input { width: auto; flex: 1 1 12rem; min-width: 0; }
+.provider-row .row-status { margin: 0.4rem 0 0; }

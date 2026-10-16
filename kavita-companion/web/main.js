@@ -63,6 +63,7 @@ async function refreshMe() {
 
 let uppy = null;
 let refreshTimer = null;
+let me = null; // the signed-in user from /api/me (roles decide which tabs and panels show)
 
 function notice(text, problem = false) {
   $("notice").textContent = text ?? "";
@@ -74,6 +75,7 @@ function show(user, kavitaUrl) {
   $("login-view").hidden = !!user;
   $("home-view").hidden = !user;
   $("nav-end").hidden = !user;
+  me = user;
   if (kavitaUrl) {
     $("back-to-kavita").href = kavitaUrl;
     $("brand-link").href = kavitaUrl;
@@ -102,6 +104,7 @@ const TABS = [
   { id: "requests", tab: "tab-requests", panels: ["requests-section"], canSee: () => true, onShow: () => { refreshRequests(); fillRequestLibraries(); } },
   { id: "activity", tab: "tab-activity", panels: ["activity-section"], canSee: (user) => user.isReviewer, onShow: () => refreshActivity(true) },
   { id: "notifications", tab: "tab-notifications", panels: ["notify-wrap"], canSee: (user) => user.canUpload, onShow: () => loadNotifications() },
+  { id: "about", tab: "tab-about", panels: ["about-section"], canSee: () => true, onShow: () => loadAbout() },
 ];
 let activeTab = null;
 
@@ -450,6 +453,8 @@ function templateName(libraryType, f) {
 
 const SHARED_MORE = ["Writer", "Penciller", "Inker", "Colorist", "CoverArtist", "Publisher", "Imprint", "Genre", "Tags", "LanguageISO"];
 const LABELS = { LanguageISO: "Language (ISO code, e.g. en)", CoverArtist: "Cover artist" };
+// Fields the "Find metadata" panel can place on the card (shared fields plus the single-file ones).
+const APPLY_FIELDS = ["Series", "Year", "AgeRating", ...SHARED_MORE, "Number", "Volume", "Title", "Summary"];
 
 /** The value all items share, or "" if they differ (blank = keep each file's own). */
 function common(items, key) {
@@ -514,6 +519,176 @@ function groupCard(items) {
   });
 
   const suggestNote = el("div", { className: "match-note" });
+
+  // External metadata (phase 2, W8): search the enabled providers and fill the card's fields. One
+  // lookup per action; the reviewer picks a candidate and applies fields (fill blanks by default,
+  // an explicit overwrite is opt-in). Nothing is applied without a click. The action only appears
+  // when external metadata is on and a provider covers this library's kind of file.
+  const metadataFor = () => {
+    const meta = review?.metadata;
+    if (!meta?.enabled) return null;
+    const type = libraryType();
+    const media = type === 0 ? "manga" : (type === 2 || type === 4) ? "book" : "comic";
+    return (meta.providers ?? []).some((provider) => provider.media.includes(media)) ? media : null;
+  };
+  const findButton = el("button", { type: "button", className: "btn btn-outline small", textContent: "Find metadata" });
+  const findBody = el("div", { className: "match-panel", hidden: true });
+  const metadataBlock = el("div", { className: "metadata-finder" }, findButton, findBody);
+  const providerById = new Map();
+  const labelOf = (id) => providerById.get(id)?.label ?? id;
+  const sharedValues = () => {
+    const values = { Series: series.value, Year: year.value, AgeRating: age.value };
+    for (const [key, input] of Object.entries(more)) values[key] = input.value;
+    return values;
+  };
+  const applyMerged = (result, candidate) => {
+    const fields = result.fields ?? {};
+    const provenance = result.provenance ?? {};
+    const provider = providerById.get(result.provider ?? candidate.provider) ?? {};
+    const source = result.provider ?? candidate.provider;
+    const pairs = [];
+    const put = (key, input) => {
+      if (fields[key] === undefined || !input) return;
+      input.value = fields[key];
+      pairs.push([key, provenance[key] ?? source]);
+    };
+    if (fields.Series !== undefined) { series.value = fields.Series; pairs.push(["Series", provenance.Series ?? source]); }
+    put("Year", year);
+    if (fields.AgeRating !== undefined) { age.value = fields.AgeRating; pairs.push(["AgeRating", provenance.AgeRating ?? source]); }
+    for (const key of SHARED_MORE) put(key, more[key]);
+    const skipped = [];
+    if (rows.length === 1) {
+      const input = rows[0].inputs;
+      put("Number", input.number); put("Volume", input.volume); put("Title", input.title); put("Summary", input.summary);
+    } else {
+      for (const key of ["Number", "Volume", "Title", "Summary"]) if (fields[key] !== undefined) skipped.push(key);
+    }
+    updateAll();
+
+    const out = el("div", { className: "apply-result" });
+    out.append(pairs.length
+      ? el("div", { className: "chips" }, ...pairs.map(([field, from]) => el("span", { className: "chip", textContent: `${field} · ${labelOf(from)}` })))
+      : el("p", { className: "muted", textContent: "Nothing to fill — your values are already set." }));
+    if (skipped.length) {
+      out.append(el("p", { className: "muted", textContent: `Per-file fields (${skipped.join(", ")}) weren't applied to a multi-file group.` }));
+    }
+    const licence = provider.licence;
+    const attribution = el("div", { className: "attribution" }, `Applied from ${provider.label ?? source}`);
+    if (licence?.name) attribution.append(` (${licence.name})`);
+    if (licence?.url) attribution.append(" — ", el("a", { href: licence.url, target: "_blank", rel: "noopener noreferrer", textContent: licence.url.replace(/^https?:\/\//, "") }));
+    out.append(attribution);
+    const conflicts = result.conflicts ?? [];
+    if (conflicts.length) {
+      const list = el("ul", { className: "conflicts" });
+      for (const conflict of conflicts) {
+        list.append(el("li", { textContent: `Kept your ${conflict.field} ("${conflict.current}") — ${labelOf(conflict.source)} suggests "${conflict.proposed}".` }));
+      }
+      out.append(el("p", { className: "muted", textContent: "Kept your values (choose Overwrite existing values to replace them):" }), list);
+    }
+    return out;
+  };
+  const renderCandidates = (body, status) => {
+    if (status !== 200) {
+      findBody.replaceChildren(el("p", { className: "row-status error", textContent: body.error ?? "The lookup failed." }));
+      return;
+    }
+    providerById.clear();
+    for (const provider of body.providers ?? []) providerById.set(provider.id, provider);
+    const candidates = body.candidates ?? [];
+    if (!candidates.length) {
+      const lines = [el("p", { className: "muted", textContent: `No candidates found for "${body.query?.title ?? "this file"}".` })];
+      for (const provider of body.providers ?? []) {
+        if (!provider.skipped) continue;
+        const why = body.externalEnabled === false ? "external metadata is turned off"
+          : provider.skipped === "no-key" ? "needs a key (an admin can add one under Metadata providers)"
+            : provider.skipped === "cooldown" ? "is rate-limited right now — try again shortly"
+              : provider.skipped === "media" ? "doesn't cover this kind of file"
+                : provider.skipped === "error" ? `couldn't be reached${provider.error ? ` (${provider.error})` : ""}`
+                  : "is turned off";
+        lines.push(el("p", { className: "muted", textContent: `${provider.label} ${why}.` }));
+      }
+      findBody.replaceChildren(...lines);
+      return;
+    }
+    const candidateGroup = `cand-${first.id}`;
+    const modeGroup = `mode-${first.id}`;
+    let chosen = candidates[0];
+    const fieldsBox = el("div", { className: "field-picker" });
+    const renderFields = () => {
+      const provider = providerById.get(chosen.provider) ?? {};
+      const available = (provider.fields ?? []).filter((field) => APPLY_FIELDS.includes(field));
+      fieldsBox.replaceChildren(
+        el("div", { className: "picker-label", textContent: "Fields to apply" }),
+        ...available.map((field) => {
+          const box = el("input", { type: "checkbox", value: field });
+          box.checked = true;
+          return el("label", { className: "check" }, box, field);
+        }),
+      );
+    };
+    const list = el("div", { className: "candidates" });
+    candidates.forEach((candidate, index) => {
+      const radio = el("input", { type: "radio", name: candidateGroup, value: String(index) });
+      if (index === 0) radio.checked = true;
+      radio.addEventListener("change", () => { chosen = candidate; renderFields(); });
+      list.append(el("label", { className: "candidate" },
+        radio,
+        el("span", { className: "chip chip-source", textContent: candidate.source ?? candidate.provider }),
+        el("span", { className: "cand-title", textContent: candidate.title }),
+        el("span", { className: "cand-meta", textContent: [candidate.number ? `#${candidate.number}` : "", candidate.year, candidate.publisher].filter(Boolean).join(" · ") }),
+        el("span", { className: `band band-${candidate.band}`, textContent: candidate.band }),
+      ));
+    });
+    const modeFill = el("input", { type: "radio", name: modeGroup, value: "fill" });
+    modeFill.checked = true;
+    const modeOverwrite = el("input", { type: "radio", name: modeGroup, value: "overwrite" });
+    const applyButton = el("button", { type: "button", className: "btn btn-outline-primary small", textContent: "Apply selected fields" });
+    const resultBox = el("div", { className: "apply-result-box" });
+    applyButton.addEventListener("click", async () => {
+      const fields = [...fieldsBox.querySelectorAll("input[type=checkbox]:checked")].map((box) => box.value);
+      if (!fields.length) { resultBox.replaceChildren(el("p", { className: "row-status error", textContent: "Choose at least one field." })); return; }
+      applyButton.disabled = true;
+      resultBox.replaceChildren(el("p", { className: "muted", textContent: "Applying…" }));
+      const { status: code, body: applied } = await api(`/api/review/${encodeURIComponent(first.id)}/apply`, {
+        method: "POST",
+        body: JSON.stringify({
+          provider: chosen.provider, externalId: chosen.externalId,
+          mode: modeOverwrite.checked ? "overwrite" : "fill", fields, current: sharedValues(),
+        }),
+      });
+      applyButton.disabled = false;
+      if (code !== 200) {
+        resultBox.replaceChildren(el("p", { className: "row-status error", textContent: applied.error ?? "Could not apply." }));
+        return;
+      }
+      resultBox.replaceChildren(applyMerged(applied, chosen));
+    });
+    renderFields();
+    findBody.replaceChildren(
+      list,
+      el("div", { className: "match-actions" },
+        el("label", { className: "check" }, modeFill, "Fill blanks"),
+        el("label", { className: "check" }, modeOverwrite, "Overwrite existing values")),
+      fieldsBox,
+      applyButton,
+      resultBox,
+    );
+  };
+  findButton.addEventListener("click", async () => {
+    findBody.hidden = false;
+    findButton.disabled = true;
+    findBody.replaceChildren(el("p", { className: "muted", textContent: "Searching the metadata sources…" }));
+    const params = new URLSearchParams();
+    const name = series.value.trim();
+    if (name) params.set("series", name);
+    const yr = year.value.trim();
+    if (yr) params.set("year", yr);
+    if (rows.length === 1) { const n = rows[0].inputs.number.value.trim(); if (n) params.set("number", n); }
+    const { status, body } = await api(`/api/review/${encodeURIComponent(first.id)}/match?${params.toString()}`);
+    findButton.disabled = false;
+    renderCandidates(body, status);
+  });
+
   card.append(...[
     el("div", { className: "group-head" },
       el("h3", { textContent: fixing ? `Fix ${first.filename}` : items.length > 1 ? `${first.defaults.Series}: ${items.length} files` : first.filename }),
@@ -526,6 +701,7 @@ function groupCard(items) {
     suggestNote,
     el("div", { className: "grid-2" }, field("Year", year), field("Age rating", age)),
     moreBox,
+    metadataFor() ? metadataBlock : null,
     el("div", { className: "rows" }, ...rows.map((r) => r.node)),
     items.length > 1 ? el("div", { className: "actions group-actions" }, approveAll) : null,
   ].filter(Boolean));
@@ -683,7 +859,7 @@ function itemRow(item, shared) {
       status,
     ),
   );
-  return { node, update, approve: doApprove, done: () => done };
+  return { node, update, approve: doApprove, done: () => done, inputs: { number, volume, title, summary } };
 }
 
 function placeholderCard(item) {
@@ -868,6 +1044,118 @@ $("approved-search").addEventListener("input", (event) => {
   }, 300);
 });
 $("review-banner-refresh").addEventListener("click", () => refreshReview());
+
+// ---------- About: metadata sources + provider admin (phase 2, W8) ----------
+// "Metadata sources" lists every provider's required credit and licence, rendered from the adapter
+// metadata (GET /api/metadata-sources) so it cannot drift. Reviewers also get a small panel to turn a
+// provider on, set or clear its key and run a test; keys are write-only and never rendered back.
+
+const SOURCE_MEDIA = { comic: "Comics", manga: "Manga", book: "Books" };
+
+async function loadAbout() {
+  await loadMetadataSources();
+  $("providers-panel-wrap").hidden = !me?.isReviewer;
+  if (me?.isReviewer) await loadProvidersPanel();
+}
+
+async function loadMetadataSources() {
+  const wrap = $("metadata-sources");
+  const { status, body } = await api("/api/metadata-sources");
+  if (status !== 200) {
+    wrap.replaceChildren(el("p", { className: "muted", textContent: body.error ?? "Couldn't load the metadata sources." }));
+    return;
+  }
+  const providers = body.providers ?? [];
+  if (!providers.length) {
+    wrap.replaceChildren(el("p", { className: "muted", textContent: "No metadata providers are built in." }));
+    return;
+  }
+  wrap.replaceChildren(...providers.map((provider) => {
+    const state = !provider.enabled ? "Off" : provider.configured ? "On" : "On — needs a key";
+    const row = el("div", { className: "source-row" },
+      el("div", { className: "source-head" },
+        el("strong", { textContent: provider.label }),
+        el("span", { className: `chip ${provider.enabled && provider.configured ? "chip-on" : ""}`, textContent: state })),
+      el("div", { className: "source-attribution", textContent: provider.attribution }));
+    const meta = el("div", { className: "source-meta" },
+      el("span", { textContent: (provider.media ?? []).map((media) => SOURCE_MEDIA[media] ?? media).join(", ") }));
+    if (provider.licence?.url) {
+      meta.append(el("a", { href: provider.licence.url, target: "_blank", rel: "noopener noreferrer", textContent: provider.licence.name || "licence" }));
+    } else if (provider.licence?.name) {
+      meta.append(el("span", { textContent: provider.licence.name }));
+    }
+    row.append(meta);
+    return row;
+  }));
+}
+
+async function loadProvidersPanel() {
+  const panel = $("providers-panel");
+  const { status, body } = await api("/api/admin/providers");
+  if (status !== 200) {
+    panel.replaceChildren(el("p", { className: "muted", textContent: body.error ?? "Couldn't load the providers." }));
+    return;
+  }
+  panel.replaceChildren(...(body.providers ?? []).map(providerRow));
+}
+
+function providerRow(provider) {
+  const status = el("span", { className: "muted" });
+  const refresh = async (message) => {
+    status.textContent = message;
+    await loadProvidersPanel();
+    await loadMetadataSources();
+  };
+  const toggle = el("button", {
+    type: "button", className: "btn btn-outline small",
+    textContent: provider.enabled ? "Turn off" : "Turn on",
+  });
+  toggle.addEventListener("click", async () => {
+    toggle.disabled = true;
+    const { status: code, body } = await api("/api/admin/providers", { method: "POST", body: JSON.stringify({ id: provider.id, enabled: !provider.enabled }) });
+    if (code !== 200) { toggle.disabled = false; status.className = "row-status error"; status.textContent = body.error ?? "Could not change that."; return; }
+    await refresh(provider.enabled ? `${provider.label} is off.` : `${provider.label} is on.`);
+  });
+  const test = el("button", { type: "button", className: "btn btn-outline small", textContent: "Test" });
+  test.addEventListener("click", async () => {
+    test.disabled = true;
+    status.className = "muted";
+    status.textContent = `Testing ${provider.label}…`;
+    const { body } = await api(`/api/admin/providers/${encodeURIComponent(provider.id)}/test`, { method: "POST" });
+    test.disabled = false;
+    status.className = body.ok ? "row-status ok" : "row-status error";
+    status.textContent = body.ok ? `${provider.label} answered.` : `No answer: ${body.detail ?? body.error ?? "check the key and try again"}.`;
+  });
+
+  const keyInput = el("input", { type: "password", placeholder: provider.hasKey ? "Replace key…" : "Paste key…", autocomplete: "off", spellcheck: "false" });
+  const saveKey = el("button", { type: "button", className: "btn btn-outline small", textContent: "Save key" });
+  saveKey.addEventListener("click", async () => {
+    if (!keyInput.value.trim()) { status.className = "row-status error"; status.textContent = "Paste the key first."; return; }
+    saveKey.disabled = true;
+    const { status: code, body } = await api("/api/admin/providers", { method: "POST", body: JSON.stringify({ id: provider.id, key: keyInput.value.trim() }) });
+    saveKey.disabled = false;
+    keyInput.value = "";
+    if (code !== 200) { status.className = "row-status error"; status.textContent = body.error ?? "Could not save the key."; return; }
+    await refresh("Key saved.");
+  });
+  const clearKey = provider.hasKey ? el("button", { type: "button", className: "btn btn-outline small", textContent: "Clear key" }) : null;
+  if (clearKey) clearKey.addEventListener("click", async () => {
+    clearKey.disabled = true;
+    await api("/api/admin/providers", { method: "POST", body: JSON.stringify({ id: provider.id, key: "" }) });
+    await refresh("Key cleared.");
+  });
+
+  const row = el("div", { className: "provider-row" },
+    el("div", { className: "provider-head" },
+      el("strong", { textContent: provider.label }),
+      el("span", { className: "muted", textContent: provider.id }),
+      el("span", { className: `chip ${provider.enabled ? "chip-on" : ""}`, textContent: provider.enabled ? "On" : "Off" }),
+      el("span", { className: "chip", textContent: provider.hasKey ? "Has key" : provider.keyed ? "No key" : "No key needed" })),
+    el("div", { className: "source-attribution", textContent: provider.attribution ?? "" }),
+    el("div", { className: "provider-actions" }, toggle, provider.keyed ? keyInput : null, provider.keyed ? saveKey : null, clearKey, test),
+    status);
+  return row;
+}
 
 // ---------- Activity (admins) ----------
 // Recent audit-log entries and a few counts, from src/activity.ts.

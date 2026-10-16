@@ -18,9 +18,9 @@ cd "$(dirname "$0")/.." || exit 1
 
 PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright/python:v1.62.0-noble"
 PLAYWRIGHT_VERSION="1.62.0"
-fast_tests=(test_auth test_activity test_preview test_notifications test_sidebar_label test_sidebar_connect test_providers_framework test_providers_metron)
+fast_tests=(test_auth test_activity test_preview test_notifications test_sidebar_label test_sidebar_connect test_providers_framework test_providers_metron test_providers_match)
 slow_tests=(test_uploads test_review test_metadata test_themes test_fix test_requests test_metadata_match)
-browser_tests=(upload_page review_page fix_page kavita_integration activity_page notifications_page requests_page)
+browser_tests=(upload_page review_page fix_page kavita_integration activity_page notifications_page requests_page suggestion_card)
 run_fast=0 run_slow=0 run_browser=0 run_roles=0 only="" repeat=1
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -48,8 +48,39 @@ run_api() {
   echo "== $1"
   if python3 "tests/$1.py"; then :; else failed+=("$1"); fi
 }
+
+# The browser tests run in a container; the portal (in the compose network) can only reach a fake
+# started on the host, through the Docker gateway. Start tests/provider_fake.py here for the browser
+# tier so tests/browser/suggestion_card.py has a Metron to talk to (no network, no real keys).
+provider_fake_pid=""
+port_open() {
+  python3 - "$1" <<'PY'
+import socket, sys
+sock = socket.socket()
+sock.settimeout(0.5)
+try:
+    sock.connect(("127.0.0.1", int(sys.argv[1])))
+    raise SystemExit(0)
+except OSError:
+    raise SystemExit(1)
+finally:
+    sock.close()
+PY
+}
+start_provider_fake() {
+  port_open 20901 && return
+  python3 tests/provider_fake.py 20901 >/dev/null 2>&1 &
+  provider_fake_pid=$!
+  for _ in $(seq 1 25); do port_open 20901 && return; sleep 0.2; done
+  echo "warning: the provider fake did not start" >&2
+}
+stop_provider_fake() {
+  [ -n "$provider_fake_pid" ] && kill "$provider_fake_pid" 2>/dev/null
+  provider_fake_pid=""
+}
 run_ui() {
   echo "== browser/$1"
+  start_provider_fake
   mkdir -p tests/screenshots && chmod 777 tests/screenshots
   if docker run --rm --ipc=host \
       -v "$PWD/.env:/work/.env:ro" -v "$PWD/tests:/work/tests:ro" -v "$PWD/tests/screenshots:/shots" \
@@ -106,6 +137,8 @@ else
     cleanup_browser_series
   fi
 fi
+
+stop_provider_fake
 
 echo
 if [ ${#failed[@]} -eq 0 ]; then echo "All test files passed."; else echo "Failed: ${failed[*]}"; exit 1; fi
