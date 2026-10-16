@@ -24,7 +24,7 @@ import type { Candidate, FetchedRecord, MatchQuery, Provider } from "./types.js"
 export const MANGADEX_ID = "mangadex";
 export const MANGADEX_LABEL = "MangaDex";
 export const MANGADEX_LICENCE = {
-  name: "MangaDex (credit required)",
+  name: "Acceptable Usage Policy (credit required)",
   url: "https://api.mangadex.org/docs/",
 };
 /** ~5 requests/s per IP, so a 250 ms spacing (the registry also uses it). */

@@ -80,7 +80,7 @@ existing values**, tick the fields to apply and press **Apply selected fields**.
 the form with a small source chip each and a line reading *Applied from Metron (CC BY-SA 4.0)*. In *Fill
 blanks* mode your own values are never replaced: anything the source wanted to change is listed under
 *Kept your values* so you can decide. A lookup only happens when you ask for one — nothing is fetched
-automatically, and nothing is applied until you press the button.
+automatically, one file is looked up at a time, and nothing is applied until you press the button.
 
 **Per file:** a cover (drawn like a Kavita tile, with the issue number badge), number, volume, title,
 summary, and the file name. The file name follows the library's naming pattern as you edit the fields
@@ -155,9 +155,12 @@ To keep a large library quick, each Browse or Needs-metadata request checks a bo
 
 ## About
 
-**Metadata sources** lists every external source the portal can fetch details from, each with the credit
-and licence it requires (for example *Comic data from Metron, CC BY-SA 4.0*). This text is built from the
-source's own settings, so it stays correct if a licence changes. Kavita admins also see a **Metadata
-providers** panel here: turn a source on or off, paste its key (stored encrypted, never shown again),
-clear it, or press **Test** to check the source answers. Sources are off by default, and nothing is ever
-fetched until a reviewer asks for it.
+**Metadata sources** lists every external source the portal can fetch details from — **Metron** and
+**GCD** (comics), **MangaDex** and **AniList** (manga and light novels), **Hardcover** and **Open
+Library** (books) — each with the credit and licence it requires (for example *Comic data from Metron,
+CC BY-SA 4.0*) and a link to the licence. This text is built from the source's own settings, so it stays
+correct if a licence changes. Kavita admins also see a **Metadata providers** panel here: turn a source
+on or off, paste its key (stored encrypted, never shown again), clear it, or press **Test** to check the
+source answers. Sources are **off by default**, nothing is fetched until a reviewer asks for a specific
+file, and the credit is always shown alongside the data. See
+[compliance.md](compliance.md) for the licence and privacy details — *this is not legal advice*.

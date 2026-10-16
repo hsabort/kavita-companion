@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+Compliance polish and verification (phase 2, M6) — no new features, no version bump.
+
+- **No-bulk / per-review safeguard, now tested.** `tests/test_providers_safeguard.py` (fast tier) proves
+  that one reviewer **Find metadata** action makes at most one search per enabled provider (candidates
+  bounded at 8, and no pre-fetch), that a **Library** browse or "needs metadata" queue makes **no**
+  external provider call at all, and that nothing is fetched in the background. The invariant is stated
+  in code where a bulk path could appear (`src/review.ts` `matchFor`, `src/library.ts`,
+  `src/providers/routes.ts`).
+- **Key handling.** Documented the policy (sealed at rest with AES-256-GCM, write-only in the UI, never
+  returned by a route, never logged) in the new [docs/compliance.md](docs/compliance.md) and
+  [docs/security.md](docs/security.md); the request-log URL redactor now also strips `key`, `token`,
+  `api_key` and `access_token` query parameters defensively.
+- **Attribution / licence wording.** Tightened the licence labels for MangaDex, AniList, Hardcover and
+  Open Library so the composed credit no longer repeats the provider name (e.g. *Book data from
+  Hardcover, API Terms*); Metron/GCD keep their exact CC BY-SA 4.0 credits. A framework test now asserts
+  every registered provider surfaces a licence name + URL, an attribution credit that names it.
+- **Docs.** Added [docs/compliance.md](docs/compliance.md) (per-provider obligations, CC BY-SA ShareAlike
+  scope, no-bulk rule, caching policy, key handling, allow/opt-in/exclude defaults, and a "not legal
+  advice" note); updated [docs/user-guide.md](docs/user-guide.md),
+  [docs/operations.md](docs/operations.md) and [docs/security.md](docs/security.md). Reconciled
+  `docs/roadmap-phase2.md` with the agreed decisions (Kavita+ delegation out of scope; ComicVine and
+  Google Books excluded; PRH deferred; no legal pass required to ship).
+
 ## 0.6.0 — 2026-10-16
 
 Added:

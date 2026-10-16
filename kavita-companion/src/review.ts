@@ -259,7 +259,21 @@ function providerStatus(reg: ProviderRegistration, media: MediaKind) {
   };
 }
 
-/** Search the enabled providers for this upload and return ranked candidates plus per-provider state. */
+/**
+ * The most candidates one Match may return. Bounded output is part of the no-bulk / per-review
+ * safeguard (M6): a reviewer action surfaces a handful of choices, never a page of a bulk mirror.
+ */
+export const MAX_MATCH_CANDIDATES = 8;
+
+/**
+ * Search the enabled providers for this upload and return ranked candidates plus per-provider state.
+ *
+ * NO-BULK / PER-REVIEW SAFEGUARD (M6): this runs only for a reviewer's explicit Match action
+ * (`GET`/`POST /api/review/:id/match`). It makes exactly one search per enabled provider for that one
+ * request — no background crawl, no whole-library prefetch, no auto-fetch on upload and no
+ * related-series fan-out. Do NOT call it from a scan, a scheduled job or a browse; a bulk path, if it
+ * were ever wanted, must be designed against the providers' terms first (see docs/compliance.md).
+ */
 async function matchFor(
   row: UploadRow, inspection: Inspection, libraryType: number,
   overrides: { series?: string; number?: string; year?: string; media?: MediaKind }, signal?: AbortSignal,
@@ -281,6 +295,8 @@ async function matchFor(
       const status = providers.find((p) => p.id === reg.provider.id);
       if (!status || status.skipped) continue;
       try {
+        // One search per enabled provider, and never a fetch: `fetch()` runs only from `/apply`,
+        // after the reviewer has picked a candidate.
         const found = await reg.provider.search(keyFor(reg.provider.id), query, signal);
         for (const candidate of found) {
           candidates.push({
@@ -303,7 +319,7 @@ async function matchFor(
   candidates.sort((a, b) => (b.score as number) - (a.score as number));
   return {
     externalEnabled: config.metadataExternalEnabled, media, query,
-    candidates: candidates.slice(0, 8), providers,
+    candidates: candidates.slice(0, MAX_MATCH_CANDIDATES), providers,
   };
 }
 

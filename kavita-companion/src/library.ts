@@ -8,6 +8,10 @@
 // browse or queue request cheap we inspect at most MAX_METADATA_LOOKUPS series per request (the
 // page size is capped at the same number) and cache each series' signal for SIGNAL_TTL_MS, so
 // paging back and forth does not re-call Kavita.
+//
+// NO-BULK SAFEGUARD (M6): this module reads ONLY Kavita's own catalogue. A browse or "needs metadata"
+// queue must never call an external metadata provider — providers are reached per explicit reviewer
+// action (the review card's Match), never from here. tests/test_providers_safeguard.py asserts it.
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { currentUser } from "./auth.js";
 import { db } from "./db.js";

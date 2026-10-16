@@ -63,8 +63,8 @@ try:
     check("the openlibrary provider is registered", status == 200 and ol is not None, str(body))
     check("openlibrary is labelled Open Library and book-only",
           ol and ol["label"] == "Open Library" and ol["media"] == ["book"], str(ol))
-    check("openlibrary carries the Open Library (Internet Archive) licence",
-          ol and ol["licence"]["name"] == "Open Library (Internet Archive)"
+    check("openlibrary carries the Internet Archive licence",
+          ol and ol["licence"]["name"] == "Internet Archive (no new rights asserted)"
           and ol["licence"]["url"] == "https://openlibrary.org/developers/api", str(ol))
     check("openlibrary never fetches covers (covers = none)", ol and ol["covers"] == "none", str(ol))
     check("openlibrary is keyless and off by default",

@@ -95,6 +95,23 @@ try:
           str(sealed))
     check("the plaintext key is absent from the database files", not at_rest_contains(KEY), "key found at rest")
 
+    # --- About -> Metadata sources: every registered provider carries a credit + licence (M2, M6) ---
+    # This is the page a signed-in user sees; it must list each provider's required credit and licence
+    # link, rendered from the adapter metadata, and never a key.
+    status, sources = app("GET", "/api/metadata-sources", admin)
+    sources_list = sources.get("providers", [])
+    check("metadata sources lists every registered provider", status == 200 and len(sources_list) >= 6, str(len(sources_list)))
+    check("every provider surfaces a licence name and url",
+          all(p.get("licence", {}).get("name") and p["licence"].get("url") for p in sources_list),
+          str([(p.get("id"), p.get("licence")) for p in sources_list]))
+    check("every provider surfaces a non-empty attribution credit",
+          all(p.get("attribution") for p in sources_list),
+          str([(p.get("id"), p.get("attribution")) for p in sources_list]))
+    check("every attribution credit names its provider label",
+          all(p.get("label", "x") in p.get("attribution", "") for p in sources_list),
+          str([(p.get("id"), p.get("attribution")) for p in sources_list]))
+    check("the metadata-sources page never echoes a provider key", not json_has_key(sources, KEY), "key leaked")
+
     # --- HTTP client: search + record + truthful User-Agent + auth header ---
     fake.reset()
     status, body = app("POST", "/api/admin/providers/stub/preview", admin, {"query": {"title": "Fixture Saga", "number": "1"}})
