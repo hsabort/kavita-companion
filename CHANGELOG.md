@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 — 2026-10-16
+
+Added:
+- An **Activity** panel for Kavita admins, below the review queue: recent sign-ins (and failed ones),
+  uploads, approvals, rejections and fixes, with action/username filters and paging, plus cards for
+  what is waiting for review and the last seven days. See [docs/user-guide.md](docs/user-guide.md).
+
 ## 0.2.1 — 2026-10-16
 
 Added:

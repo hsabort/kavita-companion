@@ -7,6 +7,7 @@ import { createHash } from "node:crypto";
 import {
   createSession, currentUser, endSession, permissions, purgeExpiredSessions, recheckSessionRoles, SESSION_COOKIE, sessionThemeId,
 } from "./auth.js";
+import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
 import { ensureSidebarLink } from "./sidebar.js";
 import { portalTheme, userThemeId } from "./themes.js";
@@ -209,6 +210,7 @@ app.get("/api/me", async (request) => {
 
 await registerUploadRoutes(app);
 await registerReviewRoutes(app);
+await registerActivityRoutes(app);
 
 async function hourlyJobs() {
   purgeExpiredSessions();

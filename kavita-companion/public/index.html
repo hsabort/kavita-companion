@@ -67,6 +67,41 @@
         </details>
       </section>
 
+      <section id="activity-section" hidden>
+        <div class="section-head">
+          <h2>Activity</h2>
+          <button id="activity-refresh" type="button" class="btn btn-outline small">Refresh</button>
+        </div>
+        <div id="activity-insights" class="insights"></div>
+        <div class="activity-filters">
+          <label for="activity-action">Action</label>
+          <select id="activity-action">
+            <option value="">All</option>
+            <option>login</option>
+            <option>login_failed</option>
+            <option>logout</option>
+            <option>upload_started</option>
+            <option>upload_completed</option>
+            <option>upload_approved</option>
+            <option>upload_rejected</option>
+            <option>upload_fixed</option>
+            <option>upload_invalid</option>
+            <option>upload_duplicate</option>
+            <option>upload_withdrawn</option>
+            <option>upload_cancelled</option>
+            <option>upload_approval_failed</option>
+            <option>upload_restored</option>
+            <option>sidebar_link</option>
+            <option>session_revoked</option>
+          </select>
+          <label for="activity-user">User</label>
+          <input id="activity-user" type="search" autocomplete="off" placeholder="any">
+        </div>
+        <p id="activity-empty" class="empty">No activity yet.</p>
+        <ul id="activity-list" class="uploads"></ul>
+        <button id="activity-more" type="button" class="btn btn-outline small show-older" hidden>Show older</button>
+      </section>
+
       <section id="upload-section" hidden>
         <h2>Upload</h2>
         <div class="upload-library">
