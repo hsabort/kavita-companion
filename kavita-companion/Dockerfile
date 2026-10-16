@@ -25,10 +25,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=sevenzip /7z/7zzs /usr/local/bin/7zzs
 COPY --from=sevenzip /7z/License.txt /usr/local/share/doc/7zip/License.txt
-# KindleUnpack (the `mobi` package, GPL-3.0) turns MOBI/AZW book uploads into EPUB; see NOTICE.md.
+# KindleUnpack (the `mobi` package, GPL-3.0) converts MOBI/AZW book uploads to EPUB; see NOTICE.md.
+# It goes into its own venv (Alpine's system pip is externally-managed, PEP 668) and onto PATH so the
+# server can spawn `mobiunpack`.
 RUN apk add --no-cache python3 py3-pip \
- && pip install --no-cache-dir mobi==0.4.1 \
+ && python3 -m venv /opt/kindleunpack \
+ && /opt/kindleunpack/bin/pip install --no-cache-dir mobi==0.4.1 \
  && rm -rf /root/.cache /tmp/*
+ENV PATH=/opt/kindleunpack/bin:$PATH
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 COPY --from=build /app/dist ./dist

@@ -6,7 +6,7 @@
 // message. Conversion is best-effort — anything KindleUnpack can't unpack is refused with a reason.
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, relative, sep } from "node:path";
 import { createZip } from "./archive.js";
@@ -59,6 +59,20 @@ async function findOpf(root: string, dir = root): Promise<string | null> {
   return null;
 }
 
+/** An EPUB KindleUnpack emitted directly (it does this for KF8 books): the best result when present. */
+async function findEpub(dir: string): Promise<string | null> {
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      const found = await findEpub(full);
+      if (found) return found;
+    } else if (entry.name.toLowerCase().endsWith(".epub")) {
+      return full;
+    }
+  }
+  return null;
+}
+
 /**
  * Convert a Kindle ebook at `source` into an EPUB at `outFile`. Throws `MobiError` with an
  * uploader-facing message when the book is DRM-protected or can't be unpacked.
@@ -71,6 +85,13 @@ export async function convertKindleToEpub(source: string, outFile: string): Prom
       throw new MobiError("This book is DRM-protected, so it can't be converted to EPUB.");
     }
     if (code !== 0) throw new MobiError("This file couldn't be read as a Kindle book.");
+
+    // KF8 books come out as a finished EPUB; older MOBI6 books come out as an HTML tree we assemble.
+    const emitted = await findEpub(work);
+    if (emitted) {
+      await copyFile(emitted, outFile);
+      return;
+    }
     const root = bookRoot(work);
     if (!root) throw new MobiError("This file couldn't be converted to EPUB.");
 
