@@ -1,12 +1,17 @@
 # Changelog
 
-## Unreleased
+## 0.2.8 — 2026-10-16
 
 Added:
 - **Reconnect the Kavita sidebar link** without signing in again: on the portal's **Upload** tab,
   **Add Uploads to your Kavita sidebar** (re)creates the user's own "Uploads ↗" entry — and repairs it
   if its auth key was deleted in Kavita — using the Kavita session the portal already holds for them
   (`POST /api/sidebar/connect`). See [docs/user-guide.md](docs/user-guide.md).
+
+Documentation:
+- [docs/metadata-providers.md](docs/metadata-providers.md): research into external metadata providers for
+  roadmap §5 phase 2 — manga/comic/book sources and Kavita+ — with a field-coverage matrix, licensing
+  notes and the open decisions (no provider integration is built).
 
 ## 0.2.7 — 2026-10-16
 
