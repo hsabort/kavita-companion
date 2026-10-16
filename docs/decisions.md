@@ -44,3 +44,20 @@ Short records of choices that shape this project, newest last. Each says what wa
     applied, so themes can't inject layout changes, third-party fonts or anything else.
 19. **Only failed sign-ins count toward sign-in limits**, so frequent or shared-network users are never
     locked out while password guessing still is.
+
+## Metadata providers — open items (docket)
+
+- **Never write `<Volume>` into a comic's ComicInfo** (0.6.6). Kavita treats a comic whose ComicInfo
+  volume the folder doesn't encode as a *different series*; a folder scan then silently drops the file
+  and removes its chapters. Comics never emit `Volume` now, and a fix clears any an older write left
+  behind — Kavita derives volume from the folder/filename.
+- **GCD: enable with a free account, and only after the throttler fix.** The API takes HTTP Basic
+  `user:pass` (verified: bad credentials → `401 Invalid username/password`), raising the limit from
+  30/hour to 2,000/day. Steps: create a free account at comics.org, then supply `username:password`
+  (stored encrypted in the DB, or via `.env`). It stays **off** until then, and until `providerFetch`
+  *skips* a long wait and reports a cooldown instead of sleeping through it (a 120 s anonymous spacing
+  currently holds the HTTP request open — see `docs/metadata-providers.md`).
+- **Review UX — the "Find metadata" click flow.** The candidate list, "Apply selected fields" and the
+  per-field source chips all live inside the wide review card; consider a focused dialog for the
+  choose-and-apply step (raised after fixing Star Wars #076/#077).
+- **Hold 1.0** until the product review (`docs/product-review-plan.md`) is done.
