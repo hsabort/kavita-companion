@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.5 — 2026-10-16
+
+Fixed:
+- **Reviewer edits and applied metadata are no longer lost on a re-render.** The review form lived
+  only in the DOM, so switching tabs (or pressing Refresh) rebuilt the cards from server defaults and
+  silently discarded anything typed or applied before Approve — an applied Metron suggestion could
+  reach approval as just `Number`/`Series`. In-progress values are now kept in a per-upload draft and
+  restored on re-render, then cleared once a decision is made (browser regression added).
+
 ## 0.6.4 — 2026-10-16
 
 Fixed:

@@ -161,6 +161,17 @@ try:
         writer = group.locator("label.field", has_text="Writer").locator("input")
         check("[desktop] the credits are filled from the provider", "A. Writer" in writer.input_value(), writer.input_value())
         page.screenshot(path=f"{shots}/suggestion-applied.png", full_page=True)
+
+        # --- applied metadata must survive a re-render (switching tabs, Refresh) ---
+        page.click("#tab-about")
+        page.wait_for_selector("#metadata-sources .source-row", timeout=15000)
+        card, group = open_card(page)  # switch back to Review and Refresh => a full re-render
+        check("[desktop] applied Year survives a card re-render",
+              group.locator("label.field", has_text="Year").locator("input").input_value() == "2012",
+              group.locator("label.field", has_text="Year").locator("input").input_value())
+        check("[desktop] applied credits survive a card re-render",
+              "A. Writer" in group.locator("label.field", has_text="Writer").locator("input").input_value(),
+              group.locator("label.field", has_text="Writer").locator("input").input_value())
         check("[desktop] no browser console errors", not errors, " | ".join(errors)[:300])
 
         # --- responsive: the panel fits a phone without horizontal scrolling ---

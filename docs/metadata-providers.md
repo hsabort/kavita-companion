@@ -128,3 +128,22 @@ the source's licence matters as much as its fields.
 5. **Attribution UX:** where the "metadata from X, CC BY-SA 4.0" credit lives.
 6. **Scope/phasing:** do we want phase-2 now, or is phase 1 (existing-series suggestions) enough for a
    while?
+
+## Operational notes & known limitations (as built, 0.6.x)
+
+Verified against the live APIs on 2026-10-16 (Metron, GCD, MangaDex, AniList, Hardcover, Open Library).
+
+- **Real-API smoke tests are essential.** Recorded fixtures masked four real bugs: Metron's credit
+  shape (`credits[].creator` a string, `role` an array, interior art role `Artist`), `refresh` bypassing
+  the adapter's cache, AniList's invalid `staff(edges { … })` selection and its `Staff.name` object
+  (needs `node { name { full } }`), and the Open Library probe rejecting a stopword query. Every adapter
+  is now probed against its real API — keep doing that when adding providers.
+- **GCD needs a free account to be practical.** Anonymous GCD allows 30 requests/hour (a 120 s
+  spacing); a free `user:pass` raises the limit to 2000/day. GCD therefore ships **off** — enable it
+  only with an account, and treat it as the comics fallback to Metron.
+- **The throttler blocks rather than skips (known wart).** `providerFetch`'s token bucket *sleeps*
+  until a provider's minimum interval elapses. That is fine for short intervals (MangaDex 250 ms,
+  AniList 2 s) but a long one (GCD 120 s) holds the HTTP request open, so "Find metadata" appears to
+  hang. Intended fix: for waits over ~2 s, **skip and report a cooldown** (set `cooldownUntil`, surface
+  `skipped: "cooldown"` to the match flow) instead of sleeping, with a test. Until then keep GCD off.
+- **Licensing wording is an engineering reading, not legal advice** — see `docs/compliance.md`.
