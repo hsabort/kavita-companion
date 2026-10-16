@@ -208,7 +208,12 @@ fields; an unknown title leaves fields blank; a provider outage doesn't break re
 
 ---
 
-## 6. Test harness refactor — planned
+## 6. Test harness refactor — in progress
+
+Done: the `ROLE_RECHECK_MS` knob (with the users-cache capped at it) cuts the roles test from ~4 minutes
+to ~30 seconds; `run.sh` gained `--fast/--slow/--browser/--roles/--all`, `--repeat N` and a first-run
+restart; `tests/harness.py` provides the shared helpers and the fast helpers-less files are being
+migrated to it (`test_activity`, `test_sidebar_label` done; the rest to follow).
 
 Make the acceptance tests shorter to write, faster to run, and clearer about what tends to break.
 

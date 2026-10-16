@@ -19,6 +19,9 @@ export const config = {
   kavitaPublicUrl: process.env.KAVITA_PUBLIC_URL ?? "http://localhost:5000",
   dataDir: process.env.DATA_DIR ?? "/data",
   sessionTtlHours: Number(process.env.SESSION_TTL_HOURS ?? 12),
+  // How often an open session's Kavita roles are re-read. Lowered in the test environment so the
+  // roles test doesn't wait two minutes twice (tests/test_roles_and_limits.py).
+  roleRecheckMs: Number(process.env.ROLE_RECHECK_MS ?? 120_000),
   // Encrypts the Kavita session tokens stored with portal sessions (seal.ts). setup.sh generates it.
   sessionSecret: process.env.COMPANION_SECRET ?? "",
   // Requests are only trusted for X-Forwarded-For when they come from Caddy on the compose network.

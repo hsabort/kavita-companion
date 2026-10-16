@@ -24,14 +24,24 @@ access, and fills the `TEST_*` lines in `.env` (passwords are generated, never p
 ## Running
 
 ```bash
-tests/run.sh               # API tests: auth, uploads, review, metadata
-tests/run.sh --browser     # plus headless-browser tests (Playwright in Docker; screenshots in tests/screenshots/)
-tests/run.sh --roles       # plus test_roles_and_limits.py (see below)
+tests/run.sh                 # the API tests (fast + slow)
+tests/run.sh --fast          # the quick tier (no library writes)
+tests/run.sh --slow          # the tier that writes to the library and rescans Kavita
+tests/run.sh --browser       # plus headless-browser tests (Playwright in Docker; screenshots in tests/screenshots/)
+tests/run.sh --roles         # plus test_roles_and_limits.py (see below)
+tests/run.sh --all           # everything
+tests/run.sh --repeat 3      # run the fast tier 3 times, reporting anything that failed once
 tests/run.sh --only test_review
 ```
 
+A full run restarts `kavita-companion` first, which clears its in-memory failed-sign-in counters so
+repeated runs don't lock the test accounts out.
+
 Requirements on the host: `python3` (standard library only) and Docker. `test_metadata.py` builds
 `.cb7` archives with the 7-Zip inside the `kavita-companion:local` image.
+
+Shared helpers live in `tests/harness.py` (`app()`, `kavita()`, `login()`, `upload()`, `wait_until()`,
+`check()`, `finish()`), so each test file holds only its own setup and assertions.
 
 | File | Covers |
 |---|---|
