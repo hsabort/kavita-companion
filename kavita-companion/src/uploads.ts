@@ -18,6 +18,7 @@ import { config } from "./config.js";
 import { audit, db } from "./db.js";
 import { inspectInBackground, removeCover } from "./inspect.js";
 import * as kavita from "./kavita.js";
+import { KINDLE_EXTENSIONS, MobiError, convertKindleToEpub } from "./mobi.js";
 import { notifyUploader } from "./notify.js";
 
 const GB = 1024 ** 3;
@@ -28,7 +29,7 @@ const TUS_PATH = "/files";
 // Set by our route handler (overwriting anything the client sent) so tus hooks know who is uploading.
 const USER_HEADER = "x-kc-user";
 
-export type DetectedType = "zip" | "rar" | "7z" | "epub" | "pdf";
+export type DetectedType = "zip" | "rar" | "7z" | "epub" | "pdf" | "mobi";
 
 /** Accepted extensions and the file contents each one may actually contain. */
 export const ACCEPTED: Record<string, DetectedType[]> = {
@@ -41,6 +42,10 @@ export const ACCEPTED: Record<string, DetectedType[]> = {
   "7z": ["zip", "rar", "7z"],
   epub: ["epub"],
   pdf: ["pdf"],
+  // Kindle formats — Books libraries only (see onUploadCreate); converted to EPUB on completion.
+  mobi: ["mobi"],
+  azw: ["mobi"],
+  azw3: ["mobi"],
 };
 export const ACCEPTED_EXTENSIONS = Object.keys(ACCEPTED);
 
@@ -82,7 +87,7 @@ const q = {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'uploading', ?, ?)`),
   touch: db.prepare("UPDATE uploads SET updated_at = ? WHERE id = ?"),
   setStatus: db.prepare("UPDATE uploads SET status = ?, error = ?, updated_at = ? WHERE id = ?"),
-  setPending: db.prepare(`UPDATE uploads SET status = 'pending', detected_type = ?, sha256 = ?, stored_path = ?,
+  setPending: db.prepare(`UPDATE uploads SET status = 'pending', ext = ?, detected_type = ?, sha256 = ?, stored_path = ?,
     error = NULL, updated_at = ? WHERE id = ?`),
   activeCount: db.prepare("SELECT COUNT(*) AS n FROM uploads WHERE owner_id = ? AND status = 'uploading'"),
   queuedBytes: db.prepare(`SELECT COALESCE(SUM(size), 0) AS total FROM uploads
@@ -161,6 +166,9 @@ export const tus = new Server({
       throw refuse(503, "Kavita is not reachable right now. Try again shortly.");
     }
     if (!library) throw refuse(400, "Choose a library for this upload.");
+    if (KINDLE_EXTENSIONS.has(ext) && library.type !== 2) {
+      throw refuse(415, ".mobi/.azw/.azw3 books are only accepted in a Books library.");
+    }
     const free = await freeDiskBytes();
 
     // From here to the insert there is no await, so concurrent requests can't both pass the checks.
@@ -231,6 +239,9 @@ async function detectType(path: string): Promise<DetectedType | null> {
     if (b.subarray(0, 6).equals(Buffer.from("Rar!\x1a\x07", "binary"))) return "rar";
     if (b.subarray(0, 6).equals(Buffer.from([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]))) return "7z";
     if (b.subarray(0, 1024).includes("%PDF-")) return "pdf";
+    // Kindle ebook: a PalmDB with type "BOOK" and creator "MOBI"/"TPZ" (KF8 keeps the same container).
+    if (b.subarray(60, 64).equals(Buffer.from("BOOK", "binary"))
+        && ["MOBI", "TPZ"].includes(b.subarray(64, 68).toString("latin1"))) return "mobi";
     return null;
   } finally {
     await handle.close();
@@ -289,11 +300,32 @@ async function checkCompletedUpload(id: string) {
     }
 
     await mkdir(PENDING_DIR, { recursive: true });
-    const storedPath = join(PENDING_DIR, `${id}.${row.ext}`);
-    await rename(partial, storedPath);
+    let ext = row.ext;
+    let effective = detected;
+    let storedPath = join(PENDING_DIR, `${id}.${row.ext}`);
+    if (detected === "mobi") {
+      // Convert to EPUB now so review, approval and Kavita all see a normal book.
+      storedPath = join(PENDING_DIR, `${id}.epub`);
+      try {
+        await convertKindleToEpub(partial, storedPath);
+      } catch (err) {
+        await discardPartial(id);
+        const message = err instanceof MobiError ? err.message : "This file couldn't be converted to EPUB.";
+        q.setStatus.run("invalid", message, Date.now(), id);
+        audit("upload_invalid", row.owner_name, null, { id, filename: row.filename, detected });
+        notifyUploader(row.owner_id, "invalid", `Couldn't accept: ${row.filename}`, message);
+        return;
+      }
+      ext = "epub";
+      effective = "epub";
+      await rm(partial, { force: true });
+    } else {
+      await rename(partial, storedPath);
+    }
     await rm(join(PARTIAL_DIR, `${id}.json`), { force: true });
-    q.setPending.run(detected, sha256, storedPath, Date.now(), id);
+    q.setPending.run(ext, effective, sha256, storedPath, Date.now(), id);
     audit("upload_completed", row.owner_name, null, { id, filename: row.filename, size: row.size, sha256 });
+    if (detected === "mobi") audit("upload_converted", row.owner_name, null, { id, filename: row.filename, from: detected, to: "epub" });
     inspectInBackground(id);
   } catch (err) {
     console.error(`Checking upload ${id} failed`, err);
@@ -307,7 +339,7 @@ async function resumeInterruptedChecks() {
     const pendingPath = join(PENDING_DIR, `${row.id}.${row.ext}`);
     const inPending = await stat(pendingPath).then(() => true, () => false);
     if (inPending && row.sha256) {
-      q.setPending.run(row.detected_type, row.sha256, pendingPath, Date.now(), row.id);
+      q.setPending.run(row.ext, row.detected_type, row.sha256, pendingPath, Date.now(), row.id);
     } else {
       await checkCompletedUpload(row.id);
     }

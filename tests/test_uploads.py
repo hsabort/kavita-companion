@@ -18,8 +18,8 @@ import urllib.error
 import urllib.request
 import zipfile
 
-from harness import check, finish, login
-from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, library_ids
+from harness import app, check, finish, login
+from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, ROOT, library_ids
 
 _libs = library_ids()
 COMICS, BOOKS = _libs["Comics"], _libs["Books"]
@@ -218,6 +218,19 @@ st, alt_epub_id, _ = tus_upload(uploader, f"Alt Layout {tag}.epub", make_epub_no
 u = wait_final(uploader, alt_epub_id)
 check("a valid EPUB in a non-canonical layout is accepted, not misread as a zip",
       u and u["status"] == "pending", str(u))
+
+# --- Kindle (MOBI/AZW) books are accepted in Books and converted to EPUB for review ---
+for label, fixture, filename in (("MOBI", "sample.mobi", f"Kindle Book {tag}.mobi"),
+                                 ("AZW3 (KF8)", "sample.azw3", f"Kindle KF8 {tag}.azw3")):
+    st, kid, _ = tus_upload(uploader, filename, (ROOT / "tests" / "fixtures" / fixture).read_bytes(), library_id=BOOKS)
+    u = wait_final(uploader, kid)
+    check(f"a {label} book is accepted and converted", u and u["status"] == "pending", str(u))
+    _, rev = app("GET", "/api/review", admin)
+    item = next((i for i in rev.get("pending", []) if i["id"] == kid), None)
+    check(f"the converted {label} book is presented as an EPUB for review",
+          item and item.get("kind") == "epub", str(item)[:160])
+st, _, body = tus_create(uploader, f"Kindle Comic {tag}.mobi", 4096, library_id=COMICS)
+check(".mobi in a Comics library is refused (415)", st == 415, f"{st} {body}")
 
 # --- Concurrency limit: 3 in progress, 4th refused; then cancel them ---
 locs = []
