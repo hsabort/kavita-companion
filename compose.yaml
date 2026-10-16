@@ -97,6 +97,10 @@ services:
       - PROVIDER_HTTP_MAX_BYTES=${PROVIDER_HTTP_MAX_BYTES:-2097152}
       - PROVIDER_CACHE_TTL_DAYS=${PROVIDER_CACHE_TTL_DAYS:-30}
       - PROVIDER_CACHE_TTL_MS=${PROVIDER_CACHE_TTL_MS:-0}
+      # Metron (comics): off until enabled; a per-install bearer token; fixed HTTPS base (test fake).
+      - PROVIDER_METRON_BASE=${PROVIDER_METRON_BASE:-}
+      - PROVIDER_METRON_KEY=${PROVIDER_METRON_KEY:-}
+      - PROVIDER_METRON_ENABLED=${PROVIDER_METRON_ENABLED:-false}
     volumes:
       - ${DATA_ROOT:-./data}/companion:/data
       # Read-write: approved uploads are moved into the library folders. Upload staging lives in

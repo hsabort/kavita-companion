@@ -11,6 +11,7 @@ import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
 import { drainNotifications, registerNotifyRoutes } from "./notify.js";
 import { purgeExpiredCache } from "./providers/cache.js";
+import "./providers/index.js"; // register the real provider adapters (Metron) with the registry
 import { registerProviderRoutes } from "./providers/routes.js";
 import { registerRequestRoutes } from "./requests.js";
 import { ensureSidebarLink, registerSidebarRoutes } from "./sidebar.js";

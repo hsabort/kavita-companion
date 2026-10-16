@@ -1,0 +1,32 @@
+{
+  "id": 7001,
+  "number": "1",
+  "title": "Chapter <b>One</b>",
+  "desc": "A synthetic summary with <b>markup</b>&amp; entities the client must strip.",
+  "rating": { "id": 3, "name": "Teen" },
+  "cover_date": "2012-03-01",
+  "store_date": "2012-02-15",
+  "modified": "2026-01-01T00:00:00Z",
+  "series": {
+    "id": 101,
+    "name": "Fixture Saga",
+    "volume": 1,
+    "year_began": 2012,
+    "language": "en",
+    "genres": [{ "id": 1, "name": "Science Fiction" }, { "id": 2, "name": "Adventure" }]
+  },
+  "publisher": { "id": 5, "name": "Fixture Press" },
+  "imprint": { "id": 8, "name": "Fixture Imprint" },
+  "credits": [
+    { "id": 1, "creator": { "id": 11, "name": "A. Writer" }, "roles": [{ "id": 1, "name": "Writer" }] },
+    { "id": 2, "creator": { "id": 12, "name": "P. Artist" }, "roles": [{ "id": 2, "name": "Penciller" }] },
+    { "id": 3, "creator": { "id": 13, "name": "I. Inker" }, "roles": [{ "id": 3, "name": "Inker" }] },
+    { "id": 4, "creator": { "id": 14, "name": "C. Colourist" }, "roles": [{ "id": 4, "name": "Colorist" }, { "id": 1, "name": "Writer" }] },
+    { "id": 5, "creator": { "id": 15, "name": "V. Cover" }, "roles": [{ "id": 5, "name": "Cover" }] },
+    { "id": 6, "creator": { "id": 16, "name": "L. Letterer" }, "roles": [{ "id": 6, "name": "Letterer" }] }
+  ],
+  "arcs": [{ "id": 1, "name": "Fixture Arc" }],
+  "characters": [{ "id": 1, "name": "Fixture Hero" }],
+  "teams": [{ "id": 1, "name": "Fixture League" }],
+  "universes": [{ "id": 1, "name": "Fixtureverse" }]
+}
