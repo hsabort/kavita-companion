@@ -121,6 +121,8 @@ try:
     check("apply carries the attribution and licence",
           applied.get("attribution") == "Comic data from Metron, CC BY-SA 4.0"
           and applied["licence"]["url"] == "https://creativecommons.org/licenses/by-sa/4.0/", str(applied.get("attribution")))
+    check("a comic's apply never offers Volume (Kavita would fork the series)",
+          "Volume" not in fields, str(fields))
 
     # --- cache-first: a second apply for the same id does not call the provider again ---
     status, second = app("POST", f"/api/review/{upload_id}/apply", admin,

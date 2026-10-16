@@ -373,8 +373,8 @@ async function applyFor(
   const current = cleanCurrent(body.current) ?? defaults;
   const merged = mergeRecords({ records: [record], current, force, locked: [...locked] });
   // Kavita forks a comic's series when ComicInfo carries a Volume the folder doesn't encode, so a
-  // comic is never offered one (the write path drops it as a backstop).
-  if (libraryType === 1) { delete merged.fields.Volume; delete merged.provenance.Volume; }
+  // comic is never offered one (the write path drops it as a backstop). Comics are LibraryType 5.
+  if (mediaForLibraryType(libraryType) === "comic") { delete merged.fields.Volume; delete merged.provenance.Volume; }
   return {
     provider: providerId, externalId, mode, cached,
     fields: merged.fields, provenance: merged.provenance, conflicts: merged.conflicts,
