@@ -14,6 +14,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { createZip, extractAll, naturalCompare, pageImages, type ArchiveEntry } from "./archive.js";
 import { currentUser, type SessionUser } from "./auth.js";
 import { notifyUploader } from "./notify.js";
+import { fulfilRequests } from "./requests.js";
 import { config } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
@@ -400,6 +401,7 @@ async function runJob(id: string) {
         id, filename: row.filename, destination: toKavitaPath(plan.destination), metadata: plan.metadata,
       });
       notifyUploader(row.owner_id, "approved", `Approved: ${row.filename}`, `Your upload was approved and added to ${plan.libraryName}.`);
+      fulfilRequests(plan.libraryId, plan.seriesName, plan.metadata.Number, id);
     } else {
       const oldDir = dirname(source.path);
       if (plan.destination !== source.path) {

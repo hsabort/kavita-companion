@@ -97,6 +97,9 @@ function show(user, kavitaUrl) {
   $("notify-wrap").hidden = !user.canUpload;
   if (user.canUpload) loadNotifications();
   refreshUploads();
+  $("requests-section").hidden = false;
+  refreshRequests();
+  fillRequestLibraries();
   refreshTimer = setInterval(refreshUploads, 10_000);
 }
 
@@ -870,6 +873,76 @@ $("activity-user").addEventListener("input", () => {
   activityTimer = setTimeout(() => refreshActivity(true), 300);
 });
 
+// ---------- Requests ----------
+// Ask for a series/issue (src/requests.ts). Everyone sees "My requests"; reviewers also see the open
+// queue with Decline / Mark fulfilled.
+
+function requestStatus(text, problem = false) {
+  $("request-status").textContent = text ?? "";
+  $("request-status").classList.toggle("error", problem);
+}
+
+function requestRow(item, forReviewer) {
+  const li = el("li", { className: "upload" });
+  li.append(el("div", { className: "upload-name", textContent: `${item.title}${item.number ? ` #${item.number}` : ""}` }));
+  const bits = [];
+  if (item.libraryName) bits.push(item.libraryName);
+  bits.push(`by ${item.username}`);
+  bits.push(item.status);
+  if (item.note) bits.push(item.note);
+  li.append(el("div", { className: "upload-meta", textContent: bits.join(" · ") }));
+  if (forReviewer && item.status === "open") {
+    const actions = el("div", { className: "actions" });
+    const fulfil = el("button", { type: "button", className: "btn btn-outline-primary small", textContent: "Mark fulfilled" });
+    fulfil.addEventListener("click", async () => { await api(`/api/requests/${item.id}/fulfil`, { method: "POST" }); refreshRequests(); });
+    const decline = el("button", { type: "button", className: "btn btn-outline small", textContent: "Decline" });
+    decline.addEventListener("click", async () => { await api(`/api/requests/${item.id}/decline`, { method: "POST" }); refreshRequests(); });
+    actions.append(fulfil, decline);
+    li.append(actions);
+  }
+  return li;
+}
+
+async function refreshRequests() {
+  const { status, body } = await api("/api/requests");
+  if (status !== 200) return;
+  const mine = body.mine ?? [];
+  $("requests-mine-empty").hidden = mine.length > 0;
+  $("requests-mine").replaceChildren(...mine.map((item) => requestRow(item, false)));
+  const open = body.open ?? [];
+  $("requests-open-wrap").hidden = !(body.canReview && open.length);
+  $("requests-open").replaceChildren(...open.map((item) => requestRow(item, true)));
+}
+
+async function addRequest() {
+  const title = $("request-title").value.trim();
+  if (!title) return requestStatus("Enter a title.", true);
+  const libraryId = $("request-library").value ? Number($("request-library").value) : undefined;
+  const { status, body } = await api("/api/requests", {
+    method: "POST",
+    body: JSON.stringify({ title, number: $("request-number").value.trim(), note: $("request-note").value.trim(), libraryId }),
+  });
+  if (status === 200) {
+    $("request-title").value = "";
+    $("request-number").value = "";
+    $("request-note").value = "";
+    requestStatus("Asked — an admin will look at it.");
+    refreshRequests();
+  } else {
+    requestStatus(body.error || "Could not send the request.", true);
+  }
+}
+
+async function fillRequestLibraries() {
+  const select = $("request-library");
+  if (select.options.length > 1) return;
+  const { status, body } = await api("/api/libraries");
+  if (status !== 200) return;
+  for (const library of body.libraries ?? []) select.append(el("option", { value: String(library.id), textContent: library.name }));
+}
+
+$("request-add").addEventListener("click", addRequest);
+
 // ---------- Notifications ----------
 // Where to tell a user about their uploads (src/notify.ts). Off by default.
 
@@ -879,6 +952,7 @@ const NOTIFY_EVENT_IDS = {
   fixed: "notify-fixed",
   invalid: "notify-invalid",
   duplicate: "notify-duplicate",
+  request: "notify-request",
 };
 
 function notifyStatus(text, problem = false) {

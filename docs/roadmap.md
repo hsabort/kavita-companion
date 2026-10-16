@@ -67,7 +67,11 @@ target never blocks approval.
 
 ---
 
-## 2. Requests board — planned
+## 2. Requests board — built
+
+Shipped in 0.2.4: a Requests board (`src/requests.ts`) where users ask for a series/issue and admins
+decline or fulfil; a matching approval fulfils a request automatically and notifies the requester.
+Tests in `tests/test_requests.py`.
 
 **Goal.** Let users ask for a series or issue they can't upload themselves; let admins see and fulfil
 requests; automatically mark a request fulfilled when a matching upload is approved.
