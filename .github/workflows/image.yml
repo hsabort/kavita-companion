@@ -5,8 +5,8 @@
 #   - pull requests:         build only, no push
 #   - manual runs:           via workflow_dispatch
 #
-# The image is linux/amd64 only: the Dockerfile ships the x64 7-Zip build. Pulling the private
-# package needs a one-off `docker login ghcr.io` on the host (docs/operations.md).
+# The image is linux/amd64 only: the Dockerfile ships the x64 7-Zip build. The package is public, so
+# it can be pulled (e.g. by docker compose) without logging in (docs/operations.md).
 name: Image
 
 on:

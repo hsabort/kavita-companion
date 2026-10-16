@@ -65,12 +65,13 @@ CI publishes the portal image to `ghcr.io/hsabort/kavita-companion`:
 | a push to `main` | `edge` (and `sha-<short>`) |
 | a pull request | none (build check only) |
 
-The package is **private**, so pulling needs a one-off login on the host with a GitHub token that can
-read packages (a classic token with the `read:packages` scope, or a fine-grained token with *Packages:
-read*):
+The package is **public**, so it can be pulled without logging in — in this stack or anywhere else:
 
-```bash
-docker login ghcr.io -u hsabort     # paste the token as the password; stored in ~/.docker/config.json
+```yaml
+# any docker-compose.yml
+services:
+  kavita-companion:
+    image: ghcr.io/hsabort/kavita-companion:0.2.1
 ```
 
 To run a released image instead of building from source, set it in `.env` and apply:
