@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 — 2026-10-16
+
+Added:
+- Published the portal image to GitHub Container Registry (`ghcr.io/hsabort/kavita-companion`, public).
+  Set `COMPANION_IMAGE` in `.env` to run a released build instead of building from source; `./setup.sh`
+  pulls it. See [docs/operations.md](docs/operations.md).
+
 ## 0.2.0 — 2026-10-15
 
 Added:
