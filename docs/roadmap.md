@@ -212,8 +212,11 @@ fields; an unknown title leaves fields blank; a provider outage doesn't break re
 
 Done: the `ROLE_RECHECK_MS` knob (with the users-cache capped at it) cuts the roles test from ~4 minutes
 to ~30 seconds; `run.sh` gained `--fast/--slow/--browser/--roles/--all`, `--repeat N` and a first-run
-restart; `tests/harness.py` provides the shared helpers and the fast helpers-less files are being
-migrated to it (`test_activity`, `test_sidebar_label` done; the rest to follow).
+restart; `tests/harness.py` provides the shared helpers, which most API files now use (`test_activity`,
+`test_sidebar_label`, `test_preview`, `test_notifications`, `test_requests`, `test_review`,
+`test_metadata`, `test_fix`). Three keep genuinely bespoke helpers — `test_auth` (rate limits and raw
+headers), `test_uploads` (resumable tus), `test_themes` (cookie-jar sessions) — and a shared browser
+`sign_in` helper is still to come.
 
 Make the acceptance tests shorter to write, faster to run, and clearer about what tends to break.
 
