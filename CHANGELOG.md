@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.2 — 2026-10-16
+
+Fixed:
+- **Metron credits** (found by a real-API smoke test): real Metron sends each credit's `creator` as a
+  **name string** and its `role` as an **array**, and uses the role name **Artist** for interior art.
+  The adapter read `creator` as an object and didn't map `Artist`, so Writer/Penciller/Inker/Colorist/
+  CoverArtist came back empty. Fixed, with the test fixture corrected to Metron's real shape.
+- **Forced refresh** now truly bypasses a provider's own record cache (it previously bypassed only the
+  route's), so a refresh re-fetches from the provider.
+
 ## 0.6.1 — 2026-10-16
 
 Compliance polish and verification (phase 2, M6) — no new features, no version bump.

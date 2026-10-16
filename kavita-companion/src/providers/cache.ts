@@ -58,6 +58,11 @@ export function purgeProviderCache(provider: string): number {
   return Number(removeProvider.run(provider).changes ?? 0);
 }
 
+/** Drop one cached record, so a forced refresh re-fetches from the provider. */
+export function deleteCachedRecord(provider: string, externalId: string): void {
+  remove.run(provider, externalId);
+}
+
 /** Delete expired rows; called from the hourly job. */
 export function purgeExpiredCache(): number {
   return Number(removeExpired.run(Date.now()).changes ?? 0);
