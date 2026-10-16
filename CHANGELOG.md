@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+Added:
+- **Hardcover books adapter (phase 2, W6)**: Hardcover joins the provider framework as the books
+  primary (ordered before Open Library). **Off by default** and keyed — it needs a free per-install
+  personal access token, sent as `Authorization: Bearer`, never shipped. It searches Hardcover's
+  Typesense "Book" index (GraphQL) and maps one book to Series (the featured `book_series`), Volume/
+  Number (`position`), Title, Summary, Year, Writer (`contributions`, Author/Writer roles),
+  Publisher/LanguageISO/PageCount (the default ebook edition), and never fetches covers. ISBN is read
+  but not mapped (our field set/OPF writer has no ISBN slot yet — a documented gap). Book data from
+  Hardcover. See [docs/architecture.md](docs/architecture.md#hardcover-books-primary-phase-2-w6).
+- **Open Library books fallback (phase 2, W7)**: a keyless REST fallback for books; **off by default**.
+  It searches `/search.json` (title or `isbn:`), fetches a work plus its first edition and resolves
+  author keys to names, then maps Title, Summary (`description` object or string), Year, Writer,
+  Publisher, LanguageISO (MARC `eng`→`en`) and Subjects→Genre/Tags. Open Library requires a truthful
+  User-Agent (the shared client sends one) and IA asserts no new copyright; covers are never fetched.
+  Book data from Open Library (Internet Archive). See
+  [docs/architecture.md](docs/architecture.md#open-library-books-fallback-phase-2-w7).
+- **PRH is deferred**: Penguin Random House stays an opt-in follow-up (the only source of a true
+  Imprint and a real AgeRating proxy); it is not built in this change.
+- Both adapters register with the same admin surface (enable/key/probe) and are covered by the fast
+  tier: `tests/test_providers_hardcover.py` and `tests/test_providers_openlibrary.py` against the shared
+  `tests/provider_fake.py` (no network, no real keys).
+
 ## 0.4.0 — 2026-10-16
 
 Added:

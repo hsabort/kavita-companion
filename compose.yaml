@@ -120,6 +120,19 @@ services:
       - PROVIDER_ANILIST_ENABLED=${PROVIDER_ANILIST_ENABLED:-false}
       - PROVIDER_ANILIST_MIN_INTERVAL_MS=${PROVIDER_ANILIST_MIN_INTERVAL_MS:-2000}
       - PROVIDER_ANILIST_CACHE_TTL_DAYS=${PROVIDER_ANILIST_CACHE_TTL_DAYS:-3}
+      # Hardcover (books primary): keyed GraphQL (a free per-install personal access token); covers
+      # never fetched. The base includes the endpoint path. 60/min -> a 1 s spacing (test fake).
+      - PROVIDER_HARDCOVER_BASE=${PROVIDER_HARDCOVER_BASE:-}
+      - PROVIDER_HARDCOVER_KEY=${PROVIDER_HARDCOVER_KEY:-}
+      - PROVIDER_HARDCOVER_ENABLED=${PROVIDER_HARDCOVER_ENABLED:-false}
+      - PROVIDER_HARDCOVER_MIN_INTERVAL_MS=${PROVIDER_HARDCOVER_MIN_INTERVAL_MS:-1000}
+      - PROVIDER_HARDCOVER_CACHE_TTL_DAYS=${PROVIDER_HARDCOVER_CACHE_TTL_DAYS:-30}
+      # Open Library (books fallback): keyless REST, truthful User-Agent required; covers never fetched.
+      # 1 request/s anonymous -> a 1 s spacing. Fixed HTTPS base (test fake).
+      - PROVIDER_OPENLIBRARY_BASE=${PROVIDER_OPENLIBRARY_BASE:-}
+      - PROVIDER_OPENLIBRARY_ENABLED=${PROVIDER_OPENLIBRARY_ENABLED:-false}
+      - PROVIDER_OPENLIBRARY_MIN_INTERVAL_MS=${PROVIDER_OPENLIBRARY_MIN_INTERVAL_MS:-1000}
+      - PROVIDER_OPENLIBRARY_CACHE_TTL_DAYS=${PROVIDER_OPENLIBRARY_CACHE_TTL_DAYS:-30}
     volumes:
       - ${DATA_ROOT:-./data}/companion:/data
       # Read-write: approved uploads are moved into the library folders. Upload staging lives in

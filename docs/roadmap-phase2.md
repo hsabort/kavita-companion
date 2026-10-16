@@ -7,9 +7,11 @@ of Service**. This is a plan; nothing here is built.
 
 **Status:** **M1 shipped in 0.3.0** — the provider framework (W1), the Metron comics adapter (W2) and the
 review card's Find metadata/apply + attribution (W8), with the fake-provider test scaffolding (W11).
-**M2 shipped in 0.3.1**: the GCD comics fallback (W3). **M3 built (W4/W5)**: the MangaDex manga adapter
-and the AniList manga/light-novel fallback, both keyless and off by default, with their fake-provider
-tests. The light-novel/book adapters (M4) and search/browse (M5) are next.
+**M2 shipped in 0.3.1**: the GCD comics fallback (W3). **M3 shipped in 0.4.0 (W4/W5)**: the MangaDex
+manga adapter and the AniList manga/light-novel fallback, both keyless and off by default, with their
+fake-provider tests. **M4 built (W6/W7)**: the Hardcover book adapter (keyed) and the Open Library book
+fallback (keyless), with their fake-provider tests; **PRH is deferred** (an opt-in follow-up, the only
+source of a true Imprint/AgeRating). Search/browse (M5) is next.
 
 Integration is **direct** (not only via Kavita+), **human-reviewed**, **low-volume and cached**. Every
 provider must pass the Compliance gate (section 1) before it can be enabled; a provider that cannot be
@@ -1456,7 +1458,7 @@ spikes first.
 | **M1 — Thin vertical slice** (release 0.3.0) | W1 core, W2 full, W8 v1 (single provider), W11 fixtures+fake Metron, W12 release notes | ~30 | 3–4 wk |
 | **M2 — Comics coverage + QA** (0.3.x) | W3 GCD, W1 cache/ID hardening, W8 multi-candidate, W11 full contract harness + fast tier | ~18 | ~2 wk |
 | **M3 — Manga** (0.4.0) | W4 MangaDex, W5 AniList, W8 manga routing, tests+browser check | ~16 | ~2 wk |
-| **M4 — Books** (0.5.0) | W6 Hardcover, W7 Open Library (+PRH opt-in), OPF/ISBN, tests | ~14 | ~2 wk |
+| **M4 — Books** (0.5.0) | W6 Hardcover, W7 Open Library; **PRH deferred** (opt-in follow-up); OPF/ISBN gap documented, tests | ~14 | ~2 wk |
 | **M5 — Search & browse** (0.6.0) | W9 completeness + "needs metadata" queue + companion search/browse | ~10 | ~1.5 wk |
 | **M6 — Compliance polish** (0.6.x → 1.0) | W10 final, W12 full docs, legal sign-off, harden | ~12 | 1.5–2 wk |
 

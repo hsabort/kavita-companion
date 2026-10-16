@@ -296,3 +296,67 @@ per-review and the read-through cache TTL is deliberately **short** (default 3 d
   (`PROVIDER_ANILIST_MIN_INTERVAL_MS`); `429`/`Retry-After` handled by `http.ts`.
 - **Probe**: `POST /api/admin/providers/anilist/test` (one minimal search). Tests:
   `tests/test_providers_anilist.py`.
+
+### Hardcover (books primary, phase 2 W6)
+
+`providers/hardcover.ts` is the book **primary**: registered with `priority: 10` (Open Library is `20`),
+so `enabledFor("book")` is tried primary-then-fallback. It is **off by default** and **keyed** — a free
+per-install personal access token, resolved by the registry from `PROVIDER_HARDCOVER_KEY` or the sealed
+`provider_config` value (never shipped), sent as `Authorization: Bearer <token>`. Hardcover's terms
+forbid using its data for LLM training and forbid commercial/public products using user-owned data;
+the public catalogue may be shown with attribution. We therefore declare the credit as the licence name
+and `covers: "none"` (no image is ever fetched, proxied or written). Base: `PROVIDER_HARDCOVER_BASE`
+(default `https://api.hardcover.app/v1/graphql` — the base includes the endpoint path).
+
+- **Search** (`search(key, query)`): a GraphQL `search(query:, query_type: "Book", per_page: 8) { results }`
+  POST (Hardcover's Typesense index) → `Candidate[]`; `externalId` = book id, `title` = the book title,
+  `year` = `release_year`, `volume` = `featured_series_position`. The defensive reader accepts the
+  Typesense `results` as a plain document array, an array of `{ document }`, or a `{ hits }` object.
+  Banded `exact` (title + year), `near` (title) or `loose`, with a matching score.
+- **Fetch** (`fetch(key, externalId)`): one folded GraphQL `books(where: { id: { _eq: <id> } }, limit: 1)`
+  POST (each top-level field counts against Hardcover's per-minute budget, so the related fields go in
+  one query) → Series (`book_series`, preferring the `featured` relation), Number/Volume
+  (`position`), Title, Summary (`description`, through `plainText`), Year (`release_year`, else
+  `release_date`), Writer (`contributions[]` filtered to the Author/Writer roles, de-duplicated),
+  Publisher (`default_ebook_edition.publisher`), LanguageISO (edition `language`, an `eng`→`en` map) and
+  PageCount. Records are read through `metadata_cache` with the configured TTL (default 30 days).
+- **Gap (documented):** the book's ISBN is read from the default edition for completeness but is **not
+  mapped** — our `Metadata` field set (and the EPUB OPF writer) has no ISBN slot yet; adding one is a
+  later, deliberate OPF schema change.
+- **Rate limit**: free 5,000/day, 60/min (burst 10) → `minIntervalMs: 1000`
+  (`PROVIDER_HARDCOVER_MIN_INTERVAL_MS`); `429`/`Retry-After` handled by `http.ts`.
+- **Probe**: `POST /api/admin/providers/hardcover/test` (one minimal Book search). Tests:
+  `tests/test_providers_hardcover.py`.
+
+### Open Library (books fallback, phase 2 W7)
+
+`providers/openlibrary.ts` is the book **fallback**: registered with `priority: 20`, so it is tried
+after Hardcover. It is **off by default** and **keyless** — but Open Library's terms require a truthful,
+identifying `User-Agent`, which the shared client already sends (a generic browser UA is not acceptable;
+`COMPANION_CONTACT_EMAIL` is the identified-tier contact). IA "does not assert any new copyright" and
+warns existing rights may apply; we pass records through with attribution and declare `covers: "none"`.
+Licence `Open Library (Internet Archive)` (<https://openlibrary.org/developers/api>). Base:
+`PROVIDER_OPENLIBRARY_BASE` (default `https://openlibrary.org`).
+
+- **Search** (`search(key, query)`): `GET {base}/search.json?q=<title|isbn:…>&limit=8&fields=…` →
+  `Candidate[]`; `externalId` = the work key (`/works/OL…W` → `OL…W`), `title`, `year`
+  (`first_publish_year`), `publisher`. An ISBN query uses the `isbn:<digits>` form. Bands/scores as for
+  Hardcover.
+- **Fetch** (`fetch(key, externalId)`): accepts a work id (`OL…W`), an ISBN, or an edition OLID
+  (`OL…M`). An ISBN fetches `GET {base}/isbn/{isbn}.json`; an edition OLID fetches
+  `GET {base}/books/{olid}.json`; either is resolved to its work, which is fetched with
+  `GET {base}/works/{workId}.json`. When there is no edition yet, the work's first edition is read from
+  `GET {base}/works/{workId}/editions.json` (best-effort: it supplies publisher/ISBN/language). Author
+  names are the embedded `author_name` when present, else the `authors[]` keys are resolved with
+  `GET {base}/authors/{olid}.json` (best-effort, capped at 5; a missing author is skipped, not fatal).
+  The mapping: Title; Summary (`description`, a string or an `{ value }` object, through `plainText`);
+  Year (`first_publish_year`/`first_publish_date`/edition `publish_date`); Writer; Publisher (edition
+  `publishers`, first); LanguageISO (edition `languages`, MARC `eng`→`en` via `providers/language.ts`);
+  Genre/Tags from `subjects` (a documented heuristic: short, non-parenthetical subjects become Genre;
+  the rest become Tags; both de-duplicated and capped). Records are read through `metadata_cache`.
+- **Gap (documented):** ISBN (`isbn_10`/`isbn_13`) and Series/Volume are read defensively but not
+  mapped — ISBN has no `Metadata` slot yet, and Open Library's series data is too inconsistent.
+- **Rate limit**: 1 request/s anonymous (3/s identified) → `minIntervalMs: 1000`
+  (`PROVIDER_OPENLIBRARY_MIN_INTERVAL_MS`); `429`/`Retry-After` handled by `http.ts`.
+- **Probe**: `POST /api/admin/providers/openlibrary/test` (one minimal search). Tests:
+  `tests/test_providers_openlibrary.py`.

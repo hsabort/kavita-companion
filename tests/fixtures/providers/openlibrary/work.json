@@ -1,0 +1,19 @@
+{
+  "key": "/works/OL9001W",
+  "title": "Fixture Book",
+  "description": { "type": "/type/text", "value": "A synthetic <b>summary</b> &amp; more." },
+  "first_publish_date": "September 3, 2018",
+  "subjects": [
+    "Science fiction",
+    "Fantasy fiction",
+    "Dune (Imaginary place)",
+    "Fiction",
+    "823/.912",
+    "Fiction"
+  ],
+  "authors": [
+    { "author": { "key": "/authors/OL9001A" } },
+    { "author": { "key": "/authors/OL9002A" } }
+  ],
+  "covers": [12345]
+}

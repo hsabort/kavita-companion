@@ -9,8 +9,10 @@
 // `probe` (the admin test route).
 import { ANILIST_MIN_INTERVAL_MS, createAnilistProvider, anilistProbe } from "./anilist.js";
 import { GCD_MIN_INTERVAL_MS, createGcdProvider, gcdProbe } from "./gcd.js";
+import { HARDCOVER_MIN_INTERVAL_MS, createHardcoverProvider, hardcoverProbe } from "./hardcover.js";
 import { MANGADEX_MIN_INTERVAL_MS, createMangadexProvider, mangadexProbe } from "./mangadex.js";
 import { METRON_MIN_INTERVAL_MS, createMetronProvider, metronProbe } from "./metron.js";
+import { OPENLIBRARY_MIN_INTERVAL_MS, createOpenLibraryProvider, openlibraryProbe } from "./openlibrary.js";
 import { register } from "./registry.js";
 
 register({
@@ -43,4 +45,20 @@ register({
   minIntervalMs: ANILIST_MIN_INTERVAL_MS,
   priority: 20,
   probe: anilistProbe,
+});
+
+register({
+  provider: createHardcoverProvider(),
+  keyed: true,
+  minIntervalMs: HARDCOVER_MIN_INTERVAL_MS,
+  priority: 10,
+  probe: hardcoverProbe,
+});
+
+register({
+  provider: createOpenLibraryProvider(),
+  keyed: false,
+  minIntervalMs: OPENLIBRARY_MIN_INTERVAL_MS,
+  priority: 20,
+  probe: openlibraryProbe,
 });
