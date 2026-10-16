@@ -39,8 +39,8 @@ All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after sta
 | `server.ts` | Fastify app: security headers, CSRF origin check, rate limits, sign-in (password and Kavita sidebar link), hourly jobs |
 | `auth.ts` | Sessions (cookie `__Host-kc_session`, SHA-256 of the token in SQLite), permissions from Kavita roles, live role re-check |
 | `uploads.ts` | Resumable uploads (tus protocol at `/files`), limits, file-type detection, duplicate check, "your uploads" API |
-| `inspect.ts` | Reads each pending upload once: page count, cover, embedded metadata |
-| `review.ts` | Review queue API, approval plan and background approval job, reject/restore, cleanup |
+| `inspect.ts` | Reads each pending upload once: page count and list, cover, embedded metadata |
+| `review.ts` | Review queue API, approval plan and background approval job, reject/restore, page preview, cleanup |
 | `archive.ts` | Safe wrappers around 7-Zip (read) and yazl (write zips) |
 | `metadata.ts` | Read/write ComicInfo.xml and EPUB OPF metadata, preserving everything not edited |
 | `sidebar.ts` | Adds the "Uploads" link to a user's Kavita sidebar |

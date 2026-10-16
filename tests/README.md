@@ -44,6 +44,7 @@ Requirements on the host: `python3` (standard library only) and Docker. `test_me
 | `test_activity.py` | Admin Activity panel: reviewer-only access, action/username filters, paging, insights shape and counts |
 | `test_notifications.py` | Per-user notifications: preference rules, SSRF/target validation, and webhook delivery for the test/invalid/rejected events (runs a receiver on the host) |
 | `test_requests.py` | Request board: create/list/decline/fulfil, permissions, and a matching approval fulfilling a request automatically |
+| `test_preview.py` | Reviewer page preview: pages served in order, bounds refused, reviewer-only |
 | `test_roles_and_limits.py` | Role changes in Kavita reach open sessions; general rate limit. **Changes test-uploader's roles for ~5 minutes** and therefore refuses to run if a real person signed in within the last hour or uploaded in the last 30 minutes (`--force` overrides). |
 | `browser/upload_page.py` | The upload page on desktop and phone sizes, no console errors |
 | `browser/review_page.py` | The review screen, cover, destination preview, approval |

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.5 — 2026-10-16
+
+Added:
+- Reviewers can **Preview** a pending comic: page through its images in the portal before approving
+  (Previous/Next or the arrow keys), without downloading it. See [docs/user-guide.md](docs/user-guide.md).
+
 ## 0.2.4 — 2026-10-16
 
 Added:

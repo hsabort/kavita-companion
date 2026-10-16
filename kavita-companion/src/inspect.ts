@@ -18,6 +18,7 @@ export interface Inspection {
   hasCover: boolean;
   embedded: Metadata;            // from ComicInfo.xml or the EPUB's OPF
   hasEmbeddedMetadata: boolean;
+  pageNames?: string[];          // ordered page image paths inside the archive (comics), for preview
   problem?: string;              // the file couldn't be read properly
 }
 
@@ -25,6 +26,16 @@ export function kindOf(ext: string): FileKind {
   if (ext === "epub") return "epub";
   if (ext === "pdf") return "pdf";
   return "comic";
+}
+
+const IMAGE_MIME: Record<string, string> = {
+  jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif",
+  webp: "image/webp", avif: "image/avif", bmp: "image/bmp", jxl: "image/jxl",
+};
+
+/** Content type for a page image, by extension. */
+export function imageMime(path: string): string {
+  return IMAGE_MIME[path.split(".").pop()?.toLowerCase() ?? ""] ?? "application/octet-stream";
 }
 
 const q = {
@@ -71,7 +82,10 @@ export async function inspectFile(id: string, path: string, ext: string): Promis
     if (!pages.length) problem = "No page images were found in this archive.";
     const coverPath = pages[0] ? await saveCover(id, path, pages[0].path) : null;
     return {
-      inspection: { kind, pages: pages.length, hasCover: !!coverPath, embedded, hasEmbeddedMetadata: !!infoEntry, problem },
+      inspection: {
+        kind, pages: pages.length, hasCover: !!coverPath, embedded, hasEmbeddedMetadata: !!infoEntry,
+        pageNames: pages.map((page) => page.path), problem,
+      },
       coverPath,
     };
   }

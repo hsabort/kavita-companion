@@ -90,6 +90,16 @@ with sync_playwright() as p:
     card.locator("label.field", has_text="Number").locator("input").fill("7")
     check("[desktop] file name follows the fields", "#007.cbz" in destination.inner_text(), destination.inner_text())
 
+    # Page preview: open, step to the last page, close.
+    card.locator("button", has_text="Preview").click()
+    page.wait_for_selector("#page-preview:not([hidden])", timeout=10000)
+    page.wait_for_selector("#preview-img[src]", timeout=10000)
+    check("[desktop] the page preview opens", page.is_visible("#page-preview"))
+    page.click("#preview-next")
+    check("[desktop] the preview counts the pages", "2 / 2" in page.inner_text("#preview-count"), page.inner_text("#preview-count"))
+    page.click("#preview-close")
+    check("[desktop] the preview closes", page.is_hidden("#page-preview"))
+
     phone_ctx, phone, phone_errors = signed_in_page(browser, {"width": 390, "height": 844}, phone=True)
     phone.locator(".review-row", has_text=filename).wait_for(timeout=30000)
     phone.locator(".review-row", has_text=filename).scroll_into_view_if_needed()
