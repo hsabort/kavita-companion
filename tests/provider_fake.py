@@ -8,7 +8,9 @@ header, and can be scripted per path to return 429 + Retry-After, 500s, oversize
 
 Default paths: `/stub/*` for the built-in test stub (W1) and `/api/issue/` (search list) plus
 `/api/issue/<id>/` (issue detail) for the Metron adapter (W2), served from
-`tests/fixtures/providers/<provider>/`.
+`tests/fixtures/providers/<provider>/`. A fake constructed with `provider="gcd"` serves GCD's paths
+(`/api/series/name/…`, `/api/issue/<id>/`), `provider="mangadex"` serves `/manga` + `/manga/<id>`, and
+`provider="anilist"` serves the single GraphQL endpoint `/` (routed on the query body).
 
 Used by tests/test_providers_framework.py and tests/test_providers_metron.py (started/stopped there).
 The portal reaches it through the Docker gateway: PROVIDER_STUB_BASE=http://<DOCKER_GATEWAY>:<port>
@@ -83,10 +85,25 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             pass  # the client aborted (e.g. hit the size cap); that is expected
 
-    def _default(self, path):
+    def _default(self, path, body=b""):
         # A fake can be scoped to one provider (set at construction). The stub/Metron routing is the
         # default so the existing tests are unchanged; a provider="gcd" fake serves GCD's paths.
-        if getattr(self.server, "provider", None) == "gcd":
+        provider = getattr(self.server, "provider", None)
+        if provider == "mangadex":
+            # MangaDex is REST: /manga (search list) and /manga/<id> (entity detail).
+            if path in ("/manga", "/manga/"):
+                return {"fixture": "search", "provider": "mangadex"}
+            if path.startswith("/manga/"):
+                return {"fixture": "record", "provider": "mangadex"}
+            return {"status": 404, "json": {"error": "not found"}}
+        if provider == "anilist":
+            # AniList is a single GraphQL endpoint; route on the query body (search vs by-id).
+            if b'"search"' in body:
+                return {"fixture": "search", "provider": "anilist"}
+            if b"9002" in body:
+                return {"fixture": "record-teen", "provider": "anilist"}
+            return {"fixture": "record", "provider": "anilist"}
+        if provider == "gcd":
             if path.startswith("/api/series/name/") or path in ("/api/series", "/api/series/"):
                 return {"fixture": "search", "provider": "gcd"}
             if path in ("/api", "/api/"):
@@ -118,7 +135,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             })
             script = STATE.scripts.get(path)
             response = script.pop(0) if script else None
-        self._respond(response if response is not None else self._default(path))
+        self._respond(response if response is not None else self._default(path, body))
 
     do_GET = _handle
     do_POST = _handle

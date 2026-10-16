@@ -108,6 +108,18 @@ services:
       - PROVIDER_GCD_ENABLED=${PROVIDER_GCD_ENABLED:-false}
       - PROVIDER_GCD_MIN_INTERVAL_MS=${PROVIDER_GCD_MIN_INTERVAL_MS:-120000}
       - PROVIDER_GCD_MIN_INTERVAL_MS_AUTHED=${PROVIDER_GCD_MIN_INTERVAL_MS_AUTHED:-5000}
+      # MangaDex (manga primary): keyless, credit required, no ads/paid use; covers never fetched.
+      # ~5 req/s per IP -> a 250 ms spacing. Fixed HTTPS base (test fake).
+      - PROVIDER_MANGADEX_BASE=${PROVIDER_MANGADEX_BASE:-}
+      - PROVIDER_MANGADEX_ENABLED=${PROVIDER_MANGADEX_ENABLED:-false}
+      - PROVIDER_MANGADEX_MIN_INTERVAL_MS=${PROVIDER_MANGADEX_MIN_INTERVAL_MS:-250}
+      - PROVIDER_MANGADEX_CACHE_TTL_DAYS=${PROVIDER_MANGADEX_CACHE_TTL_DAYS:-7}
+      # AniList (manga/light novels fallback): keyless GraphQL; strict no-storage terms -> short TTL.
+      # 90/min documented but degraded to 30/min -> a 2 s spacing. Fixed HTTPS base (test fake).
+      - PROVIDER_ANILIST_BASE=${PROVIDER_ANILIST_BASE:-}
+      - PROVIDER_ANILIST_ENABLED=${PROVIDER_ANILIST_ENABLED:-false}
+      - PROVIDER_ANILIST_MIN_INTERVAL_MS=${PROVIDER_ANILIST_MIN_INTERVAL_MS:-2000}
+      - PROVIDER_ANILIST_CACHE_TTL_DAYS=${PROVIDER_ANILIST_CACHE_TTL_DAYS:-3}
     volumes:
       - ${DATA_ROOT:-./data}/companion:/data
       # Read-write: approved uploads are moved into the library folders. Upload staging lives in

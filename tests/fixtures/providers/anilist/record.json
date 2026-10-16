@@ -1,0 +1,33 @@
+{
+  "data": {
+    "Media": {
+      "id": 9001,
+      "title": { "romaji": "Fikushon Manga", "english": "Fixture Manga", "native": "フィクスチャ" },
+      "synonyms": ["Fixture Manga"],
+      "description": "A synthetic <b>summary</b> &amp; more.",
+      "startDate": { "year": 2018 },
+      "genres": ["Action", "Adventure"],
+      "tags": [
+        { "name": "Music", "rank": 80, "category": "Theme" },
+        { "name": "School Life", "rank": 60, "category": "Theme" },
+        { "name": "Music", "rank": 80, "category": "Theme" }
+      ],
+      "staff": {
+        "edges": [
+          { "role": "Story", "node": { "name": "A. Story" } },
+          { "role": "Art", "node": { "name": "P. Artist" } },
+          { "role": "Story & Art", "node": { "name": "C. Both" } },
+          { "role": "Art", "node": { "name": "P. Artist" } },
+          { "role": "Story", "node": { "name": "A. Story" } },
+          { "role": "Illustration", "node": { "name": "I. Illustration" } },
+          { "role": "Original Story", "node": { "name": "O. Origin" } }
+        ]
+      },
+      "isAdult": true,
+      "countryOfOrigin": "JP",
+      "chapters": 120,
+      "volumes": 14,
+      "format": "MANGA"
+    }
+  }
+}

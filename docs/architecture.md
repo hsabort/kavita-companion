@@ -236,3 +236,63 @@ HTTP Basic and raises GCD's anonymous 30 requests/hour to 2,000/day. Licence `CC
 - **Rate limit**: anonymous 30/hour → `minIntervalMs: 120000`; with a key the adapter narrows it
   (`PROVIDER_GCD_MIN_INTERVAL_MS[_AUTHED]`). `429`/`Retry-After` handled by `http.ts`.
 - **Probe**: `POST /api/admin/providers/gcd/test`. Tests: `tests/test_providers_gcd.py`.
+
+### MangaDex (manga primary, phase 2 W4)
+
+`providers/mangadex.ts` is the manga **primary**: `providers/index.ts` registers it with `priority: 10`
+(AniList is `20`), so `enabledFor("manga")` is tried primary-then-fallback. It is **off by default** and
+**keyless** — enabling it is enough. MangaDex's Acceptable Usage Policy requires a **credit**, forbids
+using the data for ads/paid services, forbids hotlinking images, and requires a truthful User-Agent and
+**server-side** calls (the API has no third-party CORS, so the browser never calls it). The adapter
+therefore declares the credit as its licence name, `covers: "none"` (no image is ever fetched, proxied
+or written) and the shared UA. Base: `PROVIDER_MANGADEX_BASE` (default `https://api.mangadex.org`).
+
+- **Search** (`search(key, query)`): `GET {base}/manga?title=<title>&limit=8&order[relevance]=desc` →
+  `Candidate[]`; `externalId` = manga id, `title` = the localized title (preferring `en`), `year`.
+  MangaDex is **series-level**: it carries no issue number, so a caller's chapter number is not a
+  discriminating signal and candidates are banded on the series title + year only (`exact` when both
+  agree, `near` on a title match, else `loose`).
+- **Fetch** (`fetch(key, externalId)`): `GET {base}/manga/{id}?includes[]=author&includes[]=artist&includes[]=cover_art`
+  → a `FetchedRecord` mapped to our ComicInfo names: Series (localized title, prefer `en`), Summary
+  (`description`, prefer `en`, through `plainText` with the common credit/support preamble dropped),
+  Year (`year`), Writer (the `author` relationships), Penciller (the `artist` relationships), Genre
+  (tags whose `attributes.group` is `"genre"`), Tags (every other tag group), LanguageISO
+  (`originalLanguage`, only when it looks like a code) and AgeRating (`contentRating` →
+  `safe`=Everyone / `suggestive`=Teen / `erotica`=Mature 17+ / `pornographic`=Adults Only 18+).
+  `lastChapter`/`lastVolume` are optional series-wide counts and are deliberately **not** mapped to
+  Number/Volume. All text goes through `plainText`; records are read through `metadata_cache` with the
+  configured TTL (default 7 days for MangaDex).
+- **Rate limit**: ~5 requests/s per IP → `minIntervalMs: 250` (`PROVIDER_MANGADEX_MIN_INTERVAL_MS`);
+  `429`/`Retry-After` handled by `http.ts`.
+- **Probe**: `POST /api/admin/providers/mangadex/test` (one small manga list). Tests:
+  `tests/test_providers_mangadex.py`.
+
+### AniList (manga/light-novel fallback, phase 2 W5)
+
+`providers/anilist.ts` is the manga **fallback**: registered with `priority: 20`, so it is tried after
+MangaDex. It is **off by default** and **keyless** — reads need no auth (OAuth is only for
+private/mutations, which we never do). AniList's terms are the strictest of the providers: the API must
+not be used as a backup/data-storage service and bulk hoarding is forbidden, so lookups stay
+per-review and the read-through cache TTL is deliberately **short** (default 3 days). Licence `AniList`
+(<https://docs.anilist.co/>), `covers: "none"`. Base: `PROVIDER_ANILIST_BASE` (default
+`https://graphql.anilist.co`).
+
+- **Query**: one GraphQL selection is used for both steps — `Media(search:…)` for a search and
+  `Media(id:…)` for a fetch, requesting `id title{romaji english native} synonyms
+  description(asHtml:false) startDate{year} genres tags{name rank category} staff(edges{role node{name}})
+  isAdult countryOfOrigin chapters volumes format`. It is a `POST` with a JSON body; a GraphQL
+  `errors[]` in a 200 body is turned into a typed provider error.
+- **Search** (`search(key, query)`): at most one candidate (AniList returns a single best match),
+  banded/scored on the title (english, else romaji) and `startDate.year` exactly as MangaDex.
+- **Fetch** (`fetch(key, externalId)`): by integer media id → Series (english, else romaji, else
+  native), Summary (`description`), Year (`startDate.year`, only a four-digit value), Writer (staff
+  roles matching `story|writer`, de-duplicated), Penciller (roles matching `art|illustration|pencil`,
+  de-duplicated — a "Story & Art" credit appears in both buckets but never twice in one), Genre
+  (`genres`), Tags (`tags[].name`), LanguageISO (`countryOfOrigin` mapped: JP→ja, KR→ko, CN→zh,
+  TW→zh-tw, HK→zh-hk) and AgeRating from the coarse `isAdult` boolean (`true`=Mature 17+,
+  `false`=Everyone — we never invent finer granularity). `chapters`/`volumes` are frequently null and
+  series-level, so they are **not** mapped to Number/Volume.
+- **Rate limit**: 90/min documented but currently degraded to 30/min → `minIntervalMs: 2000`
+  (`PROVIDER_ANILIST_MIN_INTERVAL_MS`); `429`/`Retry-After` handled by `http.ts`.
+- **Probe**: `POST /api/admin/providers/anilist/test` (one minimal search). Tests:
+  `tests/test_providers_anilist.py`.

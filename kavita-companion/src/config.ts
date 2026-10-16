@@ -90,6 +90,14 @@ export const config = {
   // can tighten/loosen them without a rebuild; the defaults match the documented limits.
   gcdMinIntervalMs: Number(process.env.PROVIDER_GCD_MIN_INTERVAL_MS ?? 120_000),
   gcdMinIntervalMsAuthed: Number(process.env.PROVIDER_GCD_MIN_INTERVAL_MS_AUTHED ?? 5_000),
+  // MangaDex (manga) base URL. Keyless; server-side only. The test stack points this at a local fake.
+  mangadexBaseUrl: (process.env.PROVIDER_MANGADEX_BASE || "https://api.mangadex.org"),
+  // MangaDex ~5 requests/s per IP -> a 250 ms spacing; overridable so the tests can set it to 0.
+  mangadexMinIntervalMs: Number(process.env.PROVIDER_MANGADEX_MIN_INTERVAL_MS ?? 250),
+  // AniList (manga/light novels) GraphQL base URL. Keyless. The test stack points this at a local fake.
+  anilistBaseUrl: (process.env.PROVIDER_ANILIST_BASE || "https://graphql.anilist.co"),
+  // AniList 90/min documented but degraded to 30/min -> a 2 s spacing; overridable for the tests.
+  anilistMinIntervalMs: Number(process.env.PROVIDER_ANILIST_MIN_INTERVAL_MS ?? 2_000),
 };
 
 // ---- Per-provider settings ----------------------------------------------------------------
