@@ -84,6 +84,17 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             pass  # the client aborted (e.g. hit the size cap); that is expected
 
     def _default(self, path):
+        # A fake can be scoped to one provider (set at construction). The stub/Metron routing is the
+        # default so the existing tests are unchanged; a provider="gcd" fake serves GCD's paths.
+        if getattr(self.server, "provider", None) == "gcd":
+            if path.startswith("/api/series/name/") or path in ("/api/series", "/api/series/"):
+                return {"fixture": "search", "provider": "gcd"}
+            if path in ("/api", "/api/"):
+                return {"json": {"series": "https://www.comics.org/api/series/",
+                                 "publisher": "https://www.comics.org/api/publisher/"}}
+            if path.startswith("/api/issue/"):
+                return {"fixture": "record", "provider": "gcd"}
+            return {"status": 404, "json": {"error": "not found"}}
         if path == "/stub/search":
             return {"fixture": "search", "provider": "stub"}
         if path == "/stub/probe":
@@ -128,9 +139,11 @@ class _Server(http.server.ThreadingHTTPServer):
 
 
 class ProviderFake:
-    def __init__(self, port):
+    def __init__(self, port, provider=None):
         self.port = int(port)
+        self.provider = provider
         self._server = _Server(("0.0.0.0", self.port), _Handler)
+        self._server.provider = provider
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
 
     def start(self):
