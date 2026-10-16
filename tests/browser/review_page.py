@@ -112,6 +112,10 @@ with sync_playwright() as p:
     phone_ctx.close()
 
     page.screenshot(path=f"{shots}/m3-desktop-before.png", full_page=True)
+    # An async refresh can re-render the card while the phone context is being set up, resetting the
+    # Number field; re-apply it and confirm the destination before approving.
+    card.locator("label.field", has_text="Number").locator("input").fill("7")
+    card.locator(".destination", has_text="#007.cbz").wait_for(timeout=10000)
     card.locator("button", has_text="Approve").click()
     card.locator(".row-status", has_text="Approved").wait_for(timeout=60000)
     status_text = card.locator(".row-status").inner_text()
