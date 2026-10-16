@@ -324,3 +324,9 @@ button.link:hover { background: none; color: var(--primary-hover); }
 /* Requests */
 .subhead { font-size: 1rem; margin: 1rem 0 0.5rem; }
 .request-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0.5rem 0.9rem; align-items: end; margin-bottom: 0.5rem; }
+
+/* Page preview */
+.preview-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.preview-frame { display: flex; flex-direction: column; gap: 0.75rem; max-width: 100%; max-height: 100%; }
+#preview-img { max-width: 100%; max-height: 78vh; object-fit: contain; background: #000; border-radius: var(--radius); }
+.preview-bar { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }

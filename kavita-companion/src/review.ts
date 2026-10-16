@@ -11,13 +11,13 @@ import { copyFile, mkdir, readdir, readFile, rename, rm, rmdir, stat, statfs, wr
 import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import { pipeline } from "node:stream/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { createZip, extractAll, naturalCompare, pageImages, type ArchiveEntry } from "./archive.js";
+import { createZip, extractAll, naturalCompare, pageImages, readEntry, type ArchiveEntry } from "./archive.js";
 import { currentUser, type SessionUser } from "./auth.js";
 import { notifyUploader } from "./notify.js";
 import { fulfilRequests } from "./requests.js";
 import { config } from "./config.js";
 import { audit, db } from "./db.js";
-import { type FileKind, type Inspection, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
+import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
 import * as kavita from "./kavita.js";
 import {
   AGE_RATINGS, COMICINFO_FIELDS, type Metadata, type MetadataField,
@@ -621,6 +621,31 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     reply.header("Content-Type", types[ext] ?? "application/octet-stream");
     reply.header("Cache-Control", request.query.fix ? "no-store" : "private, max-age=3600");
     return reply.send(createReadStream(coverPath));
+  });
+
+  // One page of a pending comic, so a reviewer can page through it before approving (docs/roadmap.md §3).
+  app.get<{ Params: { id: string; n: string } }>("/api/review/:id/page/:n", async (request, reply) => {
+    if (!requireReviewer(request, reply)) return;
+    const row = getUpload(request.params.id);
+    if (!row?.stored_path) return reply.code(404).send({ error: "File not found" });
+    let names: string[] = [];
+    try {
+      names = (row.inspection ? (JSON.parse(row.inspection) as Inspection).pageNames : undefined) ?? [];
+    } catch {
+      names = [];
+    }
+    const index = Number(request.params.n) - 1;
+    if (!Number.isInteger(index) || index < 0 || index >= names.length) return reply.code(404).send({ error: "No such page" });
+    const entry = names[index]!;
+    let image: Buffer;
+    try {
+      image = await readEntry(row.stored_path, entry, 25 * 1024 * 1024);
+    } catch {
+      return reply.code(404).send({ error: "Could not read that page" });
+    }
+    reply.header("Content-Type", imageMime(entry));
+    reply.header("Cache-Control", "private, max-age=300");
+    return reply.send(image);
   });
 
   app.get<{ Params: { id: string } }>("/api/review/:id/download", async (request, reply) => {

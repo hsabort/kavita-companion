@@ -108,7 +108,11 @@ approval; no match leaves it open.
 
 ---
 
-## 3. Reviewer preview — planned
+## 3. Reviewer preview — built
+
+Shipped in 0.2.5: a reviewer can page through a pending comic before approving (page entry names are
+recorded at inspection; `GET /api/review/:id/page/:n` serves one page through the existing safe-archive
+path). Tests in `tests/test_preview.py` and `tests/browser/review_page.py`.
 
 **Goal.** Let a reviewer page through a pending file before approving it (today only the cover is shown),
 and optionally choose the cover.

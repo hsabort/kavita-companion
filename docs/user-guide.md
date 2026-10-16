@@ -85,6 +85,9 @@ put back with **Restore to queue** under *Recent decisions*.
 
 **Download** gets the original file if you want to check it first.
 
+**Preview** pages through a comic's images in the portal (Previous / Next, or the arrow keys), so you
+can check the content before approving without downloading it.
+
 ### After approving
 
 Under **Recent decisions** each approved file shows *Checking that Kavita shows it…* and then

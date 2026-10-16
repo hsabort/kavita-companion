@@ -505,6 +505,10 @@ function itemRow(item, shared) {
   const approve = el("button", { type: "button", textContent: fixing ? "Save changes" : "Approve" });
   const reject = el("button", { type: "button", className: "secondary", textContent: fixing ? "Cancel" : "Reject…" });
   const download = fixing ? null : el("a", { href: `/api/review/${encodeURIComponent(item.id)}/download`, textContent: "Download" });
+  const previewBtn = !fixing && item.kind === "comic" && item.inspection?.pages
+    ? el("button", { type: "button", className: "secondary", textContent: "Preview" })
+    : null;
+  if (previewBtn && item.inspection?.pages) previewBtn.addEventListener("click", () => openPreview(item.id, item.inspection.pages, 1));
 
   async function doApprove() {
     status.textContent = "";
@@ -581,7 +585,7 @@ function itemRow(item, shared) {
       destination,
       warnings,
       el("details", { className: "more" }, el("summary", { textContent: "Summary" }), summary),
-      el("div", { className: "actions" }, approve, reject, download),
+      el("div", { className: "actions" }, approve, reject, previewBtn, download),
       status,
     ),
   );
@@ -871,6 +875,40 @@ let activityTimer = null;
 $("activity-user").addEventListener("input", () => {
   clearTimeout(activityTimer);
   activityTimer = setTimeout(() => refreshActivity(true), 300);
+});
+
+// ---------- Page preview (admins) ----------
+// Page through a pending comic before approving it (src/review.ts: GET /api/review/:id/page/:n).
+let previewState = null; // { id, count, index }
+
+function renderPreview() {
+  if (!previewState) return;
+  $("preview-img").src = `/api/review/${encodeURIComponent(previewState.id)}/page/${previewState.index}`;
+  $("preview-count").textContent = `${previewState.index} / ${previewState.count}`;
+  $("preview-prev").disabled = previewState.index <= 1;
+  $("preview-next").disabled = previewState.index >= previewState.count;
+}
+
+function openPreview(id, count, index = 1) {
+  previewState = { id, count, index: Math.min(Math.max(index, 1), count) };
+  $("page-preview").hidden = false;
+  renderPreview();
+}
+
+function closePreview() {
+  previewState = null;
+  $("page-preview").hidden = true;
+  $("preview-img").removeAttribute("src");
+}
+
+$("preview-close").addEventListener("click", closePreview);
+$("preview-prev").addEventListener("click", () => { if (previewState && previewState.index > 1) { previewState.index -= 1; renderPreview(); } });
+$("preview-next").addEventListener("click", () => { if (previewState && previewState.index < previewState.count) { previewState.index += 1; renderPreview(); } });
+document.addEventListener("keydown", (event) => {
+  if (!previewState) return;
+  if (event.key === "Escape") closePreview();
+  else if (event.key === "ArrowLeft" && previewState.index > 1) { previewState.index -= 1; renderPreview(); }
+  else if (event.key === "ArrowRight" && previewState.index < previewState.count) { previewState.index += 1; renderPreview(); }
 });
 
 // ---------- Requests ----------
