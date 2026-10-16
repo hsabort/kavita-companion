@@ -135,7 +135,11 @@ assert image bytes and content type; assert a non-reviewer gets 403 and a `../` 
 
 ---
 
-## 4. Admin activity page — planned
+## 4. Admin activity page — built
+
+Shipped in 0.2.2: a reviewer-only **Activity** panel (`src/activity.ts`, `GET /api/admin/activity` and
+`GET /api/admin/insights`) with recent audit-log entries (action/username filters, keyset paging) and
+summary counts. Tests in `tests/test_activity.py`.
 
 **Goal.** Give admins a view of what's happening in the portal without shelling in.
 

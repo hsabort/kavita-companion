@@ -47,6 +47,7 @@ All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after sta
 | `themes.ts` | Follows the user's Kavita theme: reads the theme's colour variables and maps them onto the portal's design tokens |
 | `kavita.ts` | Kavita REST API client |
 | `db.ts` | SQLite (Node's built-in `node:sqlite`): sessions, uploads, audit log |
+| `activity.ts` | Admin Activity panel: recent audit-log entries (filters, paging) and a few counts |
 | `backup.ts` | Daily `VACUUM INTO` snapshot of the database |
 | `setup-kavita.ts` | First-run setup used by `setup.sh` (admin, libraries, auth key) |
 

@@ -86,7 +86,11 @@ function show(user, kavitaUrl) {
   }
   $("who").textContent = user.username;
   $("review-section").hidden = !user.isReviewer;
-  if (user.isReviewer) refreshReview();
+  $("activity-section").hidden = !user.isReviewer;
+  if (user.isReviewer) {
+    refreshReview();
+    refreshActivity(true);
+  }
   if (!user.canUpload) notice("Your Kavita account is read-only, so uploading isn't available.");
   $("upload-section").hidden = !user.canUpload;
   if (user.canUpload) startUploader();
@@ -761,6 +765,108 @@ $("approved-search").addEventListener("input", (event) => {
   }, 300);
 });
 $("review-banner-refresh").addEventListener("click", () => refreshReview());
+
+// ---------- Activity (admins) ----------
+// Recent audit-log entries and a few counts, from src/activity.ts.
+
+const ACTIVITY_PAGE = 50;
+let activityBefore = null;
+let activityLoading = false;
+
+const ACTIVITY_LABEL = {
+  login: "signed in",
+  login_failed: "failed to sign in",
+  logout: "signed out",
+  upload_started: "started an upload",
+  upload_completed: "finished an upload",
+  upload_approved: "approved an upload",
+  upload_rejected: "rejected an upload",
+  upload_fixed: "fixed a file",
+  upload_invalid: "discarded an invalid file",
+  upload_duplicate: "found a duplicate",
+  upload_withdrawn: "withdrew an upload",
+  upload_cancelled: "cancelled an upload",
+  upload_approval_failed: "an approval failed",
+  upload_restored: "restored an upload",
+  sidebar_link: "added the Kavita sidebar link",
+  session_revoked: "was signed out (Kavita account changed)",
+};
+
+function activityDetail(detail) {
+  if (!detail) return "";
+  if (typeof detail === "string") return detail;
+  return detail.filename ?? detail.reason ?? detail.via ?? "";
+}
+
+function activityRow(entry) {
+  const li = el("li", { className: "upload" });
+  li.append(el("div", { className: "upload-name", textContent: `${entry.username ?? "—"} ${ACTIVITY_LABEL[entry.action] ?? entry.action}` }));
+  const bits = [formatDate(entry.at)];
+  const detail = activityDetail(entry.detail);
+  if (detail) bits.push(detail);
+  if (entry.ip) bits.push(entry.ip);
+  li.append(el("div", { className: "upload-meta", textContent: bits.join(" · ") }));
+  return li;
+}
+
+function insightCard(label, value, sub) {
+  return el("div", { className: "insight" },
+    el("div", { className: "insight-value", textContent: value }),
+    el("div", { className: "insight-label", textContent: label }),
+    sub ? el("div", { className: "insight-sub", textContent: sub }) : null);
+}
+
+function renderInsights(insights) {
+  const week = insights.last7Days ?? {};
+  const top = (insights.topUploaders ?? [])[0];
+  const pending = insights.pending ?? { count: 0, bytes: 0 };
+  $("activity-insights").replaceChildren(
+    insightCard("Waiting for review", String(pending.count), pending.bytes > 0 ? formatSize(pending.bytes) : ""),
+    insightCard("Uploaded · 7 days", String(week.uploaded ?? 0)),
+    insightCard("Approved · 7 days", String(week.approved ?? 0)),
+    insightCard("Rejected · 7 days", String(week.rejected ?? 0)),
+    insightCard("Top uploader · 30 days", top ? top.username : "—", top ? `${top.count} files` : ""),
+  );
+}
+
+async function refreshActivity(reset) {
+  if (activityLoading) return;
+  activityLoading = true;
+  try {
+    if (reset) activityBefore = null;
+    const params = new URLSearchParams();
+    if ($("activity-action").value) params.set("action", $("activity-action").value);
+    const user = $("activity-user").value.trim();
+    if (user) params.set("username", user);
+    params.set("limit", String(ACTIVITY_PAGE));
+    if (activityBefore) params.set("before", String(activityBefore));
+    const { status, body } = await api(`/api/admin/activity?${params}`);
+    if (status !== 200) return;
+    const entries = body.entries ?? [];
+    activityBefore = body.nextBefore ?? null;
+    const list = $("activity-list");
+    const rows = entries.map(activityRow);
+    if (reset) list.replaceChildren(...rows);
+    else list.append(...rows);
+    $("activity-empty").hidden = list.children.length > 0;
+    $("activity-more").hidden = !activityBefore;
+    if (reset) {
+      const { status: code, body: insights } = await api("/api/admin/insights");
+      if (code === 200) renderInsights(insights);
+    }
+  } finally {
+    activityLoading = false;
+  }
+}
+
+$("activity-refresh").addEventListener("click", () => refreshActivity(true));
+$("activity-more").addEventListener("click", () => refreshActivity(false));
+$("activity-action").addEventListener("change", () => refreshActivity(true));
+let activityTimer = null;
+$("activity-user").addEventListener("input", () => {
+  clearTimeout(activityTimer);
+  activityTimer = setTimeout(() => refreshActivity(true), 300);
+});
 
 // Coming from Kavita's sidebar link (GET /login) when it didn't work.
 const signin = new URLSearchParams(location.search).get("signin");

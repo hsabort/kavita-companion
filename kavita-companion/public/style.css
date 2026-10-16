@@ -304,3 +304,13 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .kavita-ok { color: var(--primary); }
 .kavita-link { margin-left: 0.25rem; }
 #approved-search { max-width: 26rem; margin-bottom: 0.75rem; }
+
+/* Admin activity panel */
+.insights { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 0.6rem; margin-bottom: 1rem; }
+.insight { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.75rem; }
+.insight-value { font-size: 1.35rem; font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
+.insight-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }
+.insight-sub { font-size: 0.8rem; margin-top: 0.15rem; }
+.activity-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; margin-bottom: 0.75rem; }
+.activity-filters label { color: var(--muted); font-size: 0.85rem; }
+.activity-filters select, .activity-filters input { max-width: 14rem; }

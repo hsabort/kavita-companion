@@ -83,3 +83,11 @@ archives (including older .cbr files) become CBZ with your values in their Comic
 if the series or name changed, an emptied series folder is removed, and Kavita rescans. If anything goes
 wrong the file in the library is left exactly as it was and the reason is shown. **Cancel** closes the
 editor without changes.
+
+## Activity (admins)
+
+Below the review queue, **Activity** shows what has happened in the portal, newest first: sign-ins and
+failed sign-ins, uploads, approvals, rejections, fixes, withdrawals and discarded files. Use the
+**Action** and **User** filters to narrow it down and **Show older** to page back. The cards at the top
+show what is waiting for review (and its total size), the last seven days of uploads/approvals/
+rejections, and the most active uploader of the last month.
