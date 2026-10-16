@@ -7,7 +7,7 @@ import { config, providerCacheTtlMsFor } from "../config.js";
 import { audit } from "../db.js";
 import { seal } from "../seal.js";
 import { attributionFor } from "./attribution.js";
-import { cacheCount, getCachedRecord, putCachedRecord, purgeProviderCache } from "./cache.js";
+import { cacheCount, deleteCachedRecord, getCachedRecord, putCachedRecord, purgeProviderCache } from "./cache.js";
 import { forgetProviderLinks } from "./links.js";
 import { mergeRecords } from "./merge.js";
 import {
@@ -185,6 +185,8 @@ export function registerProviderRoutes(app: FastifyInstance) {
         if (!externalId) externalId = candidates[0]?.externalId ?? "";
       }
       if (!externalId) return { ok: false, reason: "no-match" };
+      // A forced refresh must bypass the adapter's own read-through cache, not just this route's.
+      if (body.refresh) deleteCachedRecord(id, externalId);
       let record = body.refresh ? null : getCachedRecord(id, externalId);
       const cached = record !== null;
       if (!record) {

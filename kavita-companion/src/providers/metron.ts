@@ -97,10 +97,12 @@ function yearOf(series: Record<string, unknown>, issue: MetronIssue): string | u
 // (or a bare `[{ creator, role }]`); role names are matched case-insensitively.
 const ROLE_PATTERNS: Array<[RegExp, MetadataField]> = [
   [/writer/i, "Writer"],
-  [/pencill?er/i, "Penciller"],
+  // Metron's cover role is "Cover"; match it before the artist pattern so a "Cover Artist" (if it
+  // ever appears) becomes CoverArtist, while the interior "Artist" role becomes Penciller.
+  [/cover/i, "CoverArtist"],
+  [/pencill?er|artist/i, "Penciller"],
   [/inker/i, "Inker"],
   [/colou?rist/i, "Colorist"],
-  [/cover/i, "CoverArtist"],
 ];
 
 function creditRoles(credits: unknown): Metadata {
@@ -108,9 +110,13 @@ function creditRoles(credits: unknown): Metadata {
   if (!Array.isArray(credits)) return {};
   for (const entry of credits) {
     const credit = obj(entry);
-    const creator = nameOf(credit.creator);
+    // Metron sends `creator` as a bare name string; nameOrString also accepts a nested { name }.
+    const creator = nameOrString(credit.creator);
     if (!creator) continue;
-    const roles = Array.isArray(credit.roles) ? credit.roles : credit.role ? [credit.role] : [];
+    // Metron's `role` is an array of { id, name }; accept a single object too.
+    const roles = Array.isArray(credit.roles) ? credit.roles
+      : Array.isArray(credit.role) ? credit.role
+      : credit.role ? [credit.role] : [];
     for (const role of roles) {
       const roleName = typeof role === "string" ? role : nameOf(role);
       for (const [pattern, field] of ROLE_PATTERNS) {

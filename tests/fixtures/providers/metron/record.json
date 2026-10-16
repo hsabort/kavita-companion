@@ -18,12 +18,12 @@
   "publisher": { "id": 5, "name": "Fixture Press" },
   "imprint": { "id": 8, "name": "Fixture Imprint" },
   "credits": [
-    { "id": 1, "creator": { "id": 11, "name": "A. Writer" }, "roles": [{ "id": 1, "name": "Writer" }] },
-    { "id": 2, "creator": { "id": 12, "name": "P. Artist" }, "roles": [{ "id": 2, "name": "Penciller" }] },
-    { "id": 3, "creator": { "id": 13, "name": "I. Inker" }, "roles": [{ "id": 3, "name": "Inker" }] },
-    { "id": 4, "creator": { "id": 14, "name": "C. Colourist" }, "roles": [{ "id": 4, "name": "Colorist" }, { "id": 1, "name": "Writer" }] },
-    { "id": 5, "creator": { "id": 15, "name": "V. Cover" }, "roles": [{ "id": 5, "name": "Cover" }] },
-    { "id": 6, "creator": { "id": 16, "name": "L. Letterer" }, "roles": [{ "id": 6, "name": "Letterer" }] }
+    { "id": 1, "creator": "A. Writer", "role": [{ "id": 1, "name": "Writer" }] },
+    { "id": 2, "creator": "P. Artist", "role": [{ "id": 2, "name": "Artist" }] },
+    { "id": 3, "creator": "I. Inker", "role": [{ "id": 3, "name": "Inker" }] },
+    { "id": 4, "creator": "C. Colourist", "role": [{ "id": 5, "name": "Colorist" }, { "id": 1, "name": "Writer" }] },
+    { "id": 5, "creator": "V. Cover", "role": [{ "id": 7, "name": "Cover" }] },
+    { "id": 6, "creator": "L. Letterer", "role": [{ "id": 6, "name": "Letterer" }] }
   ],
   "arcs": [{ "id": 1, "name": "Fixture Arc" }],
   "characters": [{ "id": 1, "name": "Fixture Hero" }],
