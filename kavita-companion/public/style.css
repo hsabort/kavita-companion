@@ -375,9 +375,6 @@ button.link:hover { background: none; color: var(--primary-hover); }
 
 /* Find metadata (review card) */
 .metadata-finder { margin-top: 0.8rem; }
-.match-panel { margin-top: 0.6rem; padding: 0.75rem 0.85rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); }
-.match-panel[hidden] { display: none; }
-.match-panel .row-status { margin: 0; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 0.25rem;
@@ -419,6 +416,33 @@ label.check input { width: auto; margin: 0; }
 .attribution a { color: var(--primary); }
 .conflicts { margin: 0.3rem 0 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--muted); }
 .row-status.ok { color: var(--primary); }
+
+/* Find metadata dialog: the whole external-metadata step, lifted out of the review card. */
+.metadata-dialog-overlay {
+  position: fixed; inset: 0; z-index: 60; padding: 1rem;
+  display: flex; align-items: flex-start; justify-content: center;
+  background: rgba(0, 0, 0, 0.7); overflow-y: auto;
+}
+.metadata-dialog-overlay[hidden] { display: none; }
+.metadata-dialog {
+  width: min(40rem, 100%); max-height: calc(100vh - 2rem); margin: auto 0;
+  display: flex; flex-direction: column;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--surface-solid); border-top: 2px solid var(--primary);
+  border-radius: var(--radius); box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+}
+.metadata-dialog:focus { outline: none; }
+.metadata-dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.metadata-dialog-head h3 { margin: 0; }
+.metadata-dialog-head-actions { display: flex; align-items: center; gap: 0.5rem; }
+.metadata-dialog-providers:empty { display: none; }
+.metadata-dialog-attribution { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+.metadata-dialog-attribution a { color: var(--primary); }
+.metadata-dialog-note { margin: 0.5rem 0 0; font-size: 0.85rem; }
+.metadata-dialog-body { margin-top: 0.75rem; overflow-y: auto; }
+.metadata-dialog-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; margin: 0.75rem 0 0; }
+.apply-summary { margin: 0; font-size: 0.9rem; color: var(--text); }
+.apply-summary.error { color: var(--error-text); }
 
 /* About -> Metadata sources */
 .source-list { display: grid; gap: 0.5rem; margin-bottom: 0.6rem; }
