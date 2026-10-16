@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.4 — 2026-10-16
+
+Fixed:
+- **AniList** (found by a real-API smoke test, follow-up to 0.6.3): the staff selection used
+  `node { name }`, but AniList's `Staff.name` is an object, so the query still errored. It is now
+  `node { name { full } }` and the adapter reads `name.full`, so AniList Writer/Penciller populate.
+
 ## 0.6.3 — 2026-10-16
 
 Fixed:

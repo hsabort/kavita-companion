@@ -44,7 +44,7 @@ const MEDIA_SELECTION = `
   startDate { year }
   genres
   tags { name rank category }
-  staff { edges { role node { name } } }
+  staff { edges { role node { name { full } } } }
   isAdult
   countryOfOrigin
   chapters
@@ -125,7 +125,9 @@ function staffNames(staff: unknown, pattern: RegExp): string {
   for (const edge of edges) {
     const entry = obj(edge);
     if (!pattern.test(text(entry.role))) continue;
-    const name = text(obj(entry.node).name);
+    // AniList's Staff.name is an object ({ full, native, ... }); accept a plain string too.
+    const rawName = obj(entry.node).name;
+    const name = typeof rawName === "string" ? text(rawName) : text(obj(rawName).full);
     if (!name || seen.has(name.toLowerCase())) continue;
     seen.add(name.toLowerCase());
     names.push(name);

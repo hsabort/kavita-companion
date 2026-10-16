@@ -14,13 +14,13 @@
       ],
       "staff": {
         "edges": [
-          { "role": "Story", "node": { "name": "A. Story" } },
-          { "role": "Art", "node": { "name": "P. Artist" } },
-          { "role": "Story & Art", "node": { "name": "C. Both" } },
-          { "role": "Art", "node": { "name": "P. Artist" } },
-          { "role": "Story", "node": { "name": "A. Story" } },
-          { "role": "Illustration", "node": { "name": "I. Illustration" } },
-          { "role": "Original Story", "node": { "name": "O. Origin" } }
+          { "role": "Story", "node": { "name": { "full": "A. Story" } } },
+          { "role": "Art", "node": { "name": { "full": "P. Artist" } } },
+          { "role": "Story & Art", "node": { "name": { "full": "C. Both" } } },
+          { "role": "Art", "node": { "name": { "full": "P. Artist" } } },
+          { "role": "Story", "node": { "name": { "full": "A. Story" } } },
+          { "role": "Illustration", "node": { "name": { "full": "I. Illustration" } } },
+          { "role": "Original Story", "node": { "name": { "full": "O. Origin" } } }
         ]
       },
       "isAdult": true,
