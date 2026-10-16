@@ -54,6 +54,21 @@ has been built.
 
 ---
 
+## Decisions (agreed 2026-10-16)
+
+These supersede the open questions in the sections below.
+
+1. **Direct integration only** — no Kavita+ dependency; we don't reimplement Kavita's own matching. (Kavita+ users keep Kavita's matching inside Kavita.)
+2. **Providers enabled by default** when an admin turns external metadata on: comics **Metron → GCD**, manga/LN **MangaDex → AniList**, books **Hardcover → Open Library**; **ComicVine and PRH opt-in**; **Jikan, Kitsu, ISBNdb excluded**. External lookups are off until enabled.
+3. **Keys** are stored **AES-256-GCM-encrypted in SQLite** (`COMPANION_SECRET`), managed by admins in the portal, with an optional `.env` override.
+4. **ComicVine and Google Books are excluded** — their terms conflict with writing data into files. No legal pass is required to ship phase 2.
+5. **Attribution:** per-candidate source chips + an "applied from X (CC BY-SA 4.0)" line on the card + an **About → Metadata sources** page listing each provider's credit and licence link, rendered from adapter metadata.
+6. **Search & browse:** a metadata-completeness score + a **"needs metadata" queue** + a thin reviewer-only **Library** tab (search/filter/browse that feeds the fix flow); per-series bulk-fill and saved views are deferred. PRH stays opt-in (the only true imprint/age source).
+
+**Consequences for the sections below:** the Kavita+ delegation path (architecture §5; project §3/§4) is **out of scope**; the ComicVine adapter and the legal-pass gate (compliance §3; project §4/§5) are **dropped**; PRH remains opt-in; no legal sign-off is needed to ship.
+
+---
+
 # 01 — Compliance and provider terms
 
 Scope: **kavita-companion** integrates directly with third-party metadata providers and writes the
