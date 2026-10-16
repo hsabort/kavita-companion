@@ -46,6 +46,7 @@
       <nav class="tabs" id="tabs" role="tablist" aria-label="Sections" hidden>
         <button class="tab" role="tab" id="tab-upload" type="button">Upload</button>
         <button class="tab" role="tab" id="tab-review" type="button">Review</button>
+        <button class="tab" role="tab" id="tab-library" type="button">Library</button>
         <button class="tab" role="tab" id="tab-requests" type="button">Requests</button>
         <button class="tab" role="tab" id="tab-activity" type="button">Activity</button>
         <button class="tab" role="tab" id="tab-notifications" type="button">Notifications</button>
@@ -73,6 +74,47 @@
           <input id="approved-search" type="search" autocomplete="off" placeholder="e.g. Iron Man">
           <ul id="approved-results" class="uploads"></ul>
         </details>
+      </section>
+
+      <section id="library-section" hidden>
+        <div class="section-head">
+          <h2>Library</h2>
+          <div class="subviews" role="tablist" aria-label="Library views">
+            <button id="library-view-browse" class="subview is-active" role="tab" type="button" aria-selected="true">Browse</button>
+            <button id="library-view-incomplete" class="subview" role="tab" type="button" aria-selected="false">Needs metadata</button>
+          </div>
+        </div>
+
+        <div id="library-browse">
+          <div class="library-filters">
+            <label class="field">Search
+              <input id="library-search" type="search" autocomplete="off" placeholder="e.g. Saga" spellcheck="false">
+            </label>
+            <label class="field">Library
+              <select id="library-filter"><option value="">All libraries</option></select>
+            </label>
+            <button id="library-search-go" type="button" class="btn btn-outline-primary small">Search</button>
+          </div>
+          <p id="library-status" class="row-status" role="status"></p>
+          <p id="library-empty" class="empty" hidden>No series match. Try a different search or library.</p>
+          <div id="library-results" class="library-table-wrap"></div>
+          <button id="library-more" type="button" class="btn btn-outline small show-older" hidden>Show more</button>
+        </div>
+
+        <div id="library-incomplete" hidden>
+          <p class="muted">Series missing a summary, writer, genre or year. Only a bounded page of the
+            library is checked per request (results are cached for a minute).</p>
+          <div class="library-filters">
+            <label class="field">Library
+              <select id="library-inc-filter"><option value="">All libraries</option></select>
+            </label>
+            <button id="library-inc-refresh" type="button" class="btn btn-outline small">Refresh</button>
+          </div>
+          <p id="library-inc-status" class="row-status" role="status"></p>
+          <p id="library-inc-empty" class="empty" hidden>Nothing is missing metadata in the series checked.</p>
+          <div id="library-inc-results" class="library-table-wrap"></div>
+          <button id="library-inc-more" type="button" class="btn btn-outline small show-older" hidden>Show more</button>
+        </div>
       </section>
 
       <section id="activity-section" hidden>

@@ -11,7 +11,9 @@ review card's Find metadata/apply + attribution (W8), with the fake-provider tes
 manga adapter and the AniList manga/light-novel fallback, both keyless and off by default, with their
 fake-provider tests. **M4 built (W6/W7)**: the Hardcover book adapter (keyed) and the Open Library book
 fallback (keyless), with their fake-provider tests; **PRH is deferred** (an opt-in follow-up, the only
-source of a true Imprint/AgeRating). Search/browse (M5) is next.
+source of a true Imprint/AgeRating). **M5 built (W9, Unreleased)**: the reviewer-only **Library** view —
+browse/search and the "needs metadata" queue over Kavita's own catalogue; per-series bulk-fill and
+saved views are deferred.
 
 Integration is **direct** (not only via Kavita+), **human-reviewed**, **low-volume and cached**. Every
 provider must pass the Compliance gate (section 1) before it can be enabled; a provider that cannot be
@@ -28,6 +30,11 @@ storage in `provider_config`, the `metadata_cache`/`provider_links` tables, `mer
 (`tests/provider_fake.py`, `tests/test_providers_framework.py`). External metadata is **off by default**;
 no provider-specific adapter (Metron, GCD, MangaDex, …) is built yet. See
 [architecture.md](architecture.md#metadata-providers-phase-2).
+
+**W9 — search & browse (M5) — is built** (branch `feat/phase2-library`): a completeness signal per
+series and a reviewer-only **Library** tab with browse/search and a "needs metadata" queue, read-only
+over Kavita's own APIs (`src/library.ts`, `docs/architecture.md#library-view-phase-2-m5`). Per-series
+bulk-fill, saved views and sort-by-completeness are deferred (decision 6).
 
 ## Defaults we intend to ship
 

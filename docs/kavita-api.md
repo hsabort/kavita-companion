@@ -37,7 +37,15 @@ Kavita's Swagger UI is only served in Development builds.
 - `GET /api/Library/libraries` → id, name, type, folders (`/data/...`).
 - Series in a library: `POST /api/Series/v2?PageNumber=1&PageSize=N` with
   `{"statements":[{"comparison":0,"field":19,"value":"<libraryId>"}],"combination":1}`. Each series has
-  `folderPath`.
+  `folderPath`. With `statements: []` the same call lists series across every library; a
+  `sortOptions {sortField, isAscending}` body sorts (`sortField` 1 = sort name). `SeriesDto` carries
+  `libraryId`/`libraryName`, so a browse page needs no extra call.
+- Free-text search: `GET /api/Search/search?queryString=<q>&includeChapterAndFiles=false` (a **GET**;
+  `POST` to that path is 404 in v0.9.1.4). It returns a `SearchResultGroupDto`; its `series[]` entries
+  are `SearchResultDto` with `seriesId`, `name`, `libraryId`, `libraryName`, `releaseYear`,
+  `volumeCount`, `chapterCount`. Search is not paged by Kavita.
+- A series' summary, writers, genres, tags, releaseYear and publicationStatus are only on
+  `GET /api/Series/metadata?seriesId=`; `publicationStatus` 0–4 = Ongoing/Hiatus/Completed/Cancelled/Ended.
 - `GET /api/Series/volumes?seriesId=<id>` → volumes with chapters (`minNumber`; values ≤ -1000 mean "none").
 - `GET /api/Plugin/parse?name=<filename>&libraryType=<type>` → `seriesName`, min/max volume and chapter
   numbers (Kavita's own file-name parser).

@@ -147,6 +147,53 @@ export async function seriesInLibrary(libraryId: number): Promise<KavitaSeries[]
   }
 }
 
+/** A series as listed by Kavita's filter API (POST /api/Series/v2), with its library. */
+export interface KavitaSeriesListItem {
+  id: number;
+  name: string;
+  libraryId: number;
+  libraryName: string;
+  folderPath: string;
+}
+
+/**
+ * One page of series from Kavita's filter API (POST /api/Series/v2), sorted by sort name. With no
+ * libraryId every library is listed; the Library view's browse/queue endpoints page through this so
+ * a large library is never fetched in one go.
+ */
+export async function seriesPage(libraryId: number | undefined, page: number, pageSize: number): Promise<KavitaSeriesListItem[]> {
+  const statements = libraryId === undefined ? [] : [{ comparison: 0, field: 19, value: String(libraryId) }];
+  const body = { statements, combination: 1, sortOptions: { sortField: 1, isAscending: true } };
+  const res = await kavitaFetch(`/api/Series/v2?PageNumber=${page}&PageSize=${pageSize}`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Kavita series: HTTP ${res.status}`);
+  const list = (await res.json()) as { id: number; name: string; libraryId?: number; libraryName?: string; folderPath?: string }[];
+  return list.map((s) => ({
+    id: s.id, name: s.name, libraryId: s.libraryId ?? 0, libraryName: s.libraryName ?? "", folderPath: s.folderPath ?? "",
+  }));
+}
+
+/** A series as returned by Kavita's free-text search (GET /api/Search/search?queryString=). */
+export interface KavitaSearchSeries {
+  seriesId: number;
+  name: string;
+  libraryId: number;
+  libraryName: string;
+  releaseYear?: number;
+}
+
+/** Free-text series search across every library (Kavita ranks the matches). */
+export async function searchSeries(query: string): Promise<KavitaSearchSeries[]> {
+  const res = await kavitaFetch(
+    `/api/Search/search?queryString=${encodeURIComponent(query)}&includeChapterAndFiles=false`,
+  );
+  if (!res.ok) throw new Error(`Kavita search: HTTP ${res.status}`);
+  const body = (await res.json()) as { series?: KavitaSearchSeries[] };
+  return body.series ?? [];
+}
+
 /** Issue/chapter and volume numbers already in a series (Kavita's "none" markers left out). */
 export async function seriesContents(seriesId: number): Promise<{ numbers: string[]; volumes: string[] }> {
   const res = await kavitaFetch(`/api/Series/volumes?seriesId=${seriesId}`);
