@@ -1,0 +1,32 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 7001,
+      "number": "1",
+      "cover_date": "2012-03-01",
+      "store_date": "2012-02-15",
+      "modified": "2026-01-01T00:00:00Z",
+      "series": { "id": 101, "name": "Fixture Saga", "volume": 1, "year_began": 2012, "language": "en" },
+      "publisher": { "id": 5, "name": "Fixture Press" }
+    },
+    {
+      "id": 7002,
+      "number": "2",
+      "cover_date": "2012-04-01",
+      "modified": "2026-01-01T00:00:00Z",
+      "series": { "id": 101, "name": "Fixture Saga", "volume": 1, "year_began": 2012, "language": "en" },
+      "publisher": { "id": 5, "name": "Fixture Press" }
+    },
+    {
+      "id": 7099,
+      "number": "9",
+      "cover_date": "1999-09-01",
+      "modified": "2026-01-01T00:00:00Z",
+      "series": { "id": 202, "name": "Entirely Different Thing", "volume": 1, "year_began": 1999, "language": "en" },
+      "publisher": { "id": 6, "name": "Another House" }
+    }
+  ]
+}

@@ -170,3 +170,29 @@ default**: `METADATA_EXTERNAL_ENABLED` is false and every provider is off until 
 
 Tests: `tests/test_providers_framework.py` exercises all of the above against `tests/provider_fake.py`
 (a stdlib fake) with no network and no real keys.
+
+### Metron (comics adapter, phase 2 W2)
+
+`providers/metron.ts` is the first real adapter; `providers/index.ts` registers it (imported by
+`server.ts`), so it exists but is **off by default** — it becomes usable only when external metadata is
+on, its enable flag is set *and* a bearer token is present (the registry resolves `PROVIDER_METRON_KEY`
+or the sealed `provider_config` value). It declares `media: ["comic"]`, the ComicInfo fields it can
+supply, `covers: "none"` (Metron's cover images are fair-use and excluded from CC BY-SA 4.0, so they are
+never fetched, proxied or written) and the `CC BY-SA 4.0` licence. Base URL: `PROVIDER_METRON_BASE`
+(default `https://metron.cloud`).
+
+- **Search** (`search(key, query)`): one `GET {base}/api/issue/?series_name=<title>&number=<n>&series_year_began=<year>`
+  (Metron's ranked issue list) → `Candidate[]`; `externalId` = issue id, `title` = `series.name`,
+  `year` = `series.year_began`, `publisher` = `publisher.name`, `number`. Banded `exact` (series name +
+  number + year), `near` (name + number) or `loose`, with a matching score.
+- **Fetch** (`fetch(key, externalId)`): `GET {base}/api/issue/{id}/` → a `FetchedRecord` mapped to our
+  ComicInfo names: Series/Number/Volume/Title/Summary/Year/Publisher/Imprint/Genre/Tags/LanguageISO/
+  AgeRating, plus the credits→roles split (Writer/Penciller/Inker/Colorist/CoverArtist from `credits`
+  role names, case-insensitive). All text goes through `plainText`. Records are read through the
+  `metadata_cache` with the configured TTL (default 30 days), so a repeat fetch is one call.
+- **Links**: `fetch` has no library/series context, so `linkMetronSeries(libraryId, seriesName, externalId)`
+  is the helper the review flow calls on confirmation to persist a `provider_links` row.
+- **Rate limit**: 20 requests/minute, so it registers `minIntervalMs: 3000` and passes the same spacing
+  to the shared client; `429`/`Retry-After` are handled by `http.ts`.
+- **Probe**: `POST /api/admin/providers/metron/test` fetches one known issue detail through the shared
+  client. Tests: `tests/test_providers_metron.py` against `tests/provider_fake.py` (no network, no keys).

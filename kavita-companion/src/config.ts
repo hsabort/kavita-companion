@@ -80,6 +80,9 @@ export const config = {
   // Metadata cache TTL: default 30 days, per-provider overrides, and a millisecond knob for tests.
   providerCacheTtlDays: Number(process.env.PROVIDER_CACHE_TTL_DAYS ?? 30),
   providerCacheTtlMs: Number(process.env.PROVIDER_CACHE_TTL_MS ?? 0),
+  // Metron (comics) base URL. Real adapters use a fixed HTTPS host; the test stack points this at a
+  // local fake (PROVIDERS_ALLOW_PRIVATE). An empty env value falls back to the default.
+  metronBaseUrl: (process.env.PROVIDER_METRON_BASE || "https://metron.cloud"),
 };
 
 // ---- Per-provider settings ----------------------------------------------------------------

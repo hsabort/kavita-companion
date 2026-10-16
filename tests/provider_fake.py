@@ -6,9 +6,13 @@ framework can be exercised with no network, no real provider and no keys. Record
 (method, path, query, headers, body) so tests can assert call counts, the User-Agent and the auth
 header, and can be scripted per path to return 429 + Retry-After, 500s, oversized bodies or delays.
 
-Used by tests/test_providers_framework.py (started/stopped there). The portal reaches it through the
-Docker gateway: PROVIDER_STUB_BASE=http://<DOCKER_GATEWAY>:<port>. Run standalone with
-`python3 tests/provider_fake.py <port>`.
+Default paths: `/stub/*` for the built-in test stub (W1) and `/api/issue/` (search list) plus
+`/api/issue/<id>/` (issue detail) for the Metron adapter (W2), served from
+`tests/fixtures/providers/<provider>/`.
+
+Used by tests/test_providers_framework.py and tests/test_providers_metron.py (started/stopped there).
+The portal reaches it through the Docker gateway: PROVIDER_STUB_BASE=http://<DOCKER_GATEWAY>:<port>
+(or PROVIDER_METRON_BASE for Metron). Run standalone with `python3 tests/provider_fake.py <port>`.
 
     fake = ProviderFake(20900).start()
     ...
@@ -86,6 +90,11 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return {"json": {"ok": True}}
         if path.startswith("/stub/record/"):
             return {"fixture": "record", "provider": "stub"}
+        # Metron (phase 2, W2): the issue list endpoint and one issue detail.
+        if path in ("/api/issue", "/api/issue/"):
+            return {"fixture": "search", "provider": "metron"}
+        if path.startswith("/api/issue/"):
+            return {"fixture": "record", "provider": "metron"}
         return {"status": 404, "json": {"error": "not found"}}
 
     def _handle(self):

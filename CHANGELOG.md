@@ -13,6 +13,14 @@ Added:
   later): only a built-in test stub. Admins manage providers via
   `GET/POST /api/admin/providers` (reviewer-only; keys are never returned). See
   [docs/architecture.md](docs/architecture.md#metadata-providers-phase-2).
+- **Metron adapter (phase 2, W2)**: the first real metadata provider. Comics only; **off by default**
+  and usable only once an admin enables it *and* supplies a free per-install Metron bearer token. It
+  searches Metron's issue list and maps one issue to our ComicInfo fields (series/number/volume/title/
+  summary/year/publisher/imprint/genre/tags/language/age rating) plus creator roles
+  (Writer/Penciller/Inker/Colorist/CoverArtist), caches records with the shared TTL, and never fetches
+  Metron's fair-use cover images. Data from Metron, CC BY-SA 4.0
+  (<https://creativecommons.org/licenses/by-sa/4.0/>). See
+  [docs/architecture.md](docs/architecture.md#metron-comics-adapter-phase-2-w2).
 
 ## 0.2.8 — 2026-10-16
 
