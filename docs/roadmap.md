@@ -182,7 +182,8 @@ upload's library and returns its Kavita metadata (summary, credits, publishers, 
 language) as review-screen fields, which the card offers with a one-click fill. External providers
 (MangaDex / AniList) remain a later phase. Tests in `tests/test_metadata_match.py`. Phase-2 provider
 research (which external sources to add, free vs paid, licensing) is in
-[metadata-providers.md](metadata-providers.md) — documented, not built.
+[metadata-providers.md](metadata-providers.md) — documented, not built. A concrete implementation plan
+(compliance, architecture, search/browse, QA, project schedule) is in [roadmap-phase2.md](roadmap-phase2.md).
 
 **Goal.** Prefill the review editor with the best matching metadata so admins type less and files land
 with correct names and tags.
