@@ -49,6 +49,7 @@
         <button class="tab" role="tab" id="tab-requests" type="button">Requests</button>
         <button class="tab" role="tab" id="tab-activity" type="button">Activity</button>
         <button class="tab" role="tab" id="tab-notifications" type="button">Notifications</button>
+        <button class="tab" role="tab" id="tab-about" type="button">About</button>
       </nav>
       <p id="notice" class="notice" role="status" hidden></p>
 
@@ -189,6 +190,25 @@
           <span id="notify-status" class="muted"></span>
         </div>
       </details>
+
+      <section id="about-section" hidden>
+        <div class="section-head"><h2>About</h2></div>
+        <h3 class="subhead">Metadata sources</h3>
+        <p class="muted">Reviewers can fetch details for a comic or book from these sources when an admin
+          turns one on. Each source is credited below with its licence; nothing is fetched until a
+          reviewer asks for it.</p>
+        <div id="metadata-sources" class="source-list"></div>
+        <p class="hint">This is not legal advice. Provider terms and licences change; re-check them
+          before enabling a source.</p>
+        <div id="providers-panel-wrap" hidden>
+          <h3 class="subhead">Metadata providers</h3>
+          <p class="muted">Admins only. Providers are off by default: nothing is fetched until you turn
+            one on and, where it needs one, add its key. Keys are stored encrypted and are never shown
+            again.</p>
+          <div id="providers-panel" class="providers-panel"></div>
+          <p id="providers-status" class="row-status" role="status"></p>
+        </div>
+      </section>
     </div>
   </main>
 

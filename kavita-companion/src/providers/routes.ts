@@ -3,9 +3,10 @@
 // returned by any route — only hasKey/configured booleans are.
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { currentUser, type SessionUser } from "../auth.js";
-import { providerCacheTtlMsFor } from "../config.js";
+import { config, providerCacheTtlMsFor } from "../config.js";
 import { audit } from "../db.js";
 import { seal } from "../seal.js";
+import { attributionFor } from "./attribution.js";
 import { cacheCount, getCachedRecord, putCachedRecord, purgeProviderCache } from "./cache.js";
 import { forgetProviderLinks } from "./links.js";
 import { mergeRecords } from "./merge.js";
@@ -32,6 +33,7 @@ const describe = (reg: ProviderRegistration) => ({
   id: reg.provider.id,
   label: reg.provider.label,
   licence: reg.provider.licence,
+  attribution: attributionFor(reg.provider),
   media: reg.provider.capabilities.media,
   fields: reg.provider.capabilities.fields,
   covers: reg.provider.covers,
@@ -65,6 +67,27 @@ function toRecord(input: unknown): FetchedRecord {
 }
 
 export function registerProviderRoutes(app: FastifyInstance) {
+  // The About -> Metadata sources page: every registered provider's required credit and licence,
+  // rendered from the adapters' own metadata so it cannot drift. Visible to any signed-in user; no
+  // key or secret is ever included.
+  app.get("/api/metadata-sources", async (request, reply) => {
+    if (!currentUser(request)) return reply.code(401).send({ error: "Not signed in" });
+    return {
+      externalEnabled: config.metadataExternalEnabled,
+      providers: all().map((reg) => ({
+        id: reg.provider.id,
+        label: reg.provider.label,
+        media: reg.provider.capabilities.media,
+        licence: reg.provider.licence,
+        attribution: attributionFor(reg.provider),
+        covers: reg.provider.covers,
+        keyed: reg.keyed,
+        enabled: isEnabled(reg),
+        configured: isConfigured(reg),
+      })),
+    };
+  });
+
   app.get("/api/admin/providers", async (request, reply) => {
     if (!requireReviewer(request, reply)) return;
     return { providers: all().map(describe) };

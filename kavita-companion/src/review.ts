@@ -15,10 +15,16 @@ import { createZip, extractAll, naturalCompare, pageImages, readEntry, type Arch
 import { currentUser, type SessionUser } from "./auth.js";
 import { notifyUploader } from "./notify.js";
 import { fulfilRequests } from "./requests.js";
-import { config } from "./config.js";
+import { config, providerCacheTtlMsFor } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
 import * as kavita from "./kavita.js";
+import { attributionFor } from "./providers/attribution.js";
+import { getCachedRecord, putCachedRecord } from "./providers/cache.js";
+import { providerCooldownMs, ProviderHttpError } from "./providers/http.js";
+import { mergeRecords } from "./providers/merge.js";
+import { all as allProviders, enabledFor, get as getProvider, isConfigured, isEnabled, keyFor, type ProviderRegistration } from "./providers/registry.js";
+import type { MatchQuery, MediaKind } from "./providers/types.js";
 import {
   AGE_RATINGS, COMICINFO_FIELDS, type Metadata, type MetadataField,
   opfPathFromContainer, readComicInfo, writeComicInfo, writeEpubMetadata,
@@ -193,6 +199,168 @@ async function suggestFor(row: UploadRow, inspection: Inspection, libraryType: n
   if (typeof meta.releaseYear === "number" && meta.releaseYear > 0) fields.Year = String(meta.releaseYear);
   if (typeof meta.language === "string" && /^[a-z]{2}(-[a-z]{2})?$/i.test(meta.language.trim())) fields.LanguageISO = meta.language.trim();
   return { found: true, seriesId: match.id, seriesName: match.name, fields };
+}
+
+// ---------- External metadata providers (phase 2, W8) ----------
+// The review card's "Find metadata" action: search the enabled providers for this upload's media,
+// let the reviewer pick one candidate, then merge its fetched fields onto the card's shared values
+// using the W1 merge rules (never overwrite a value the file already has unless mode="overwrite").
+// One lookup per human action; nothing is fetched in bulk and nothing is written to disk here.
+
+/** Kavita's LibraryType numbers -> provider media classes (see main.js templateName). */
+function mediaForLibraryType(type: number): MediaKind {
+  if (type === 0) return "manga";
+  if (type === 2 || type === 4) return "book";
+  return "comic";
+}
+
+/** Which providers are usable now, so the review card can offer "Find metadata" only where it can help. */
+function metadataAvailability() {
+  if (!config.metadataExternalEnabled) return { enabled: false, providers: [] };
+  return {
+    enabled: true,
+    providers: allProviders()
+      .filter((reg) => isEnabled(reg) && isConfigured(reg))
+      .map((reg) => ({
+        id: reg.provider.id, label: reg.provider.label,
+        media: reg.provider.capabilities.media, fields: reg.provider.capabilities.fields,
+        attribution: attributionFor(reg.provider), licence: reg.provider.licence,
+      })),
+  };
+}
+
+const asMediaKind = (value: unknown): MediaKind | undefined =>
+  value === "comic" || value === "manga" || value === "book" ? value : undefined;
+
+/** Why a provider is (not) usable for this lookup — so a blank result is explainable to the reviewer. */
+type ProviderSkip = "disabled" | "no-key" | "cooldown" | "media" | "error" | null;
+function providerStatus(reg: ProviderRegistration, media: MediaKind) {
+  const id = reg.provider.id;
+  const cooldown = providerCooldownMs(id);
+  let skipped: ProviderSkip = null;
+  if (!config.metadataExternalEnabled || !isEnabled(reg)) skipped = "disabled";
+  else if (!isConfigured(reg)) skipped = "no-key";
+  else if (cooldown > 0) skipped = "cooldown";
+  else if (!reg.provider.capabilities.media.includes(media)) skipped = "media";
+  return {
+    id,
+    label: reg.provider.label,
+    media: reg.provider.capabilities.media,
+    fields: reg.provider.capabilities.fields,
+    licence: reg.provider.licence,
+    attribution: attributionFor(reg.provider),
+    keyed: reg.keyed,
+    enabled: isEnabled(reg),
+    configured: isConfigured(reg),
+    hasKey: reg.keyed ? isConfigured(reg) : false,
+    skipped: skipped as ProviderSkip,
+    retryAfterMs: cooldown > 0 ? cooldown : undefined,
+    error: undefined as string | undefined,
+  };
+}
+
+/** Search the enabled providers for this upload and return ranked candidates plus per-provider state. */
+async function matchFor(
+  row: UploadRow, inspection: Inspection, libraryType: number,
+  overrides: { series?: string; number?: string; year?: string; media?: MediaKind }, signal?: AbortSignal,
+) {
+  const { defaults } = await defaultsFor(row, inspection, libraryType);
+  const media = overrides.media ?? mediaForLibraryType(libraryType);
+  const title = (overrides.series ?? defaults.Series ?? "").trim();
+  const query: MatchQuery = {
+    title,
+    number: overrides.number ?? defaults.Number,
+    volume: defaults.Volume,
+    year: overrides.year ?? defaults.Year,
+    libraryType,
+  };
+  const providers = allProviders().map((reg) => providerStatus(reg, media));
+  const candidates: Array<Record<string, unknown>> = [];
+  if (title) {
+    for (const reg of enabledFor(media)) {
+      const status = providers.find((p) => p.id === reg.provider.id);
+      if (!status || status.skipped) continue;
+      try {
+        const found = await reg.provider.search(keyFor(reg.provider.id), query, signal);
+        for (const candidate of found) {
+          candidates.push({
+            ...candidate,
+            source: reg.provider.label,
+            attribution: attributionFor(reg.provider),
+            licence: reg.provider.licence,
+          });
+        }
+      } catch (err) {
+        const retryAfterMs = err instanceof ProviderHttpError ? err.retryAfterMs : undefined;
+        if (status) {
+          status.skipped = retryAfterMs ? "cooldown" : "error";
+          status.retryAfterMs = retryAfterMs;
+          status.error = err instanceof Error ? err.message : String(err);
+        }
+      }
+    }
+  }
+  candidates.sort((a, b) => (b.score as number) - (a.score as number));
+  return {
+    externalEnabled: config.metadataExternalEnabled, media, query,
+    candidates: candidates.slice(0, 8), providers,
+  };
+}
+
+/** Only the provider-known fields may be proposed; everything else is treated as locked for the call. */
+const asMetadataFields = (value: unknown): MetadataField[] =>
+  Array.isArray(value)
+    ? value.filter((f): f is MetadataField => typeof f === "string" && (COMICINFO_FIELDS as readonly string[]).includes(f))
+    : [];
+
+/** Sanitise the card's current shared values: only known fields, only non-empty strings. */
+function cleanCurrent(input: unknown): Metadata | undefined {
+  if (!input || typeof input !== "object") return undefined;
+  const out: Metadata = {};
+  for (const field of COMICINFO_FIELDS) {
+    const value = (input as Record<string, unknown>)[field];
+    if (typeof value === "string" && value.trim()) out[field] = value.trim();
+  }
+  return out;
+}
+
+/** Fetch (cache-first) one confirmed candidate and merge it onto the card's current values. */
+async function applyFor(
+  row: UploadRow, inspection: Inspection, libraryType: number,
+  body: { provider?: unknown; externalId?: unknown; mode?: unknown; fields?: unknown; current?: unknown; locked?: unknown; refresh?: unknown },
+) {
+  const providerId = typeof body.provider === "string" ? body.provider : "";
+  const externalId = typeof body.externalId === "string" ? body.externalId : "";
+  const reg = providerId ? getProvider(providerId) : undefined;
+  if (!reg) throw new ReviewError(400, "Unknown metadata provider.");
+  if (!externalId) throw new ReviewError(400, "Pick a candidate first.");
+  if (!isEnabled(reg)) throw new ReviewError(409, "That metadata provider is turned off.");
+  if (!isConfigured(reg)) throw new ReviewError(409, "That metadata provider needs a key.");
+  const mode = body.mode === "overwrite" ? "overwrite" : "fill";
+
+  const requested = asMetadataFields(body.fields);
+  const selected = requested.length ? requested : [...COMICINFO_FIELDS];
+  const locked = new Set<MetadataField>(asMetadataFields(body.locked));
+  for (const field of COMICINFO_FIELDS) if (!selected.includes(field)) locked.add(field);
+  // "fill" never forces; "overwrite" forces exactly the selected fields.
+  const force = mode === "overwrite" ? selected : [];
+
+  const key = keyFor(providerId);
+  let record = body.refresh === true ? null : getCachedRecord(providerId, externalId);
+  const cached = record !== null;
+  if (!record) {
+    record = await reg.provider.fetch(key, externalId);
+    putCachedRecord(record, providerCacheTtlMsFor(providerId));
+  }
+
+  const { defaults } = await defaultsFor(row, inspection, libraryType);
+  const current = cleanCurrent(body.current) ?? defaults;
+  const merged = mergeRecords({ records: [record], current, force, locked: [...locked] });
+  return {
+    provider: providerId, externalId, mode, cached,
+    fields: merged.fields, provenance: merged.provenance, conflicts: merged.conflicts,
+    attribution: attributionFor(reg.provider), licence: reg.provider.licence,
+  };
 }
 
 async function reviewItem(row: UploadRow, libraryTypes: Map<number, number>) {
@@ -625,6 +793,7 @@ export async function registerReviewRoutes(app: FastifyInstance) {
       recent: (q.recent.all() as unknown as UploadRow[]).map(decisionItem),
       ageRatings: AGE_RATINGS,
       rejectedRetentionDays: config.rejectedRetentionDays,
+      metadata: metadataAvailability(),
     };
   });
 
@@ -657,6 +826,65 @@ export async function registerReviewRoutes(app: FastifyInstance) {
       return await suggestFor(row, inspection, libraryType);
     } catch {
       return { found: false };
+    }
+  });
+
+  // Search the enabled external metadata providers for this pending upload (phase 2, W8). The card
+  // sends its current shared values as query overrides so the search uses what the reviewer sees; the
+  // upload's parsed defaults fill any gap. GET (query) or POST (JSON body) accept the same fields.
+  const matchHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+    const user = requireReviewer(request, reply);
+    if (!user) return;
+    const row = getUpload((request.params as { id: string }).id);
+    if (!row?.inspection) return reply.code(404).send({ error: "Nothing to match yet." });
+    const inspection = JSON.parse(row.inspection) as Inspection;
+    const libraryType = (await kavita.librariesCached()).find((library) => library.id === row.library_id)?.type ?? 0;
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    const query = (request.query ?? {}) as Record<string, unknown>;
+    const pick = (name: string): string | undefined => {
+      const chosen = typeof body[name] === "string" ? body[name] : query[name];
+      return typeof chosen === "string" && chosen.trim() ? chosen.trim() : undefined;
+    };
+    try {
+      const result = await matchFor(row, inspection, libraryType, {
+        series: pick("series"), number: pick("number"), year: pick("year"), media: asMediaKind(pick("media")),
+      });
+      audit("provider_match", user.username, request.ip, { id: row.id, media: result.media, candidates: result.candidates.length });
+      return result;
+    } catch (err) {
+      return reply.code(500).send({ error: err instanceof Error ? err.message : "The lookup failed." });
+    }
+  };
+  app.get<{ Params: { id: string } }>("/api/review/:id/match", matchHandler);
+  app.post<{ Params: { id: string }; Body: Record<string, unknown> }>("/api/review/:id/match", matchHandler);
+
+  // Fetch (cache-first) one candidate and merge it onto the card's current values (phase 2, W8). The
+  // merge never overwrites a value the file already has unless mode="overwrite"; conflicts are
+  // returned so the card can show "kept yours". Nothing is written to disk here — the reviewer's final
+  // form values are what /approve writes.
+  app.post<{
+    Params: { id: string };
+    Body: { provider?: unknown; externalId?: unknown; mode?: unknown; fields?: unknown; current?: unknown; locked?: unknown; refresh?: unknown };
+  }>("/api/review/:id/apply", async (request, reply) => {
+    const user = requireReviewer(request, reply);
+    if (!user) return;
+    const row = getUpload(request.params.id);
+    if (!row?.inspection) return reply.code(404).send({ error: "Nothing to apply to yet." });
+    const inspection = JSON.parse(row.inspection) as Inspection;
+    const libraryType = (await kavita.librariesCached()).find((library) => library.id === row.library_id)?.type ?? 0;
+    try {
+      const result = await applyFor(row, inspection, libraryType, request.body ?? {});
+      audit("provider_apply", user.username, request.ip, {
+        id: row.id, provider: result.provider, externalId: result.externalId, mode: result.mode,
+        fields: Object.keys(result.fields),
+      });
+      return { ok: true, ...result };
+    } catch (err) {
+      if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
+      if (err instanceof ProviderHttpError) {
+        return reply.code(502).send({ error: "The metadata provider could not be reached. Try again shortly." });
+      }
+      return reply.code(500).send({ error: err instanceof Error ? err.message : "Applying failed." });
     }
   });
 

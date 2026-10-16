@@ -71,6 +71,7 @@ test-uploader's roles and watches the live session refresh, which is outside the
 | `test_metadata_match.py` | Metadata auto-fill: a matching Kavita series' metadata is suggested for a new upload |
 | `test_providers_framework.py` | External-metadata framework (phase 2, W1): provider registry enable/disable + keyed-gating, the shared HTTP client (retry on 429/500, truthful User-Agent, size cap), sealed key round-trip + redaction, cache TTL, and merge precedence/no-overwrite. Uses `tests/provider_fake.py` (stdlib fake provider) pointed at via `PROVIDER_STUB_BASE`; no network, no real keys |
 | `test_providers_metron.py` | Metron comics adapter (phase 2, W2): registration contract (CC BY-SA 4.0, comic fields, covers `none`, keyed), keyed-gating, search → candidates with band/score ordering, fetch → full ComicInfo mapping (credits → Writer/Penciller/Inker/Colorist/CoverArtist, plainText stripping), read-through record cache, and 429 + `Retry-After` / 500 retry plus an HTML body being refused. Uses `tests/provider_fake.py` via `PROVIDER_METRON_BASE`; no network, no real keys |
+| `test_providers_match.py` | Review-card metadata (phase 2, W8): access control + CSRF for `/match` and `/apply`, the About metadata-sources credit, `/match` from the upload's parsed defaults, and `/apply` merge rules — fill blanks, conflicts instead of silent overwrites, explicit overwrite, the field allow-list, cache-first fetch. Uses `tests/provider_fake.py` via `PROVIDER_METRON_BASE`; the pending upload is withdrawn, no library writes |
 | `test_sidebar_label.py` | The Kavita sidebar entry is named `Uploads ↗` (creates/repairs it on sign-in) |
 | `test_sidebar_connect.py` | `POST /api/sidebar/connect` reconnects a signed-in uploader's sidebar entry from their stored Kavita session (signed-out 401, Read Only 403, the entry comes back) |
 | `test_roles_and_limits.py` | Role changes in Kavita reach open sessions; general rate limit. **Changes test-uploader's roles for ~5 minutes** and therefore refuses to run if a real person signed in within the last hour or uploaded in the last 30 minutes (`--force` overrides). |
@@ -81,6 +82,7 @@ test-uploader's roles and watches the live session refresh, which is outside the
 | `browser/activity_page.py` | The admin Activity panel renders (cards + entries) and is hidden from non-admins |
 | `browser/notifications_page.py` | The Notifications panel is shown to uploaders (save works) and hidden from read-only accounts |
 | `browser/requests_page.py` | A user asks for a title; a reviewer sees it in the open queue and declines it |
+| `browser/suggestion_card.py` | The review card's **Find metadata** flow (phase 2, W8): the turned-off state, enabling Metron + key + Test on the About panel, candidates → apply → filled fields + source chips + *Applied from Metron (CC BY-SA 4.0)*, responsive on phone. `tests/run.sh` starts `tests/provider_fake.py` on the host for the browser tier (the portal reaches it through the Docker gateway); the upload is withdrawn and Metron left off |
 
 `settings.py` reads `.env`; library ids are looked up by name (Manga, Comics, Books).
 

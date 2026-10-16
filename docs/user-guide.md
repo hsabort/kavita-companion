@@ -13,9 +13,9 @@ sidebar**. Signing in with your Kavita password once repairs it too.
 Read Only Kavita accounts can sign in but can't upload; Kavita won't give them a sidebar link, so the
 portal doesn't offer them one.
 
-The portal is split into tabs — **Upload**, **Review**, **Requests**, **Activity** and **Notifications** —
-and you only see the ones your Kavita role allows. The tab you're on is kept in the address (`#review`),
-so a refresh or the back button returns to it.
+The portal is split into tabs — **Upload**, **Review**, **Requests**, **Activity**, **Notifications** and
+**About** — and you only see the ones your Kavita role allows. The tab you're on is kept in the address
+(`#review`), so a refresh or the back button returns to it.
 
 The portal uses the same theme as your Kavita account (Settings → Theme in Kavita). If you change it,
 the portal follows as soon as you switch back to its tab.
@@ -73,6 +73,15 @@ publisher, genres, language. Leaving a field empty keeps whatever each file alre
 Where the series already exists in Kavita, the card offers **use Kavita's …** to fill the shared fields
 (year, credits, publisher, genre, tags, language) from that series' existing metadata.
 
+**Find metadata** (when an admin has turned on an external source, such as **Metron** for comics)
+searches that source for this file's series and lists candidates — each shown with its source, title,
+year, publisher and a match band. Pick one, leave **Fill blanks** (the default) or choose **Overwrite
+existing values**, tick the fields to apply and press **Apply selected fields**. The values appear in
+the form with a small source chip each and a line reading *Applied from Metron (CC BY-SA 4.0)*. In *Fill
+blanks* mode your own values are never replaced: anything the source wanted to change is listed under
+*Kept your values* so you can decide. A lookup only happens when you ask for one — nothing is fetched
+automatically, and nothing is applied until you press the button.
+
 **Per file:** a cover (drawn like a Kavita tile, with the issue number badge), number, volume, title,
 summary, and the file name. The file name follows the library's naming pattern as you edit the fields
 (e.g. `Series v1 #007` for comics, `Series v01 c007` for manga); type over it to set your own.
@@ -105,7 +114,6 @@ can check the content before approving without downloading it.
 Under **Recent decisions** each approved file shows *Checking that Kavita shows it…* and then
 **In Kavita ✓ Open in Kavita** once Kavita lists it (usually within a minute). If Kavita hasn't listed it
 after 15 minutes you'll see why, with **Check again**. Uploaders see the same link in *Your uploads*.
-
 ### Fixing an approved file
 
 Click **Fix…** on an approved file (or find it with *Find an approved file to fix*). The same editor
@@ -123,3 +131,12 @@ failed sign-ins, uploads, approvals, rejections, fixes, withdrawals and discarde
 **Action** and **User** filters to narrow it down and **Show older** to page back. The cards at the top
 show what is waiting for review (and its total size), the last seven days of uploads/approvals/
 rejections, and the most active uploader of the last month.
+
+## About
+
+**Metadata sources** lists every external source the portal can fetch details from, each with the credit
+and licence it requires (for example *Comic data from Metron, CC BY-SA 4.0*). This text is built from the
+source's own settings, so it stays correct if a licence changes. Kavita admins also see a **Metadata
+providers** panel here: turn a source on or off, paste its key (stored encrypted, never shown again),
+clear it, or press **Test** to check the source answers. Sources are off by default, and nothing is ever
+fetched until a reviewer asks for it.

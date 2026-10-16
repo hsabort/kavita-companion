@@ -57,7 +57,8 @@ All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after sta
 | `providers/cache.ts` | `metadata_cache` read-through with a per-provider TTL |
 | `providers/links.ts` | `provider_links`: a reviewed series -> its external id, so a repeat upload skips search |
 | `providers/merge.ts` | Merge fetched records with the file/form values: per-field precedence, no silent overwrite, provenance, conflicts, validation |
-| `providers/routes.ts` | Admin provider settings (list, key, enable) and diagnostics |
+| `providers/attribution.ts` | The required credit for a provider, composed from its adapter metadata (label + licence) so it cannot drift |
+| `providers/routes.ts` | Admin provider settings (list, key, enable), diagnostics, and the About → Metadata sources list |
 | `providers/stub.ts` | Built-in test-only provider (registered when `PROVIDERS_STUB=true`) |
 | `setup-kavita.ts` | First-run setup used by `setup.sh` (admin, libraries, auth key) |
 
@@ -167,6 +168,23 @@ default**: `METADATA_EXTERNAL_ENABLED` is false and every provider is off until 
   one; `POST /api/admin/providers/:id/test` is a cheap validity probe.
   `POST /api/admin/providers/:id/preview` is a diagnostic (search → fetch → merge, or a merge-only dry
   run) used by the framework tests.
+- **Reviewer flow (W8)** (`review.ts`, reviewer-only, CSRF via the global Origin hook):
+  `GET|POST /api/review/:id/match` searches the providers enabled for the upload's media (from its
+  library type) using the card's current series/number/year, falling back to the upload's parsed
+  defaults; it returns ranked `candidates[]` (each with its source label, attribution and licence) plus
+  a `providers[]` list marking disabled/no-key/cooldown/error/off-media so a blank result is
+  explainable. `POST /api/review/:id/apply` body `{ provider, externalId, mode: "fill"|"overwrite",
+  fields?, current?, locked?, refresh? }` fetches the confirmed candidate (cache-first) and merges it
+  onto the card's current values with the W1 merge rules: `fill` proposes only blanks (existing values
+  come back as `conflicts[]`), `overwrite` replaces exactly the selected `fields`. It returns
+  `{ fields, provenance, conflicts, attribution, licence, cached }` and never writes to disk — the
+  reviewer's final form values are what `/approve` writes.
+- **Attribution** (`providers/attribution.ts`): the credit shown on the card and on
+  **About → Metadata sources** is composed from the adapter's own label + licence
+  (`"Comic data from Metron, CC BY-SA 4.0"`), and `GET /api/metadata-sources` (any signed-in user) lists
+  every provider's credit and licence URL, so a licence change cannot silently drop the attribution.
+  Reviewers also get a **Metadata providers** panel on About to turn a provider on, set/clear its key
+  and run the probe; keys are write-only and never rendered back.
 
 Tests: `tests/test_providers_framework.py` exercises all of the above against `tests/provider_fake.py`
 (a stdlib fake) with no network and no real keys.
