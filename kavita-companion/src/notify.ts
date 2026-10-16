@@ -8,7 +8,7 @@ import { config } from "./config.js";
 import { db } from "./db.js";
 
 const CHANNELS = new Set(["webhook", "ntfy", "discord"]);
-export const NOTIFY_EVENTS = ["approved", "rejected", "fixed", "invalid", "duplicate"] as const;
+export const NOTIFY_EVENTS = ["approved", "rejected", "fixed", "invalid", "duplicate", "request"] as const;
 const EVENTS = new Set<string>(NOTIFY_EVENTS);
 const DELIVERY_TIMEOUT_MS = 10_000;
 const MAX_ATTEMPTS = 5;

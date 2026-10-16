@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.4 — 2026-10-16
+
+Added:
+- A **Requests** board: users ask for a series or issue; Kavita admins see the open queue and can
+  **Decline** or **Mark fulfilled**, and approving a matching upload fulfils the request automatically
+  (and notifies the requester if they set notifications up). See [docs/user-guide.md](docs/user-guide.md).
+
 ## 0.2.3 — 2026-10-16
 
 Added:

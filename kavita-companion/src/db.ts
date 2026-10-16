@@ -83,6 +83,24 @@ db.exec(`
     last_error   TEXT
   );
   CREATE INDEX IF NOT EXISTS notifications_pending ON notifications (delivered_at, attempts);
+
+  -- Series/issues users ask for. An admin fulfils them manually, or a matching approval does it.
+  CREATE TABLE IF NOT EXISTS requests (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL,
+    username            TEXT NOT NULL,
+    title               TEXT NOT NULL,   -- the series or title wanted
+    number              TEXT,            -- optional issue/volume
+    library_id          INTEGER,
+    library_name        TEXT,
+    note                TEXT,
+    status              TEXT NOT NULL,   -- open | fulfilled | declined
+    created_at          INTEGER NOT NULL,
+    decided_by          TEXT,
+    decided_at          INTEGER,
+    fulfilled_upload_id TEXT
+  );
+  CREATE INDEX IF NOT EXISTS requests_status ON requests (status, created_at);
 `);
 
 // Columns added after the table first shipped (M3). CREATE TABLE IF NOT EXISTS won't add them.

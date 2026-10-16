@@ -45,6 +45,14 @@ an **ntfy** topic URL, or a **Discord** webhook. Paste the address, tick the eve
 **Save**; **Send test** checks it works. Notifications are off until you set one up. On some servers,
 addresses on the local network are refused (see [security.md](security.md)).
 
+## Requests
+
+**Requests** lets you ask for a series or issue you'd like in the library: type the title, optionally an
+issue number, library and a note, and press **Ask for it**. Your asks appear under **My requests** with
+their status. Kavita admins see everyone's open requests and can **Decline** one or **Mark fulfilled**;
+approving a matching file fulfils the request automatically and — if you set notifications up — tells
+you.
+
 ## Reviewing (Kavita admins)
 
 Uploads waiting for review appear at the top of the portal, grouped: several issues of the same

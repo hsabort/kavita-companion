@@ -49,6 +49,7 @@ All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after sta
 | `db.ts` | SQLite (Node's built-in `node:sqlite`): sessions, uploads, audit log |
 | `activity.ts` | Admin Activity panel: recent audit-log entries (filters, paging) and a few counts |
 | `notify.ts` | Per-user notifications (webhook / ntfy / Discord): preferences, target checks and a delivery outbox |
+| `requests.ts` | Request board: users ask for titles, admins decide, and matching approvals fulfil requests |
 | `backup.ts` | Daily `VACUUM INTO` snapshot of the database |
 | `setup-kavita.ts` | First-run setup used by `setup.sh` (admin, libraries, auth key) |
 

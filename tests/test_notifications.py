@@ -24,7 +24,7 @@ from settings import ORIGIN, env, library_ids
 
 GATEWAY = env.get("DOCKER_GATEWAY", "172.31.0.1")
 PORT = 21080
-EVENTS = ["approved", "rejected", "fixed", "invalid", "duplicate"]
+EVENTS = ["approved", "rejected", "fixed", "invalid", "duplicate", "request"]
 
 received = []
 results = []

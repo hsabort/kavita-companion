@@ -320,3 +320,7 @@ button.link:hover { background: none; color: var(--primary-hover); }
 .notify-events legend { color: var(--muted); font-size: 0.85rem; padding: 0 0.25rem; }
 .notify-events label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
 #notify-status.error { color: var(--error-text); }
+
+/* Requests */
+.subhead { font-size: 1rem; margin: 1rem 0 0.5rem; }
+.request-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 0.5rem 0.9rem; align-items: end; margin-bottom: 0.5rem; }

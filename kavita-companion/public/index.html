@@ -119,6 +119,36 @@
         <ul id="uploads" class="uploads"></ul>
       </section>
 
+      <section id="requests-section" hidden>
+        <div class="section-head"><h2>Requests</h2></div>
+        <p class="muted">Ask for a series or issue you'd like to see in the library.</p>
+        <div class="request-form">
+          <label class="field">Title
+            <input id="request-title" type="text" placeholder="e.g. Saga" autocomplete="off" spellcheck="false" maxlength="200">
+          </label>
+          <label class="field">Issue (optional)
+            <input id="request-number" type="text" placeholder="e.g. 7" autocomplete="off" maxlength="40">
+          </label>
+          <label class="field">Library (optional)
+            <select id="request-library"><option value="">Any</option></select>
+          </label>
+          <label class="field">Note (optional)
+            <input id="request-note" type="text" placeholder="anything helpful" autocomplete="off" maxlength="500">
+          </label>
+        </div>
+        <div class="actions">
+          <button id="request-add" type="button" class="btn btn-outline-primary small">Ask for it</button>
+          <span id="request-status" class="muted"></span>
+        </div>
+        <h3 class="subhead">My requests</h3>
+        <p id="requests-mine-empty" class="empty">You haven't asked for anything yet.</p>
+        <ul id="requests-mine" class="uploads"></ul>
+        <div id="requests-open-wrap" hidden>
+          <h3 class="subhead">Open requests</h3>
+          <ul id="requests-open" class="uploads"></ul>
+        </div>
+      </section>
+
       <details id="notify-wrap" class="recent" hidden>
         <summary>Notifications</summary>
         <p class="muted">Get told when your uploads are approved, rejected or corrected.</p>
@@ -140,6 +170,7 @@
           <label><input type="checkbox" id="notify-fixed"> a file in the library is corrected</label>
           <label><input type="checkbox" id="notify-invalid"> a file is discarded (wrong type)</label>
           <label><input type="checkbox" id="notify-duplicate"> a duplicate file is found</label>
+          <label><input type="checkbox" id="notify-request"> a title I requested is added</label>
         </fieldset>
         <div class="actions">
           <button id="notify-save" type="button" class="btn btn-outline-primary small">Save</button>
