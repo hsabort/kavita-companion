@@ -10,6 +10,17 @@ provider must pass the Compliance gate (section 1) before it can be enabled; a p
 used safely is excluded or shipped off by default. Section 5 assigns the work to named agent roles with
 estimates.
 
+## Status (updated 2026-10-16)
+
+**W1 — provider-adapter framework — is built** (branch `feat/phase2-w1`): the adapter contract
+(`src/providers/types.ts`), registry with enable/key resolution, the shared outbound HTTP client
+(timeout, retries/backoff, `Retry-After`, token bucket, UA, size cap, HTML strip), AES-256-GCM key
+storage in `provider_config`, the `metadata_cache`/`provider_links` tables, `merge.ts`, the reviewer-only
+`/api/admin/providers` routes, and a test-only stub provider plus the fake-provider harness
+(`tests/provider_fake.py`, `tests/test_providers_framework.py`). External metadata is **off by default**;
+no provider-specific adapter (Metron, GCD, MangaDex, …) is built yet. See
+[architecture.md](architecture.md#metadata-providers-phase-2).
+
 ## Defaults we intend to ship
 
 | Media | Primary | Fallback | Opt-in / excluded |

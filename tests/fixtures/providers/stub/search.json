@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "id": "fx-saga-1",
+      "title": "Fixture Saga",
+      "number": "1",
+      "volume": "1",
+      "year": "2012",
+      "publisher": "Fixture Press",
+      "score": 0.97
+    },
+    {
+      "id": "fx-saga-2",
+      "title": "Fixture Saga",
+      "number": "2",
+      "volume": "1",
+      "year": "2013",
+      "publisher": "Fixture Press",
+      "score": 0.61
+    },
+    {
+      "id": "fx-other-9",
+      "title": "Entirely Different Thing",
+      "number": "9",
+      "year": "1999",
+      "publisher": "Another House",
+      "score": 0.22
+    }
+  ]
+}

@@ -51,6 +51,14 @@ All three run as the unprivileged `PUID:PGID` user (Kavita drops to it after sta
 | `notify.ts` | Per-user notifications (webhook / ntfy / Discord): preferences, target checks and a delivery outbox |
 | `requests.ts` | Request board: users ask for titles, admins decide, and matching approvals fulfil requests |
 | `backup.ts` | Daily `VACUUM INTO` snapshot of the database |
+| `providers/types.ts` | The provider-adapter contract: `Provider`, `Candidate`, `FetchedRecord`, `MatchQuery`, `MediaKind` |
+| `providers/registry.ts` | Which adapters exist and which are usable now (enable flag + key), and `enabledFor(media)` |
+| `providers/http.ts` | The single outbound path: truthful User-Agent, timeout, retries/backoff, `Retry-After`, per-provider token bucket, response size cap, JSON parse, HTML strip |
+| `providers/cache.ts` | `metadata_cache` read-through with a per-provider TTL |
+| `providers/links.ts` | `provider_links`: a reviewed series -> its external id, so a repeat upload skips search |
+| `providers/merge.ts` | Merge fetched records with the file/form values: per-field precedence, no silent overwrite, provenance, conflicts, validation |
+| `providers/routes.ts` | Admin provider settings (list, key, enable) and diagnostics |
+| `providers/stub.ts` | Built-in test-only provider (registered when `PROVIDERS_STUB=true`) |
 | `setup-kavita.ts` | First-run setup used by `setup.sh` (admin, libraries, auth key) |
 
 The browser side (`kavita-companion/web/main.js`, bundled with esbuild) uses Uppy for uploads.
@@ -127,3 +135,38 @@ switches back to the portal tab.
   destination and renamed into place (replacing the file when the name is unchanged), then the old file
   and an emptied folder are removed and both locations are rescanned (a whole-library scan when the old
   folder is gone, so Kavita drops the old series).
+
+## Metadata providers (phase 2)
+
+The portal can fetch metadata from external providers and write it into a file at approval. **Off by
+default**: `METADATA_EXTERNAL_ENABLED` is false and every provider is off until an admin turns it on
+(Activity → Metadata sources).
+
+- **Contract** (`providers/types.ts`): each adapter implements `search(key, query)` → candidates and
+  `fetch(key, externalId)` → one `FetchedRecord` already mapped to our ComicInfo field names, with its
+  licence and media. Keyedness, cache TTL and rate limit are registry metadata, not part of the
+  interface, so the contract stays stable.
+- **Registry** (`providers/registry.ts`): a provider is *usable* when external metadata is on, its
+  enable flag is set (a `provider_config` row, or `PROVIDER_<ID>_ENABLED`) and, for a keyed provider, a
+  key is present. Keys are AES-256-GCM sealed (`seal.ts`) in `provider_config`; a `PROVIDER_<ID>_KEY`
+  `.env` value overrides the stored one. No key is ever returned by an API or written to logs.
+- **Outbound HTTP** (`providers/http.ts`): one shared client for every provider call — a truthful
+  `User-Agent` (`kavita-companion/<version> (+<PUBLIC_ORIGIN>)`), a short timeout, bounded retries with
+  exponential backoff + jitter on network errors/5xx/429, `Retry-After` honoured as a cooldown, a
+  per-provider token bucket, a response size cap, defensive JSON parsing and an HTML-stripping hook.
+  A private/LAN base URL is refused unless `PROVIDERS_ALLOW_PRIVATE` is set.
+- **Cache and links**: `metadata_cache` is a read-through cache keyed by provider + external id with a
+  per-provider TTL (default 30 days); `provider_links` remembers a reviewed series' external id so a
+  repeat upload skips search. Nothing is ever prefetched in bulk — a lookup is one explicit request.
+- **Merge** (`providers/merge.ts`): fetched records are merged with the values the file/form already
+  has. A non-empty current value is never overwritten silently (it is offered as a conflict); `force`
+  accepts an explicit overwrite; `locked` fields are never proposed. Each proposed field carries its
+  source provider (provenance) and is validated (Year, AgeRating, LanguageISO, length) before use.
+- **Admin API** (`providers/routes.ts`, reviewer-only): `GET /api/admin/providers` lists id, label,
+  licence, media, enabled/configured/hasKey; `POST /api/admin/providers` sets/clears a key and toggles
+  one; `POST /api/admin/providers/:id/test` is a cheap validity probe.
+  `POST /api/admin/providers/:id/preview` is a diagnostic (search → fetch → merge, or a merge-only dry
+  run) used by the framework tests.
+
+Tests: `tests/test_providers_framework.py` exercises all of the above against `tests/provider_fake.py`
+(a stdlib fake) with no network and no real keys.

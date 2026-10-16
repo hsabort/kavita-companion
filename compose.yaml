@@ -84,6 +84,19 @@ services:
       - MIN_FREE_DISK_GB=${MIN_FREE_DISK_GB:-25}
       - NOTIFY_ALLOW_PRIVATE=${NOTIFY_ALLOW_PRIVATE:-false}
       - ROLE_RECHECK_MS=${ROLE_RECHECK_MS:-120000}
+      # External metadata providers (phase 2). Off by default; an admin enables a provider in the UI.
+      - METADATA_EXTERNAL_ENABLED=${METADATA_EXTERNAL_ENABLED:-false}
+      - PROVIDERS_ALLOW_PRIVATE=${PROVIDERS_ALLOW_PRIVATE:-false}
+      - PROVIDERS_STUB=${PROVIDERS_STUB:-false}
+      - PROVIDER_STUB_ENABLED=${PROVIDER_STUB_ENABLED:-false}
+      - PROVIDER_STUB_BASE=${PROVIDER_STUB_BASE:-}
+      - PROVIDER_STUB_KEY=${PROVIDER_STUB_KEY:-}
+      - PROVIDER_HTTP_TIMEOUT_MS=${PROVIDER_HTTP_TIMEOUT_MS:-8000}
+      - PROVIDER_HTTP_RETRIES=${PROVIDER_HTTP_RETRIES:-2}
+      - PROVIDER_HTTP_BACKOFF_MS=${PROVIDER_HTTP_BACKOFF_MS:-500}
+      - PROVIDER_HTTP_MAX_BYTES=${PROVIDER_HTTP_MAX_BYTES:-2097152}
+      - PROVIDER_CACHE_TTL_DAYS=${PROVIDER_CACHE_TTL_DAYS:-30}
+      - PROVIDER_CACHE_TTL_MS=${PROVIDER_CACHE_TTL_MS:-0}
     volumes:
       - ${DATA_ROOT:-./data}/companion:/data
       # Read-write: approved uploads are moved into the library folders. Upload staging lives in

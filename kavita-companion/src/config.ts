@@ -1,9 +1,20 @@
 // All runtime settings come from environment variables (set in compose.yaml from ../.env).
+import { readFileSync } from "node:fs";
 
 function required(name: string): string {
   const value = process.env[name];
   if (!value) throw new Error(`Missing required environment variable ${name}`);
   return value;
+}
+
+/** The package version, used in the outbound provider User-Agent. Falls back rather than crashing. */
+function readVersion(): string {
+  try {
+    const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")) as { version?: string };
+    return pkg.version ?? "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
 }
 
 export const config = {
@@ -46,4 +57,47 @@ export const config = {
   maxConcurrentPerUser: Number(process.env.MAX_CONCURRENT_UPLOADS_PER_USER ?? 3),
   minFreeDiskGb: Number(process.env.MIN_FREE_DISK_GB ?? 25),
   abandonedUploadHours: Number(process.env.ABANDONED_UPLOAD_HOURS ?? 24),
+
+  // ---- External metadata providers (phase 2, W1 framework) ----
+  // Version string for the outbound provider User-Agent.
+  version: readVersion(),
+  // Master switch: external lookups stay off until an admin turns external metadata on. Each
+  // provider is additionally gated by its own enable flag (a provider_config row, or
+  // PROVIDER_<ID>_ENABLED=true). Nothing is enabled by default.
+  metadataExternalEnabled: process.env.METADATA_EXTERNAL_ENABLED === "true",
+  // Shared outbound HTTP client (providers/http.ts): short timeout, bounded retries, response cap.
+  providerHttpTimeoutMs: Number(process.env.PROVIDER_HTTP_TIMEOUT_MS ?? 8000),
+  providerHttpRetries: Number(process.env.PROVIDER_HTTP_RETRIES ?? 2),
+  providerHttpBackoffMs: Number(process.env.PROVIDER_HTTP_BACKOFF_MS ?? 500),
+  providerHttpMaxBytes: Number(process.env.PROVIDER_HTTP_MAX_BYTES ?? 2 * 1024 * 1024),
+  // Provider base URLs are operator-set (real adapters hard-code https hosts). Refuse a private/LAN
+  // base unless explicitly allowed, so a misconfigured setting cannot turn the portal into an SSRF
+  // tool. The test stack points the stub at the Docker gateway and sets this true.
+  providersAllowPrivate: process.env.PROVIDERS_ALLOW_PRIVATE === "true",
+  // The built-in stub provider, registered only for tests (test use only; never in production).
+  providersStub: process.env.PROVIDERS_STUB === "true" || process.env.PROVIDER_STUB_ENABLED === "true",
+  providerStubBase: process.env.PROVIDER_STUB_BASE ?? "",
+  // Metadata cache TTL: default 30 days, per-provider overrides, and a millisecond knob for tests.
+  providerCacheTtlDays: Number(process.env.PROVIDER_CACHE_TTL_DAYS ?? 30),
+  providerCacheTtlMs: Number(process.env.PROVIDER_CACHE_TTL_MS ?? 0),
 };
+
+// ---- Per-provider settings ----------------------------------------------------------------
+// A provider reads its key/enable/base/TTL from PROVIDER_<ID>_* so a `.env` can seed any provider
+// (the admin UI is the normal path; `.env` wins when both are set, so an operator can pin a value).
+
+export function providerEnvKey(id: string): string | null {
+  return process.env[`PROVIDER_${id.toUpperCase()}_KEY`] || null;
+}
+
+export function providerEnvEnabled(id: string): boolean {
+  return process.env[`PROVIDER_${id.toUpperCase()}_ENABLED`] === "true";
+}
+
+export function providerCacheTtlMsFor(id: string): number {
+  const ms = Number(process.env[`PROVIDER_${id.toUpperCase()}_CACHE_TTL_MS`] ?? 0);
+  if (ms > 0) return ms;
+  if (config.providerCacheTtlMs > 0) return config.providerCacheTtlMs;
+  const days = Number(process.env[`PROVIDER_${id.toUpperCase()}_CACHE_TTL_DAYS`] ?? 0);
+  return (days > 0 ? days : config.providerCacheTtlDays) * 86_400_000;
+}
