@@ -66,6 +66,7 @@ docker compose up -d` does the same). Any other compose file can use the image d
 | [docs/development.md](docs/development.md) | Working on kavita-companion, building, tests |
 | [docs/kavita-api.md](docs/kavita-api.md) | Kavita API behaviour this project relies on (verified) |
 | [docs/decisions.md](docs/decisions.md) | Why things are the way they are |
+| [docs/roadmap.md](docs/roadmap.md) | Planned features (design only, not built yet) |
 | [host/README.md](host/README.md) | Notes for running inside an unprivileged Incus/LXC container |
 | [CHANGELOG.md](CHANGELOG.md) | What changed |
 | [NOTICE.md](NOTICE.md) | Licences of included third-party material |
