@@ -313,7 +313,9 @@ export function createOpenLibraryProvider(): Provider {
 /** Cheap validity probe: one minimal search through the shared client. */
 export async function openlibraryProbe(_provider: Provider, _key: string | null): Promise<{ ok: boolean; detail?: string }> {
   const url = new URL(`${base()}/search.json`);
-  url.searchParams.set("q", "the");
+  // Open Library rejects a bare common word as a search ("Invalid query; ... not allowed: the"),
+  // so the probe uses a two-word query it accepts.
+  url.searchParams.set("q", "the hobbit");
   url.searchParams.set("limit", "1");
   const data = await getJson<OpenLibrarySearch>(url.toString());
   if (!Array.isArray(data.docs)) throw new ProviderHttpError("json", "openlibrary: probe response had no docs");

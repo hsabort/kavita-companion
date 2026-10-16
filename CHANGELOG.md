@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.3 — 2026-10-16
+
+Fixed:
+- **AniList** (found by a real-API smoke test): the GraphQL selection used `staff(edges { … })`, which
+  AniList rejects as a syntax error, so every AniList request failed. Corrected to `staff { edges { … } }`.
+- **Open Library probe**: Open Library rejects a bare common word as a search ("Invalid query; … not
+  allowed: the"), so the admin **Test** button wrongly reported it unreachable. The probe now uses a
+  query OL accepts (the adapter's real search was always fine).
+
 ## 0.6.2 — 2026-10-16
 
 Fixed:
