@@ -1,0 +1,17 @@
+{
+  "id": "fx-saga-1",
+  "media": "comic",
+  "fields": {
+    "Series": "Fixture Saga",
+    "Number": "1",
+    "Volume": "1",
+    "Title": "Chapter One",
+    "Writer": "A. Writer",
+    "Penciller": "P. Artist",
+    "Publisher": "Fixture Press",
+    "Year": "2012",
+    "Genre": "Science Fiction",
+    "LanguageISO": "en",
+    "Summary": "A synthetic summary with <b>markup</b> that the client must strip."
+  }
+}

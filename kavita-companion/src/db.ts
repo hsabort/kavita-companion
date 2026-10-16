@@ -101,6 +101,38 @@ db.exec(`
     fulfilled_upload_id TEXT
   );
   CREATE INDEX IF NOT EXISTS requests_status ON requests (status, created_at);
+
+  -- External metadata providers (phase 2, W1). One row per provider the admin has touched. Keys are
+  -- stored sealed (seal.ts, AES-256-GCM); the plaintext never reaches the database or the API.
+  CREATE TABLE IF NOT EXISTS provider_config (
+    provider   TEXT PRIMARY KEY,
+    key_sealed TEXT,
+    enabled    INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+
+  -- Read-through cache of one provider record (FetchedRecord), keyed by provider + external id.
+  -- Written only by an explicit, human-triggered lookup; never bulk-prefetched.
+  CREATE TABLE IF NOT EXISTS metadata_cache (
+    provider     TEXT NOT NULL,
+    external_id  TEXT NOT NULL,
+    media        TEXT NOT NULL,
+    fields_json  TEXT NOT NULL,
+    licence_json TEXT NOT NULL,
+    fetched_at   INTEGER NOT NULL,
+    expires_at   INTEGER NOT NULL,
+    PRIMARY KEY (provider, external_id)
+  );
+  CREATE INDEX IF NOT EXISTS metadata_cache_expires ON metadata_cache (expires_at);
+
+  -- A series as seen in the review -> its external id at a provider, so a repeat upload skips search.
+  CREATE TABLE IF NOT EXISTS provider_links (
+    library_id  INTEGER NOT NULL,
+    series_name TEXT NOT NULL,
+    provider    TEXT NOT NULL,
+    external_id TEXT NOT NULL,
+    PRIMARY KEY (library_id, series_name, provider)
+  );
 `);
 
 // Columns added after the table first shipped (M3). CREATE TABLE IF NOT EXISTS won't add them.

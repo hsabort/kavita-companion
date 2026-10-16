@@ -69,6 +69,7 @@ test-uploader's roles and watches the live session refresh, which is outside the
 | `test_requests.py` | Request board: create/list/decline/fulfil, permissions, and a matching approval fulfilling a request automatically |
 | `test_preview.py` | Reviewer page preview: pages served in order, bounds refused, reviewer-only |
 | `test_metadata_match.py` | Metadata auto-fill: a matching Kavita series' metadata is suggested for a new upload |
+| `test_providers_framework.py` | External-metadata framework (phase 2, W1): provider registry enable/disable + keyed-gating, the shared HTTP client (retry on 429/500, truthful User-Agent, size cap), sealed key round-trip + redaction, cache TTL, and merge precedence/no-overwrite. Uses `tests/provider_fake.py` (stdlib fake provider) pointed at via `PROVIDER_STUB_BASE`; no network, no real keys |
 | `test_sidebar_label.py` | The Kavita sidebar entry is named `Uploads ↗` (creates/repairs it on sign-in) |
 | `test_sidebar_connect.py` | `POST /api/sidebar/connect` reconnects a signed-in uploader's sidebar entry from their stored Kavita session (signed-out 401, Read Only 403, the entry comes back) |
 | `test_roles_and_limits.py` | Role changes in Kavita reach open sessions; general rate limit. **Changes test-uploader's roles for ~5 minutes** and therefore refuses to run if a real person signed in within the last hour or uploaded in the last 30 minutes (`--force` overrides). |

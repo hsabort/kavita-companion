@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+Added:
+- **Metadata-provider framework (phase 2, W1)**: the portal can now talk to external metadata
+  providers through one adapter contract (`src/providers/`), with a registry, a shared outbound HTTP
+  client (truthful User-Agent, timeouts, retries/back-off, `Retry-After`, a per-provider rate limit and
+  a response size cap), an encrypted per-provider key store (`provider_config`), a read-through
+  `metadata_cache` with per-provider TTL, `provider_links`, and a field-merge step that never
+  overwrites a value the file already has unless asked and reports every conflict.
+  **External metadata is off by default** and there are **no provider adapters yet** (Metron etc. come
+  later): only a built-in test stub. Admins manage providers via
+  `GET/POST /api/admin/providers` (reviewer-only; keys are never returned). See
+  [docs/architecture.md](docs/architecture.md#metadata-providers-phase-2).
+
 ## 0.2.8 — 2026-10-16
 
 Added:

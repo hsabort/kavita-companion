@@ -10,6 +10,8 @@ import {
 import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
 import { drainNotifications, registerNotifyRoutes } from "./notify.js";
+import { purgeExpiredCache } from "./providers/cache.js";
+import { registerProviderRoutes } from "./providers/routes.js";
 import { registerRequestRoutes } from "./requests.js";
 import { ensureSidebarLink, registerSidebarRoutes } from "./sidebar.js";
 import { portalTheme, userThemeId } from "./themes.js";
@@ -216,6 +218,7 @@ await registerActivityRoutes(app);
 await registerNotifyRoutes(app);
 await registerRequestRoutes(app);
 await registerSidebarRoutes(app);
+await registerProviderRoutes(app);
 
 async function hourlyJobs() {
   purgeExpiredSessions();
@@ -223,6 +226,7 @@ async function hourlyJobs() {
     ["purge abandoned uploads", purgeAbandonedUploads],
     ["purge old rejections", purgeOldRejections],
     ["deliver notifications", drainNotifications],
+    ["purge metadata cache", async () => { purgeExpiredCache(); }],
     ["database backup", backupDatabase],
   ] as const) {
     await job().catch((err: unknown) => app.log.error({ err }, `${name} failed`));
