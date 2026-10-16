@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.7 — 2026-10-16
+
+Changed:
+- **GCD's optional account key is manageable in the portal.** GCD is keyless, so it was registered as
+  "no key needed" and the About → Metadata providers panel hid the key field even once one was saved.
+  A new `optionalKey` registration flag makes the panel offer Save/Clear and show "Has key" for GCD, and
+  the admin API now reports `hasKey` for any provider that has one. GCD's key is a free comics.org
+  account's `user:pass`, sent as HTTP Basic (raises its limit from 30/hour to 2,000/day).
+
 ## 0.6.6 — 2026-10-16
 
 Fixed:

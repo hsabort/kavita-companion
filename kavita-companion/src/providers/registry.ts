@@ -17,6 +17,9 @@ export interface ProviderRegistration {
   provider: Provider;
   /** Keyed providers are usable only once an admin key (or .env key) is present. */
   keyed: boolean;
+  /** Keyless providers whose key is *optional* (it raises a rate limit). The UI offers a key field
+   *  and reports whether one is set, but the provider works without it. */
+  optionalKey?: boolean;
   /** Minimum spacing between calls to this provider (the token bucket, capacity 1). 0 = unlimited. */
   minIntervalMs: number;
   /**

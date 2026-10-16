@@ -11,7 +11,7 @@ import { cacheCount, deleteCachedRecord, getCachedRecord, putCachedRecord, purge
 import { forgetProviderLinks } from "./links.js";
 import { mergeRecords } from "./merge.js";
 import {
-  all, configRow, get, isConfigured, isEnabled, keyFor, setEnabled, setKeySealed, type ProviderRegistration,
+  all, configRow, get, hasKey, isConfigured, isEnabled, keyFor, setEnabled, setKeySealed, type ProviderRegistration,
 } from "./registry.js";
 import type { Metadata, MetadataField } from "../metadata.js";
 import type { Candidate, FetchedRecord, MatchQuery, MediaKind } from "./types.js";
@@ -38,9 +38,10 @@ const describe = (reg: ProviderRegistration) => ({
   fields: reg.provider.capabilities.fields,
   covers: reg.provider.covers,
   keyed: reg.keyed,
+  optionalKey: !!reg.optionalKey,
   enabled: isEnabled(reg),
   configured: isConfigured(reg),
-  hasKey: reg.keyed ? isConfigured(reg) : false,
+  hasKey: hasKey(reg.provider.id),
   ttlDays: Math.round(providerCacheTtlMsFor(reg.provider.id) / 86_400_000 * 100) / 100,
   cacheCount: cacheCount(reg.provider.id),
   updatedAt: configRow(reg.provider.id)?.updated_at ?? null,

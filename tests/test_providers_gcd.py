@@ -67,6 +67,7 @@ try:
           and gcd["licence"]["url"] == "https://creativecommons.org/licenses/by-sa/4.0/", str(gcd))
     check("gcd never rehosts covers (covers = none)", gcd and gcd["covers"] == "none", str(gcd))
     check("gcd is keyless and off by default", gcd and gcd["keyed"] is False and gcd["enabled"] is False, str(gcd))
+    check("gcd accepts an optional key (to raise its rate limit)", gcd and gcd.get("optionalKey") is True, str(gcd))
     fields = set(gcd.get("fields", [])) if gcd else set()
     check("gcd's field set covers the roles it maps",
           {"Series", "Number", "Volume", "Title", "Summary", "Year", "Writer", "Penciller", "Inker",
@@ -112,12 +113,19 @@ try:
 
     # --- optional `user:pass` key goes out as HTTP Basic ---
     app("POST", "/api/admin/providers", admin, {"id": "gcd", "key": "reader:secret"})
+    _, body = app("GET", "/api/admin/providers", admin)
+    gcd = next(p for p in body["providers"] if p["id"] == "gcd")
+    check("a saved optional key is reported and stays usable without one",
+          gcd["hasKey"] is True and gcd["configured"] is True, str(gcd))
     _, body = app("POST", "/api/admin/providers/gcd/preview", admin,
                   {"externalId": "8002", "refresh": True})
     headers = last_request("/api/issue/8002/").get("headers", {})
     check("a user:pass key is sent as HTTP Basic",
           headers.get("Authorization", "").startswith("Basic "), str(headers))
     app("POST", "/api/admin/providers", admin, {"id": "gcd", "key": ""})
+    _, body = app("GET", "/api/admin/providers", admin)
+    gcd = next(p for p in body["providers"] if p["id"] == "gcd")
+    check("clearing the optional key takes hasKey back to false", gcd["hasKey"] is False, str(gcd))
 
     # --- search -> candidates (variants dropped, exact ranked first) ---
     fake.reset()

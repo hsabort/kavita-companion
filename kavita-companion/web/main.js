@@ -1184,9 +1184,9 @@ function providerRow(provider) {
       el("strong", { textContent: provider.label }),
       el("span", { className: "muted", textContent: provider.id }),
       el("span", { className: `chip ${provider.enabled ? "chip-on" : ""}`, textContent: provider.enabled ? "On" : "Off" }),
-      el("span", { className: "chip", textContent: provider.hasKey ? "Has key" : provider.keyed ? "No key" : "No key needed" })),
+      el("span", { className: "chip", textContent: provider.hasKey ? "Has key" : provider.keyed ? "No key" : provider.optionalKey ? "Key optional" : "No key needed" })),
     el("div", { className: "source-attribution", textContent: provider.attribution ?? "" }),
-    el("div", { className: "provider-actions" }, toggle, provider.keyed ? keyInput : null, provider.keyed ? saveKey : null, clearKey, test),
+    el("div", { className: "provider-actions" }, toggle, (provider.keyed || provider.optionalKey) ? keyInput : null, (provider.keyed || provider.optionalKey) ? saveKey : null, clearKey, test),
     status);
   return row;
 }
