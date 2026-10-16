@@ -62,12 +62,33 @@ const sleep = (ms: number, signal?: AbortSignal) =>
 const lastCall = new Map<string, number>();
 const cooldownUntil = new Map<string, number>();
 
-/** Wait for the provider's token bucket (one token per `minIntervalMs`) and any 429 cooldown. */
+/**
+ * Longest wait the token bucket will sleep through. A request that held on for longer than this would
+ * look hung to the reviewer, so above it the throttle *skips* instead (see below). 3 s covers every
+ * interactive provider's spacing — MangaDex 250 ms, Hardcover/Open Library 1 s, AniList 2 s, Metron
+ * 3 s — while staying well under the browser/proxy request timeouts that would otherwise cut the call
+ * off. GCD's anonymous 120 s spacing (and its 5 s authenticated one) is far above it, which is exactly
+ * the hang this avoids.
+ */
+export const THROTTLE_MAX_SLEEP_MS = 3_000;
+
+/**
+ * Wait for the provider's token bucket (one token per `minIntervalMs`) and any 429 cooldown.
+ *
+ * A wait at or below THROTTLE_MAX_SLEEP_MS is slept through, exactly as before. A longer one is not:
+ * the cooldown is recorded (so `providerCooldownMs` and the next call both see it) and a `cooldown`
+ * ProviderHttpError carrying the remaining wait is thrown at once. Callers skip this provider and
+ * report a retry time instead of holding the HTTP request open.
+ */
 async function throttle(provider: string, minIntervalMs: number, signal?: AbortSignal): Promise<void> {
   const until = cooldownUntil.get(provider) ?? 0;
   const last = lastCall.get(provider) ?? 0;
   const now = Date.now();
   const wait = Math.max(until - now, minIntervalMs > 0 ? last + minIntervalMs - now : 0);
+  if (wait > THROTTLE_MAX_SLEEP_MS) {
+    cooldownUntil.set(provider, now + wait);
+    throw new ProviderHttpError("cooldown", `${provider}: rate limited; retry in ${Math.ceil(wait / 1000)}s`, undefined, wait);
+  }
   if (wait > 0) await sleep(wait, signal);
   lastCall.set(provider, Date.now());
 }

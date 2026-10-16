@@ -610,6 +610,12 @@ function groupCard(items) {
       findBody.replaceChildren(el("p", { className: "row-status error", textContent: body.error ?? "The lookup failed." }));
       return;
     }
+    // A provider that hit its rate limit is skipped, not failed: say when it can be tried again.
+    const retryIn = (ms) => {
+      if (typeof ms !== "number" || ms <= 0) return "shortly";
+      const seconds = Math.ceil(ms / 1000);
+      return seconds < 60 ? `in ${seconds}s` : `in about ${Math.ceil(seconds / 60)} min`;
+    };
     providerById.clear();
     for (const provider of body.providers ?? []) providerById.set(provider.id, provider);
     const candidates = body.candidates ?? [];
@@ -619,7 +625,7 @@ function groupCard(items) {
         if (!provider.skipped) continue;
         const why = body.externalEnabled === false ? "external metadata is turned off"
           : provider.skipped === "no-key" ? "needs a key (an admin can add one under Metadata providers)"
-            : provider.skipped === "cooldown" ? "is rate-limited right now — try again shortly"
+            : provider.skipped === "cooldown" ? `is rate-limited right now — try again ${retryIn(provider.retryAfterMs)}`
               : provider.skipped === "media" ? "doesn't cover this kind of file"
                 : provider.skipped === "error" ? `couldn't be reached${provider.error ? ` (${provider.error})` : ""}`
                   : "is turned off";
