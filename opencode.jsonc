@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Keep more of the recent conversation verbatim beside the summary.
+  // Default is 15000 tokens.
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 40000 },
+    // Tokens kept free below the DeepSeek V4.1 Flash 1M-token limit before
+    // auto-compaction starts. Default is 10% of the limit (100000 here).
+    // A smaller buffer means the session uses more of the window before it
+    // compacts.
+    "buffer": 30000
+  },
+
+  // Retain more tool output (file reads, command output) in context.
+  // Defaults are 2000 lines / 51200 bytes.
+  "tool_output": {
+    "max_lines": 4000,
+    "max_bytes": 102400
+  }
+}
