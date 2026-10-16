@@ -61,13 +61,11 @@ Short records of choices that shape this project, newest last. Each says what wa
 - **Review UX — the "Find metadata" click flow.** The candidate list, "Apply selected fields" and the
   per-field source chips all live inside the wide review card; consider a focused dialog for the
   choose-and-apply step (raised after fixing Star Wars #076/#077).
-- **MOBI/AZW3 support (investigated, not built).** Kavita reads EPUB/PDF only, so `.mobi` is refused
-  today. Feasible path: accept `.mobi`/`.azw3` in the Books library, convert to EPUB on upload-complete
-  with **KindleUnpack** (the `mobi` PyPI package, pure Python, **GPL-3.0** — compatible with this repo),
-  then hand the EPUB to the normal review → approve → Kavita. *Proven in a scratch container:* a
-  public-domain Gutenberg `.mobi` unpacked to an EPUB tree (`mobi8/META-INF/…` + `OEBPS/…`) and, zipped
-  mimetype-first, is recognised by our own upload sniffer. Calibre's `ebook-convert` is the one-command
-  alternative but a ~1 GB dependency. Open questions before building: image fidelity, MOBI7 vs KF8
-  output, refusing DRM'd files, the image-size cost of bundling Python, and a test fixture. Decision
-  pending.
+- **MOBI/AZW3 support (built, 0.6.9).** Kavita reads EPUB/PDF only, so Kindle books used to be refused
+  at upload. Now `.mobi`/`.azw`/`.azw3` are accepted **in a Books library** and converted to EPUB on
+  upload-complete with **KindleUnpack** (the `mobi` PyPI package, pure Python, GPL-3.0) — Python lives in
+  a venv in the portal image. KF8 books come out as a finished EPUB; MOBI6 books are assembled from
+  KindleUnpack's HTML tree (adding `mimetype` + `META-INF/container.xml`). DRM-protected or unreadable
+  files are refused with a plain reason, and DRM is never stripped. KindleUnpack reads the format from
+  the file *name*, so the converter stages a copy with its extension first.
 - **Hold 1.0** until the product review (`docs/product-review-plan.md`) is done.
