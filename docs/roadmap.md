@@ -175,7 +175,12 @@ summary counts. Tests in `tests/test_activity.py`.
 
 ---
 
-## 5. Metadata auto-fill / match — planned
+## 5. Metadata auto-fill / match — built (phase 1)
+
+Shipped in 0.2.7: `GET /api/review/:id/suggest` (`src/review.ts`) finds the same-named series in the
+upload's library and returns its Kavita metadata (summary, credits, publishers, genre, tags, year,
+language) as review-screen fields, which the card offers with a one-click fill. External providers
+(MangaDex / AniList) remain a later phase. Tests in `tests/test_metadata_match.py`.
 
 **Goal.** Prefill the review editor with the best matching metadata so admins type less and files land
 with correct names and tags.

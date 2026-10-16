@@ -65,6 +65,9 @@ series from the same person form one card.
 **Shared fields** (top of the card): library, series, year, age rating, and under **More** credits,
 publisher, genres, language. Leaving a field empty keeps whatever each file already says.
 
+Where the series already exists in Kavita, the card offers **use Kavita's …** to fill the shared fields
+(year, credits, publisher, genre, tags, language) from that series' existing metadata.
+
 **Per file:** a cover (drawn like a Kavita tile, with the issue number badge), number, volume, title,
 summary, and the file name. The file name follows the library's naming pattern as you edit the fields
 (e.g. `Series v1 #007` for comics, `Series v01 c007` for manga); type over it to set your own.
