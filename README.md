@@ -38,6 +38,22 @@ Then open `https://<domain>:<KAVITA_HTTPS_PORT>` for Kavita and `https://<domain
 for the upload portal. Each user signs in to the portal once with their Kavita password; after that
 "Uploads" is in their Kavita sidebar.
 
+## Using the published image
+
+The upload portal is published to GitHub Container Registry and can be pulled without signing in
+(public, `linux/amd64`): `ghcr.io/hsabort/kavita-companion`.
+
+To run a released build instead of building from source, set it in `.env` and re-run `./setup.sh`:
+
+```dotenv
+COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:0.2.1
+```
+
+`./setup.sh` then pulls the image instead of building it (`docker compose pull kavita-companion &&
+docker compose up -d` does the same). Any other compose file can use the image directly, e.g.
+`image: ghcr.io/hsabort/kavita-companion:latest`. Tags and rollback are in
+[docs/operations.md](docs/operations.md).
+
 ## Documentation
 
 | Document | For |
