@@ -84,6 +84,8 @@ export function bookMediaDefaults(embedded: Metadata, filename: string): Metadat
     if (guess.number?.trim()) out.Number = guess.number.trim();
     else delete out.Number;
   }
+  // A "Author - Title" file name gives us an author even when the file carries no Writer.
+  if (!out.Writer?.trim() && guess.author?.trim()) out.Writer = guess.author.trim();
   return out;
 }
 

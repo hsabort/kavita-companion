@@ -299,7 +299,7 @@ async function matchFor(
     : overrides.series ?? defaults.Series ?? "").trim();
   const query: MatchQuery = {
     title,
-    series: book ? defaults.Series : undefined,
+    series: book ? (overrides.series || defaults.Series) : undefined,
     number: overrides.number ?? defaults.Number,
     volume: defaults.Volume,
     year: overrides.year ?? defaults.Year,
@@ -453,7 +453,8 @@ async function settleStagedBookName(row: UploadRow, inspection: Inspection): Pro
   try {
     await rename(row.stored_path, target);
   } catch {
-    return null;
+    // A previous pass may have renamed the file but crashed before recording it; repair, don't give up.
+    if (!(await exists(target))) return null;
   }
   q.setStoredPath.run(target, Date.now(), row.id);
   return display;
@@ -537,22 +538,27 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
 
   const metadata = cleanMetadata(input.metadata);
   const extension = targetExtension(kindOf(source.ext));
-  // A book's name is derived from its metadata, not typed: "<Series> #<n> - <Title>" in a folder named
-  // for the series (standalone: "<Title>" in the author's — else the title's — folder). Comics/manga
-  // keep the reviewer's series and file name.
+  // A book's series is its folder: what the reviewer typed, else its metadata Series, else — for a
+  // standalone — the author (else the title). Comics/manga keep the reviewer's series.
   const book = mediaForLibraryType(library.type) === "book";
-  const wantedSeries = input.seriesName || metadata.Series || "";
-  const canonical = book ? canonicalBookName({ ...metadata, Series: metadata.Series || wantedSeries }) : null;
-  const seriesName = safeSegment(book ? (canonical!.series || wantedSeries) : wantedSeries);
+  const typedSeries = (input.seriesName || metadata.Series || "").trim();
+  const seriesName = safeSegment(book ? canonicalBookName({ ...metadata, Series: typedSeries }).series : typedSeries);
   if (!seriesName) throw new ReviewError(400, book ? "Enter a title or author." : "Enter a series name.");
-  const base = safeSegment(book ? canonical!.filename : (splitName(input.filename.trim()).base ?? input.filename));
-  if (!base) throw new ReviewError(400, "Enter a file name.");
-  const filename = `${base}.${extension}`;
 
-  // Existing series (any capitalisation): use the folder Kavita already has for it.
+  // Existing series (any capitalisation): file under the folder — and the exact name — Kavita already has.
   const existing = (await kavita.seriesInLibrary(library.id)).find(
     (s) => s.name.localeCompare(seriesName, undefined, { sensitivity: "accent" }) === 0,
   );
+  const finalSeries = existing?.name ?? seriesName;
+  // A book's file name is derived, never typed, and named for the folder it lands in (<Series> #<n> -
+  // <Title>.epub; standalone <Title>.epub); comics/manga keep the reviewer's file name.
+  const typedBase = splitName(input.filename.trim()).base ?? input.filename;
+  const wantedBase = book
+    ? canonicalBookName(typedSeries ? { ...metadata, Series: finalSeries } : metadata).filename
+    : typedBase;
+  const base = safeSegment(wantedBase);
+  if (!base) throw new ReviewError(400, "Enter a file name.");
+  const filename = `${base}.${extension}`;
   const seriesDir = (existing && toLocalPath(existing.folderPath)) || join(libraryRoot, seriesName);
   if (!isInside(seriesDir, libraryRoot)) throw new ReviewError(400, "That series folder is outside the library.");
   const destination = join(seriesDir, filename);
@@ -566,7 +572,7 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
   }
 
   // The series the file is filed under is also what goes inside it, so Kavita can't disagree.
-  metadata.Series = existing?.name ?? seriesName;
+  metadata.Series = finalSeries;
   return {
     libraryId: library.id, libraryName: library.name, seriesName: metadata.Series, newSeries: !existing,
     seriesDir, destination, metadata,
@@ -1032,8 +1038,8 @@ export async function registerReviewRoutes(app: FastifyInstance) {
         required: ["libraryId", "seriesName", "filename"],
         properties: {
           libraryId: { type: "integer" },
-          seriesName: { type: "string", minLength: 1, maxLength: 300 },
-          filename: { type: "string", minLength: 1, maxLength: 300 },
+          seriesName: { type: "string", maxLength: 300 },
+          filename: { type: "string", maxLength: 300 },
           metadata: { type: "object", additionalProperties: { type: "string", maxLength: 20_000 } },
         },
       },
@@ -1087,8 +1093,8 @@ export async function registerReviewRoutes(app: FastifyInstance) {
         required: ["libraryId", "seriesName", "filename"],
         properties: {
           libraryId: { type: "integer" },
-          seriesName: { type: "string", minLength: 1, maxLength: 300 },
-          filename: { type: "string", minLength: 1, maxLength: 300 },
+          seriesName: { type: "string", maxLength: 300 },
+          filename: { type: "string", maxLength: 300 },
           metadata: { type: "object", additionalProperties: { type: "string", maxLength: 20_000 } },
         },
       },

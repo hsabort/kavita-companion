@@ -190,27 +190,6 @@ function normalizeTitle(value: string): string {
   return plainText(value).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
-/** The `series` value(s) on a search doc (a string or an array) as a list. */
-function seriesNames(value: unknown): string[] {
-  if (Array.isArray(value)) return value.map((item) => text(item)).filter(Boolean);
-  const single = text(value);
-  return single ? [single] : [];
-}
-
-/**
- * Does a candidate match the query's series hint? The series is only ever a hint for a book search
- * (Open Library does not reliably expose it, so this is usually inert): it breaks a tie between
- * equally-scored title matches and never changes a candidate's band/score on its own.
- */
-function matchesSeries(names: string[], query: MatchQuery): boolean {
-  const want = normalizeTitle(query.series ?? "");
-  if (!want) return false;
-  return names.some((name) => {
-    const have = normalizeTitle(name);
-    return have === want || have.includes(want) || want.includes(have);
-  });
-}
-
 function toCandidate(document: Record<string, unknown>, query: MatchQuery): Candidate {
   const title = text(document.title);
   const year = yearOf(document.first_publish_year) ?? yearOf(document.publish_date);
@@ -294,13 +273,9 @@ export function createOpenLibraryProvider(): Provider {
       url.searchParams.set("fields", SEARCH_FIELDS);
       const data = await getJson<OpenLibrarySearch>(url.toString(), signal);
       return (data.docs ?? [])
-        .map((document) => {
-          const doc = document ?? {};
-          return { candidate: toCandidate(doc, query), seriesHint: matchesSeries(seriesNames(doc.series), query) };
-        })
-        .filter(({ candidate }) => candidate.externalId && candidate.title)
-        .sort((a, b) => b.candidate.score - a.candidate.score || Number(b.seriesHint) - Number(a.seriesHint))
-        .map(({ candidate }) => candidate);
+        .map((document) => toCandidate(document ?? {}, query))
+        .filter((candidate) => candidate.externalId && candidate.title)
+        .sort((a, b) => b.score - a.score);
     },
 
     async fetch(_key: string | null, externalId: string, signal?: AbortSignal): Promise<FetchedRecord> {
