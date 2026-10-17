@@ -95,7 +95,14 @@ def epub():
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
         z.writestr(zipfile.ZipInfo("mimetype"), "application/epub+zip", compress_type=zipfile.ZIP_STORED)
-        z.writestr("META-INF/container.xml", "<container/>" + secrets.token_hex(16))
+        z.writestr("META-INF/container.xml",
+                   '<container><rootfiles><rootfile full-path="OEBPS/content.opf"/></rootfiles></container>')
+        z.writestr("OEBPS/content.opf",
+                   '<?xml version="1.0"?><package xmlns="http://www.idpf.org/2007/opf" version="2.0" '
+                   'unique-identifier="id"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/">'
+                   f'<dc:identifier id="id">urn:uuid:{secrets.token_hex(8)}</dc:identifier>'
+                   '<dc:language>en</dc:language></metadata><manifest/><spine/></package>')
+        z.writestr("OEBPS/ch1.xhtml", f"<html/>{secrets.token_hex(8)}".encode())
     return buf.getvalue()
 
 
@@ -150,23 +157,18 @@ status, res = app("POST", f"/api/review/{conflict_id}/approve", admin,
 check("same file name in the same series refused (409)", status == 409 and "already exists" in res.get("error", ""), f"{status} {res}")
 check("refused approval leaves the upload waiting", items and app("GET", "/api/review", admin)[1]["pending"]
       and any(i["id"] == conflict_id for i in app("GET", "/api/review", admin)[1]["pending"]))
+# --- A book is saved under its canonical name ('<Series> #<n> - <Title>.epub'), not what was typed ---
 status, res = app("POST", f"/api/review/{book_id}/approve", admin,
-                  {"libraryId": BOOKS, "seriesName": "Kavita Test Book", "filename": "Renamed.cbz"})
-check("typing .cbz for an EPUB keeps it an .epub", status == 409 or (status == 202 and res.get("destination", "").endswith("Renamed.epub")), f"{status} {res}")
+                  {"libraryId": BOOKS, "seriesName": "Kavita Test Book", "filename": "Typed Name.cbz",
+                   "metadata": {"Title": f"Extra {tag}", "Number": "1", "Writer": "A. Writer"}})
+book_dir = MEDIA / "books" / "Kavita Test Book"
+book_final = book_dir / f"Kavita Test Book #1 - Extra {tag}.epub"
+cleanup_paths.append(book_dir)
+check("a book is saved as '<Series> #<n> - <Title>.epub', whatever was typed",
+      status == 202 and res.get("destination", "").endswith(f"Kavita Test Book #1 - Extra {tag}.epub"), f"{status} {res}")
 if status == 202:
     wait_approved(admin, book_id)
-    cleanup_paths.append(MEDIA / "books" / "Kavita Test Book" / "Renamed.epub")
-
-# --- Approve into an existing series uses that series' folder (case-insensitive match) ---
-status, res = app("POST", f"/api/review/{book_id}/approve", admin,
-                  {"libraryId": BOOKS, "seriesName": "kavita test book", "filename": f"Kavita Test Book - Extra {tag}.epub"})
-book_final = MEDIA / "books" / "Kavita Test Book" / f"Kavita Test Book - Extra {tag}.epub"
-cleanup_paths.append(book_final)
-if status == 202:
-    wait_approved(admin, book_id)
-check("approve into existing series 'Kavita Test Book'",
-      (status == 202 and res.get("newSeries") is False and book_final.exists())
-      or (MEDIA / "books" / "Kavita Test Book" / "Renamed.epub").exists(), f"{status} {res}")
+    check("the canonical book file is in the library", book_final.exists(), str(res))
 
 # --- Reject, restore, reject ---
 status, _ = app("POST", f"/api/review/{mislabelled_id}/reject", admin, {"reason": "Wrong series, please rename."})
