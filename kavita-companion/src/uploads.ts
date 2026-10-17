@@ -336,9 +336,13 @@ async function checkCompletedUpload(id: string) {
 /** After a restart, finish checks that were interrupted. */
 async function resumeInterruptedChecks() {
   for (const row of q.byStatus.all("checking") as unknown as UploadRow[]) {
-    const pendingPath = join(PENDING_DIR, `${row.id}.${row.ext}`);
-    const inPending = await stat(pendingPath).then(() => true, () => false);
-    if (inPending && row.sha256) {
+    // Prefer the recorded path: a book is renamed to its canonical name after inspection, so the
+    // original "pending/<id>.<ext>" may no longer exist.
+    let pendingPath: string | undefined;
+    for (const candidate of [row.stored_path, join(PENDING_DIR, `${row.id}.${row.ext}`)]) {
+      if (candidate && await stat(candidate).then(() => true, () => false)) { pendingPath = candidate; break; }
+    }
+    if (pendingPath && row.sha256) {
       q.setPending.run(row.ext, row.detected_type, row.sha256, pendingPath, Date.now(), row.id);
     } else {
       await checkCompletedUpload(row.id);

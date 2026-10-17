@@ -791,10 +791,11 @@ function groupCard(items) {
 
   card.append(...[
     el("div", { className: "group-head" },
-      el("h3", { textContent: fixing ? `Fix ${first.filename}` : items.length > 1 ? `${first.defaults.Series}: ${items.length} files` : first.filename }),
+      el("h3", { textContent: fixing ? `Fix ${first.filename}` : items.length > 1 ? `${first.defaults.Series}: ${items.length} files` : (first.stagedName ?? first.filename) }),
       el("div", {
         className: "upload-meta",
-        textContent: fixing ? `Now at ${first.currentPath}. Uploaded by ${first.uploader}.` : `Uploaded by ${first.uploader} to ${first.libraryName}`,
+        textContent: fixing ? `Now at ${first.currentPath}. Uploaded by ${first.uploader}.`
+          : `Uploaded by ${first.uploader} to ${first.libraryName}` + (first.stagedName && first.stagedName !== first.filename ? ` · uploaded as ${first.filename}` : ""),
       })),
     el("div", { className: "grid-2" }, field("Library", library), field("Series", series)),
     seriesNote,
@@ -962,7 +963,7 @@ function itemRow(item, shared) {
   const node = el("div", { className: "review-row", dataset: { id: item.id, mode: fixing ? "fix" : "approve" } },
     cover,
     el("div", { className: "row-body" },
-      el("div", { className: "upload-name", textContent: item.filename }),
+      el("div", { className: "upload-name", textContent: item.stagedName ?? item.filename }),
       el("div", { className: "facts", textContent: facts }),
       el("div", { className: "grid-3" }, field("Number", number), field("Volume", volume), field("Title", title)),
       field("File name", filename),
