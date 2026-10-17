@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.8.0 — 2026-10-17
+
 Added:
 - **Names are cleaned before they reach the library.** A new `cleanName()` drops release/scene tags
   (`(2020) (Digital) (Zone-Empire)`, `(LuCaZ)`, `(-KS-)`), bare years and year ranges, and orphan
@@ -33,6 +35,12 @@ Changed:
 - **The runtime image no longer ships pip, setuptools or the npm CLI.** The KindleUnpack venv keeps only
   what `mobi` uses at runtime, and npm is dropped after `npm ci`; this clears the HIGH advisories Trivy
   found in those packages' vendored dependencies (and shrinks the image), so the gate passes.
+
+Fixed:
+- **A standalone book's "Fix" form no longer turns its author into a series.** Fixing a standalone
+  book (whose folder is the author) seeded `Series` from that folder, so re-saving it produced
+  `<Author> - <Title>` and sometimes a spurious number. The Fix form now uses the same defaults as the
+  review card, so the author-as-series guard and the file-name title fallback apply.
 
 ## 0.7.0 — 2026-10-17
 
