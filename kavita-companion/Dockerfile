@@ -27,14 +27,29 @@ COPY --from=sevenzip /7z/7zzs /usr/local/bin/7zzs
 COPY --from=sevenzip /7z/License.txt /usr/local/share/doc/7zip/License.txt
 # KindleUnpack (the `mobi` package, GPL-3.0) converts MOBI/AZW book uploads to EPUB; see NOTICE.md.
 # It goes into its own venv (Alpine's system pip is externally-managed, PEP 668) and onto PATH so the
-# server can spawn `mobiunpack`.
+# server can spawn `mobiunpack`. mobi imports only the stdlib plus loguru, so after the install the
+# venv drops pip, setuptools and the packages pip seeds: none are used at runtime, and Trivy flags the
+# advisories in pip's and setuptools' own vendored copies (msgpack, urllib3, jaraco.context, wheel).
+# The system pip goes too, so the runtime image carries no pip at all.
 RUN apk add --no-cache python3 py3-pip \
  && python3 -m venv /opt/kindleunpack \
  && /opt/kindleunpack/bin/pip install --no-cache-dir mobi==0.4.1 \
+ && rm -rf /opt/kindleunpack/lib/python*/site-packages/pip* \
+           /opt/kindleunpack/lib/python*/site-packages/setuptools* \
+           /opt/kindleunpack/lib/python*/site-packages/wheel* \
+           /opt/kindleunpack/lib/python*/site-packages/msgpack* \
+           /opt/kindleunpack/lib/python*/site-packages/urllib3* \
+           /opt/kindleunpack/bin/pip* \
+ && apk del py3-pip \
  && rm -rf /root/.cache /tmp/*
 ENV PATH=/opt/kindleunpack/bin:$PATH
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
+# npm is only needed to install dependencies; the server runs `node dist/server.js`. Dropping the CLI
+# after the install takes the base image's bundled npm (and its own dependencies) out of the runtime
+# image, which is what Trivy otherwise flags as HIGH.
+RUN npm ci --omit=dev --ignore-scripts \
+ && npm cache clean --force \
+ && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/public ./public
 EXPOSE 3000

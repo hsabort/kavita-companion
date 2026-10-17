@@ -84,6 +84,11 @@ The `TEST_*` Kavita accounts must exist in the test stack (create them once in t
 Settings → Users). Work on a feature branch in the worktree, then merge to `main` and update live with
 `git pull && ./setup.sh`.
 
+The test `.env` also carries `TEST_STACK=1`, which `tests/settings.py` requires: the suite refuses to
+run when it is missing, or when the resolved media root is the live `/srv/media` (see
+[tests/README.md](../tests/README.md)). That is what keeps a stray run in the live checkout away from
+the live library.
+
 ## Tests
 
 Acceptance tests run against the stack described by the checkout's `.env` (the test environment above).
