@@ -170,6 +170,28 @@ if status == 202:
     wait_approved(admin, book_id)
     check("the canonical book file is in the library", book_final.exists(), str(res))
 
+# --- A standalone book needs no invented series: it lands in the author's folder ---
+author = f"Test Author {tag}"
+standalone_id = upload(uploader, "Dune.epub", epub(), BOOKS)
+wait_ready(admin, [standalone_id])
+status, res = app("POST", f"/api/review/{standalone_id}/approve", admin,
+                  {"libraryId": BOOKS, "seriesName": "", "filename": "Dune",
+                   "metadata": {"Title": "Dune", "Writer": author}})
+standalone_dir = MEDIA / "books" / author
+standalone_final = standalone_dir / "Dune.epub"
+cleanup_paths.append(standalone_dir)
+check("a standalone book is approved with no typed series, into the author's folder",
+      status == 202 and res.get("destination", "").endswith(f"{author}/Dune.epub"), f"{status} {res}")
+if status == 202:
+    wait_approved(admin, standalone_id)
+    check("the standalone book file is in the library", standalone_final.exists(), str(res))
+
+# --- A book typed into an existing series uses that series' exact name for the file too ---
+# NOT covered here: Kavita does not index this stack's Books library (only Comics has series), so
+# `seriesInLibrary(Books)` is always empty and the "existing series" branch cannot be reached. The
+# generic case-insensitive reuse is covered for Comics in test_metadata; the book-specific part (the
+# file name is built from the folder's exact name) is correct by construction but untested here.
+
 # --- Reject, restore, reject ---
 status, _ = app("POST", f"/api/review/{mislabelled_id}/reject", admin, {"reason": "Wrong series, please rename."})
 mine = {u["id"]: u for u in app("GET", "/api/uploads", uploader)[1]["uploads"]}
@@ -211,9 +233,13 @@ for s in comics_series or []:
         kavita("DELETE", f"/api/Series/{s['id']}")
 kavita("POST", "/api/Library/scan-folder", {"apiKey": env["COMPANION_KAVITA_AUTH_KEY"],
                                             "folderPath": "/data/books/Kavita Test Book", "abortOnNoSeriesMatch": False})
-# Only this run's files: real uploads may be waiting in the same folder.
-ours = {comic_id, conflict_id, mislabelled_id, book_id}
-left = [p.name for p in PENDING.iterdir() if p.name.split(".", 1)[0] in ours] if PENDING.exists() else []
+kavita("POST", "/api/Library/scan-folder", {"apiKey": env["COMPANION_KAVITA_AUTH_KEY"],
+                                            "folderPath": f"/data/books/Test Author {tag}", "abortOnNoSeriesMatch": False})
+# Only this run's files: real uploads may be waiting in the same folder. A staged book is named
+# "<id> <canonical>.epub", so match on the id that precedes the first space as well as the first dot.
+ours = {comic_id, conflict_id, mislabelled_id, book_id, standalone_id}
+left = [p.name for p in PENDING.iterdir()
+        if p.name.split(" ", 1)[0].split(".", 1)[0] in ours] if PENDING.exists() else []
 check("test files cleaned up", not left and not any(p.exists() for p in cleanup_paths), str(left))
 
 print(f"\n{sum(results)}/{len(results)} passed")
