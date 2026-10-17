@@ -778,7 +778,11 @@ function groupCard(items) {
     if (name) params.set("series", name);
     const yr = year.value.trim();
     if (yr) params.set("year", yr);
-    if (rows.length === 1) { const n = rows[0].inputs.number.value.trim(); if (n) params.set("number", n); }
+    if (rows.length === 1) {
+      const input = rows[0].inputs;
+      const n = input.number.value.trim(); if (n) params.set("number", n);
+      const t = input.title.value.trim(); if (t) params.set("title", t);
+    }
     const { status, body } = await api(`/api/review/${encodeURIComponent(first.id)}/match?${params.toString()}`);
     dialogRefresh.disabled = false;
     renderCandidates(body, status);

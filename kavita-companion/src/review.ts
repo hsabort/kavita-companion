@@ -286,13 +286,19 @@ export const MAX_MATCH_CANDIDATES = 8;
  */
 async function matchFor(
   row: UploadRow, inspection: Inspection, libraryType: number,
-  overrides: { series?: string; number?: string; year?: string; media?: MediaKind }, signal?: AbortSignal,
+  overrides: { series?: string; title?: string; number?: string; year?: string; media?: MediaKind }, signal?: AbortSignal,
 ) {
   const { defaults } = await defaultsFor(row, inspection, libraryType);
   const media = overrides.media ?? mediaForLibraryType(libraryType);
-  const title = (overrides.series ?? defaults.Series ?? "").trim();
+  // Comics/manga are searched by their series; books by their title (their series is only a ranking
+  // hint — see src/identify.ts). A book's series is the fallback key when the file has no title.
+  const book = media === "book";
+  const title = (book
+    ? overrides.title ?? defaults.Title ?? defaults.Series ?? ""
+    : overrides.series ?? defaults.Series ?? "").trim();
   const query: MatchQuery = {
     title,
+    series: book ? defaults.Series : undefined,
     number: overrides.number ?? defaults.Number,
     volume: defaults.Volume,
     year: overrides.year ?? defaults.Year,
@@ -884,7 +890,7 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     };
     try {
       const result = await matchFor(row, inspection, libraryType, {
-        series: pick("series"), number: pick("number"), year: pick("year"), media: asMediaKind(pick("media")),
+        series: pick("series"), title: pick("title"), number: pick("number"), year: pick("year"), media: asMediaKind(pick("media")),
       });
       audit("provider_match", user.username, request.ip, { id: row.id, media: result.media, candidates: result.candidates.length });
       return result;

@@ -11,9 +11,11 @@ import secrets
 import sys
 import time
 import zipfile
+from urllib.parse import parse_qs, urlparse
 
 from harness import app, check, finish, login, upload
-from settings import library_ids
+from provider_fake import ProviderFake
+from settings import env, library_ids
 
 BOOKS = library_ids()["Books"]
 tag = "".join(secrets.choice("abcdefghjkmnpqrstuvwxyz") for _ in range(6))
@@ -92,6 +94,37 @@ try:
     e = defaults_of(items, id_embedded)
     check("embedded metadata wins over the filename guess",
           e.get("Series") == "Dune" and e.get("Title") == "Dune" and e.get("Number") == "1", str(e))
+
+    # --- the search key: a book searches by its Title, with its series as a hint (Task 2) ---
+    ol_fake = ProviderFake(urlparse(env.get("PROVIDER_OPENLIBRARY_BASE", "")).port or 20906,
+                           provider="openlibrary").start()
+    try:
+        app("POST", "/api/admin/providers", admin, {"id": "openlibrary", "enabled": True})
+        ol_fake.reset()
+        docs = {"numFound": 2, "docs": [
+            {"key": "/works/OL1W", "title": "The Final Empire", "series": ["Elantris"]},
+            {"key": "/works/OL2W", "title": "The Final Empire", "series": ["Mistborn"]},
+        ]}
+        ol_fake.script("/search.json", [{"json": docs}, {"json": docs}])
+
+        _, body = app("GET", f"/api/review/{id_mistborn}/match", admin)
+        q = body.get("query") or {}
+        check("a book searches by its Title, with its series as a hint",
+              q.get("title") == "The Final Empire" and q.get("series") == "Mistborn", str(q))
+        ol_candidates = [c for c in body.get("candidates", []) if c.get("provider") == "openlibrary"]
+        check("the matching series wins a title tie",
+              [c["externalId"] for c in ol_candidates] == ["OL2W", "OL1W"], str(ol_candidates))
+        calls = ol_fake.requests("/search.json")
+        check("the lookup asked the provider once, with the title as the term",
+              len(calls) == 1 and parse_qs(calls[0]["query"]).get("q") == ["The Final Empire"],
+              str([(r["path"], r["query"]) for r in calls]))
+
+        _, body = app("GET", f"/api/review/{id_author}/match", admin)
+        check("an 'Author - Title' name searches the title, never the author",
+              (body.get("query") or {}).get("title") == "The Final Empire", str(body.get("query")))
+    finally:
+        app("POST", "/api/admin/providers", admin, {"id": "openlibrary", "enabled": False})
+        ol_fake.stop()
 finally:
     for upload_id in uploaded:
         app("DELETE", f"/api/uploads/{upload_id}", uploader)
