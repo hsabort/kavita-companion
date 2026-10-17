@@ -143,6 +143,18 @@ function normalizeTitle(value: string): string {
   return plainText(value).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
+/**
+ * Does a candidate's series name match the query's series hint? The series is only ever a hint for a
+ * book search (the title is the key), so this breaks a tie between equally-scored title matches and
+ * never changes a candidate's band/score on its own.
+ */
+function matchesSeries(name: string, query: MatchQuery): boolean {
+  const want = normalizeTitle(query.series ?? "");
+  const have = normalizeTitle(name);
+  if (!want || !have) return false;
+  return have === want || have.includes(want) || want.includes(have);
+}
+
 /** The featured `book_series` entry (or the first with a position), giving the series name + position. */
 function featuredSeries(value: unknown): { name: string; position: string } {
   const entries = (Array.isArray(value) ? value : value ? [value] : []).map(obj);
@@ -226,11 +238,17 @@ export function createHardcoverProvider(): Provider {
     covers: HARDCOVER_COVERS,
 
     async search(key: string | null, query: MatchQuery, signal?: AbortSignal): Promise<Candidate[]> {
-      const data = await graphql<HardcoverSearch>(key, SEARCH_QUERY, { query: query.title, perPage: 8 }, signal);
+      const term = query.title || query.series || "";
+      const data = await graphql<HardcoverSearch>(key, SEARCH_QUERY, { query: term, perPage: 8 }, signal);
       return searchDocuments(data.search?.results)
-        .map((document) => toCandidate(document, query))
-        .filter((candidate) => candidate.externalId && candidate.title)
-        .sort((a, b) => b.score - a.score);
+        .map((document) => ({
+          candidate: toCandidate(document, query),
+          // The series is a hint: it only breaks a tie between equally-scored title matches.
+          seriesHint: matchesSeries(text(obj(document.featured_series).name), query),
+        }))
+        .filter(({ candidate }) => candidate.externalId && candidate.title)
+        .sort((a, b) => b.candidate.score - a.candidate.score || Number(b.seriesHint) - Number(a.seriesHint))
+        .map(({ candidate }) => candidate);
     },
 
     async fetch(key: string | null, externalId: string, signal?: AbortSignal): Promise<FetchedRecord> {
