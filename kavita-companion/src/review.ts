@@ -18,6 +18,7 @@ import { fulfilRequests } from "./requests.js";
 import { config, providerCacheTtlMsFor } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
+import { bookMediaDefaults } from "./identify.js";
 import * as kavita from "./kavita.js";
 import { attributionFor } from "./providers/attribution.js";
 import { getCachedRecord, putCachedRecord } from "./providers/cache.js";
@@ -139,25 +140,34 @@ const defaultsCache = new Map<string, { defaults: Metadata; warnings: string[] }
 async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: number) {
   const cached = defaultsCache.get(row.id);
   if (cached) return cached;
-  const parsed = await kavita.parseName(row.filename, libraryType).catch(() => null);
   const embedded = inspection.embedded;
-  const fromName: Metadata = {
-    Series: parsed?.seriesName || undefined,
-    Number: parsedNumber(parsed?.minChapterNumber),
-    Volume: parsedNumber(parsed?.minVolumeNumber),
-  };
-  // Embedded metadata wins (Kavita would use it anyway); the file name fills the gaps.
-  const defaults: Metadata = { ...fromName, ...embedded };
-  if (!defaults.Series) defaults.Series = safeSegment(splitName(row.filename).base) ?? "Unsorted";
-
   const warnings: string[] = [];
+  let defaults: Metadata;
+
+  if (mediaForLibraryType(libraryType) === "book") {
+    // Books are identified by their Title. Kavita's file-name parser is manga-shaped (it reads
+    // "Catch-22" as series "Catch" and keeps an author prefix), so book defaults come from the
+    // file-name guess plus embedded metadata instead.
+    defaults = bookMediaDefaults(embedded, row.filename);
+  } else {
+    const parsed = await kavita.parseName(row.filename, libraryType).catch(() => null);
+    const fromName: Metadata = {
+      Series: parsed?.seriesName || undefined,
+      Number: parsedNumber(parsed?.minChapterNumber),
+      Volume: parsedNumber(parsed?.minVolumeNumber),
+    };
+    // Embedded metadata wins (Kavita would use it anyway); the file name fills the gaps.
+    defaults = { ...fromName, ...embedded };
+    if (!defaults.Series) defaults.Series = safeSegment(splitName(row.filename).base) ?? "Unsorted";
+    if (embedded.Series && fromName.Series && normalizeSeries(embedded.Series) !== normalizeSeries(fromName.Series)) {
+      warnings.push(`The metadata inside the file says series "${embedded.Series}", but the file name suggests "${fromName.Series}". Check which is right.`);
+    }
+    if (inspection.kind === "comic" && !inspection.hasEmbeddedMetadata) {
+      warnings.push("No metadata inside the file; it will be added on approval from the values below.");
+    }
+  }
+
   if (inspection.problem) warnings.push(inspection.problem);
-  if (embedded.Series && fromName.Series && normalizeSeries(embedded.Series) !== normalizeSeries(fromName.Series)) {
-    warnings.push(`The metadata inside the file says series "${embedded.Series}", but the file name suggests "${fromName.Series}". Check which is right.`);
-  }
-  if (inspection.kind === "comic" && !inspection.hasEmbeddedMetadata) {
-    warnings.push("No metadata inside the file; it will be added on approval from the values below.");
-  }
   if (embedded.PageCount && inspection.pages !== null && Number(embedded.PageCount) !== inspection.pages) {
     warnings.push(`The metadata says ${embedded.PageCount} pages but the file has ${inspection.pages}; it will be corrected.`);
   }
