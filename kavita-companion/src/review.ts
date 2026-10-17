@@ -19,7 +19,7 @@ import { config, providerCacheTtlMsFor } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
 import { bookMediaDefaults, canonicalBookName } from "./identify.js";
-import { cleanName } from "./naming.js";
+import { cleanName, dedupeSeriesVolume } from "./naming.js";
 import * as kavita from "./kavita.js";
 import { attributionFor } from "./providers/attribution.js";
 import { getCachedRecord, putCachedRecord } from "./providers/cache.js";
@@ -559,7 +559,7 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
   const typedBase = splitName(input.filename.trim()).base ?? input.filename;
   const wantedBase = book
     ? canonicalBookName(typedSeries ? { ...metadata, Series: finalSeries } : metadata).filename
-    : cleanName(typedBase);
+    : dedupeSeriesVolume(cleanName(typedBase), finalSeries, metadata.Volume);
   const base = safeSegment(wantedBase);
   if (!base) throw new ReviewError(400, "Enter a file name.");
   const filename = `${base}.${extension}`;
@@ -575,10 +575,13 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
     throw new ReviewError(410, mode === "fix" ? "The file is no longer in the library folder." : "The uploaded file is no longer on the server.");
   }
 
-  // The series the file is filed under is also what goes inside it, so Kavita can't disagree.
-  metadata.Series = finalSeries;
+  // The series the file is filed under is also what goes inside it, so Kavita can't disagree. A
+  // standalone book has no series: writing its author as calibre:series would make its own file look
+  // like a series book if it were ever re-uploaded.
+  if (book && !typedSeries) delete metadata.Series;
+  else metadata.Series = finalSeries;
   return {
-    libraryId: library.id, libraryName: library.name, seriesName: metadata.Series, newSeries: !existing,
+    libraryId: library.id, libraryName: library.name, seriesName: metadata.Series ?? finalSeries, newSeries: !existing,
     seriesDir, destination, metadata,
   };
 }

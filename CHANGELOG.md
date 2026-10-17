@@ -13,6 +13,10 @@ Added:
   series blurb (`The Gate of the Feral Gods: Dungeon Crawler Carl Book 4` ->
   `The Gate of the Feral Gods`). A title with no series (`Dune: Messiah`) is left alone. The portal's
   destination preview uses the same rules, so it matches what the server writes.
+- **Two round-trip traps are closed.** A standalone book no longer gets its author written as
+  `calibre:series` (so re-uploading its own file cannot turn it into a series book), and an embedded
+  series that merely repeats the author is ignored. A series that already names the volume
+  (`Iron Man v1`) no longer produces a doubled volume (`Iron Man v1 v01 #001.cbz` -> `Iron Man v1 #001.cbz`).
 
 Changed:
 - **The test suite refuses to run against the live library.** `tests/settings.py` — imported by every
