@@ -823,13 +823,18 @@ async function fixItem(row: UploadRow) {
   }));
   if (coverPath) fixCovers.set(row.id, coverPath);
   const libraries = await kavita.librariesCached();
-  const parsed = await kavita.parseName(row.filename, libraries.find((l) => l.id === row.library_id)?.type ?? 0).catch(() => null);
+  const libraryType = libraries.find((l) => l.id === row.library_id)?.type ?? 0;
+  const parsed = await kavita.parseName(row.filename, libraryType).catch(() => null);
   // The series it is filed under now (the folder name) is the best default; the file's metadata fills the rest.
   const currentSeries = basenameOf(dirname(source.path));
-  const defaults: Metadata = {
-    Number: parsedNumber(parsed?.minChapterNumber), Volume: parsedNumber(parsed?.minVolumeNumber),
-    ...inspection.embedded, Series: inspection.embedded.Series ?? currentSeries,
-  };
+  const defaults: Metadata = mediaForLibraryType(libraryType) === "book"
+    // A book's folder is its series or its author, so use the review card's defaults: the author-as-series
+    // guard and the file-name title fallback apply, and a standalone does not come back as "<Author> - <Title>".
+    ? bookMediaDefaults(inspection.embedded, basenameOf(source.path))
+    : {
+        Number: parsedNumber(parsed?.minChapterNumber), Volume: parsedNumber(parsed?.minVolumeNumber),
+        ...inspection.embedded, Series: inspection.embedded.Series ?? currentSeries,
+      };
   const warnings: string[] = [];
   if (inspection.problem) warnings.push(inspection.problem);
   if (inspection.embedded.Series && normalizeSeries(inspection.embedded.Series) !== normalizeSeries(currentSeries)) {
