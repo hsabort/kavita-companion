@@ -81,6 +81,8 @@ try:
                                      Title="Saga 001 (2020) (Digital) (Zone-Empire)")), COMICS)
     id_manga = upload(uploader, f"Whatever {tag} 001.cbz",
                       cbz(comicinfo(Series="Solo Leveling (2021) (Digital) (LuCaZ)")), MANGA)
+    id_trade = upload(uploader, f"Kc Trade {tag} Vol. 05 - Part 01 (2017) (Digital) (Zone-Empire).cbr",
+                      cbz(), COMICS)
 
     # --- books: the Title loses a repeated series prefix and a trailing series blurb ---
     id_blurb = upload(uploader, f"Blurb {tag}.epub",
@@ -97,7 +99,7 @@ try:
                               epub(dc_title="The Ultimate Hitchhiker's Guide to the Galaxy",
                                    dc_creator="Douglas Adams", calibre_series="Douglas Adams"), BOOKS)
 
-    uploaded += [id_comic, id_manga, id_blurb, id_prefix, id_dirty, id_colon, id_author_series]
+    uploaded += [id_comic, id_manga, id_blurb, id_prefix, id_dirty, id_colon, id_author_series, id_trade]
 
     items = {}
     for _ in range(90):
@@ -113,6 +115,10 @@ try:
     m = defaults_of(items, id_manga)
     check("a manga's year and scanner tag are stripped from the series",
           m.get("Series") == "Solo Leveling", str(m))
+
+    t = defaults_of(items, id_trade)
+    check("a Vol. trade suggests no issue number (a subtitle 'Part 01' is not one)",
+          t.get("Volume") == "5" and not t.get("Number"), str(t))
 
     b = defaults_of(items, id_blurb)
     check("a trailing series blurb is dropped from a book title",

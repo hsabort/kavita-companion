@@ -95,24 +95,11 @@ The first rehearsal re-uploaded live files and exposed two defects, now fixed an
 
 ## Rehearsal (test stack)
 
-Eight representative live files copied read-only to `/tmp/opencode/roundtrip`, re-uploaded through
-the test portal (test-uploader), approved (test-admin), verified on disk and in Kavita, then removed.
-The script (`/tmp/opencode/roundtrip/rehearse.py`) mirrors the portal's `templateName`.
-
-| Library | Original (as it is in the live library) | Renamed by the tool |
-|---|---|---|
-| Books | `(Dungeon Crawler Carl 04 - The Gate of the Feral Gods Dungeon Crawler Carl Book 4.epub` | `Dungeon Crawler Carl/Dungeon Crawler Carl #4 - The Gate of the Feral Gods.epub` |
-| Books | `The ultimate hitchhiker's guide to the galaxy.epub` | `Douglas Adams/The ultimate hitchhiker's guide to the galaxy.epub` |
-| Comics | `Sex Criminals 026 (2020) (Digital) (Zone-Empire).cbr` | `Sex Criminals/Sex Criminals #026.cbz` |
-| Comics | `The Wicked + The Divine Vol. 01 - The Faust Act (2014) (Digital) (Zone-Empire).cbr` | `The Wicked + The Divine/The Wicked + The Divine v01.cbz` |
-| Comics | `Iron Man v1 01.cbr` | `Iron Man v1/Iron Man v1 #001.cbz` |
-| Comics | `Saga #062.cbz` | `Saga/Saga #062.cbz` |
-| Manga | `Solo Leveling c159.cbz` | `Solo Leveling/Solo Leveling c159.cbz` |
-| Manga | `Solo Leveling v01.cbz` | `Solo Leveling/Solo Leveling v01.cbz` |
-
-Kavita indexed the six Comics/Manga/Books-with-series; `Douglas Adams` is not a Kavita series because
-Kavita's Books library uses a standalone book's title as its series (pre-existing behaviour, also true
-on live).
+The full live library (75 files) was re-uploaded through the test portal and verified. The complete
+original → renamed table and the findings are in
+[`2026-10-17-media-naming-rehearsal.md`](2026-10-17-media-naming-rehearsal.md). Result: 75/75
+approved, written and indexed; no refusals or collisions. One defect surfaced and was fixed: a `Vol.`
+trade no longer suggests an issue number read out of a subtitle ("… Part 01").
 
 ## Follow-on (separate): the live round-trip
 The rehearsal passed. The live round-trip (remove → re-upload → revalidate) still needs an explicit
