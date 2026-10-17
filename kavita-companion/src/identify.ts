@@ -5,6 +5,7 @@
 // (it reads "Catch-22" as series "Catch", keeps an author prefix, and drops a "#1"), so book
 // defaults are built here from the file name plus the file's embedded metadata instead.
 import type { Metadata } from "./metadata.js";
+import { cleanBookTitle, cleanName } from "./naming.js";
 
 export interface NameGuess {
   title?: string;
@@ -86,6 +87,12 @@ export function bookMediaDefaults(embedded: Metadata, filename: string): Metadat
   }
   // A "Author - Title" file name gives us an author even when the file carries no Writer.
   if (!out.Writer?.trim() && guess.author?.trim()) out.Writer = guess.author.trim();
+  // Clean what the card will show, so a reviewer starts from a tidy Series/Title (release tags, bare
+  // years and orphan brackets out; a repeated series prefix and a series blurb out of the Title).
+  if (out.Series?.trim()) out.Series = cleanName(out.Series);
+  else delete out.Series;
+  if (out.Title?.trim()) out.Title = cleanBookTitle(out.Title, out.Series ?? "");
+  else delete out.Title;
   return out;
 }
 
@@ -99,10 +106,10 @@ export interface CanonicalBookName { series: string; filename: string }
  * each part through `safeSegment` before touching the filesystem.
  */
 export function canonicalBookName(meta: Metadata): CanonicalBookName {
-  const title = (meta.Title ?? "").trim();
-  const series = (meta.Series ?? "").trim();
+  const series = cleanName((meta.Series ?? "").trim());
   const number = (meta.Number ?? "").trim();
-  const author = (meta.Writer ?? "").trim();
+  const author = cleanName((meta.Writer ?? "").trim());
+  const title = cleanBookTitle((meta.Title ?? "").trim(), series);
   if (series) {
     const suffix = number ? ` #${number}` : "";
     return { series, filename: title ? `${series}${suffix} - ${title}` : `${series}${suffix}` };

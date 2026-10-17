@@ -74,6 +74,7 @@ missing-field detection is checked against real Kavita state without the slow up
 |---|---|
 | `test_auth.py` | Health, security headers, sign-in/out, session cookie flags, CSRF, permissions, rate limit |
 | `test_settings_guard.py` | The suite refuses a live-looking stack: `settings.py` aborts when `.env` lacks `TEST_STACK=1` or points `MEDIA_ROOT` at the live `/srv/media`, and accepts a marked test stack. Runs `settings.py` in a subprocess against crafted `.env` files; needs no running stack |
+| `test_naming.py` | Name cleanup: release tags, bare years and orphan brackets are stripped from a comic/manga series and a book's Series/Title, a repeated series prefix and a trailing series blurb are dropped from a book title, and a colon title with no series is left alone |
 | `test_uploads.py` | Resumable uploads incl. a dropped connection, refusals, type and duplicate checks, limits, ownership, withdraw |
 | `test_review.py` | Review queue: permissions, suggestions, approval into new/existing series, name clashes, `../` safety, reject/restore, Kavita shows the result |
 | `test_themes.py` | Theme sync: signed-out default, Dracula and Light via password sign-in, theme change via the sidebar link, an open session following changes made in Kavita (stored session encrypted), back to Dark. Temporarily installs catalogue themes and restores Kavita afterwards. |

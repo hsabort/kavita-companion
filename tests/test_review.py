@@ -186,6 +186,22 @@ if status == 202:
     wait_approved(admin, standalone_id)
     check("the standalone book file is in the library", standalone_final.exists(), str(res))
 
+# --- A tagged series and file name are cleaned before they land in the library ---
+dirty_series = f"Kc Dirty {tag}"
+dirty_id = upload(uploader, f"{dirty_series} 001 (2020) (Digital) (Zone-Empire).cbr", cbz(), COMICS)
+wait_ready(admin, [dirty_id])
+status, res = app("POST", f"/api/review/{dirty_id}/approve", admin,
+                  {"libraryId": COMICS, "seriesName": f"({dirty_series} (1968-1996)",
+                   "filename": f"{dirty_series} 001 (2020) (Digital) (Zone-Empire).cbr"})
+dirty_dir = MEDIA / "comics" / dirty_series
+dirty_final = dirty_dir / f"{dirty_series} 001.cbz"
+cleanup_paths.append(dirty_dir)
+check("a tagged series and file name are cleaned before they land",
+      status == 202 and res.get("destination") == f"/data/comics/{dirty_series}/{dirty_series} 001.cbz", f"{status} {res}")
+if status == 202:
+    wait_approved(admin, dirty_id)
+    check("the cleaned comic file is in the library", dirty_final.exists(), str(res))
+
 # --- A book typed into an existing series uses that series' exact name for the file too ---
 # NOT covered here: Kavita does not index this stack's Books library (only Comics has series), so
 # `seriesInLibrary(Books)` is always empty and the "existing series" branch cannot be reached. The
@@ -219,7 +235,7 @@ for _ in range(60):
 check("approved series appears in Kavita", found)
 
 # --- Clean up: withdraw leftovers, remove library files, rescan ---
-for uid in (conflict_id, mislabelled_id):
+for uid in (conflict_id, mislabelled_id, dirty_id):
     app("DELETE", f"/api/uploads/{uid}", uploader)
 for p in cleanup_paths:
     shutil.rmtree(p) if p.is_dir() else p.unlink(missing_ok=True)
@@ -237,7 +253,7 @@ kavita("POST", "/api/Library/scan-folder", {"apiKey": env["COMPANION_KAVITA_AUTH
                                             "folderPath": f"/data/books/Test Author {tag}", "abortOnNoSeriesMatch": False})
 # Only this run's files: real uploads may be waiting in the same folder. A staged book is named
 # "<id> <canonical>.epub", so match on the id that precedes the first space as well as the first dot.
-ours = {comic_id, conflict_id, mislabelled_id, book_id, standalone_id}
+ours = {comic_id, conflict_id, mislabelled_id, book_id, standalone_id, dirty_id}
 left = [p.name for p in PENDING.iterdir()
         if p.name.split(" ", 1)[0].split(".", 1)[0] in ours] if PENDING.exists() else []
 check("test files cleaned up", not left and not any(p.exists() for p in cleanup_paths), str(left))

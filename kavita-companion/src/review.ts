@@ -19,6 +19,7 @@ import { config, providerCacheTtlMsFor } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
 import { bookMediaDefaults, canonicalBookName } from "./identify.js";
+import { cleanName } from "./naming.js";
 import * as kavita from "./kavita.js";
 import { attributionFor } from "./providers/attribution.js";
 import { getCachedRecord, putCachedRecord } from "./providers/cache.js";
@@ -159,7 +160,10 @@ async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: 
     };
     // Embedded metadata wins (Kavita would use it anyway); the file name fills the gaps.
     defaults = { ...fromName, ...embedded };
-    if (!defaults.Series) defaults.Series = safeSegment(splitName(row.filename).base) ?? "Unsorted";
+    // Clean the series so the card starts tidy (a scene tag or orphan bracket never reaches a folder).
+    if (defaults.Series) defaults.Series = cleanName(defaults.Series);
+    if (!defaults.Series?.trim()) delete defaults.Series;
+    if (!defaults.Series) defaults.Series = safeSegment(cleanName(splitName(row.filename).base)) ?? "Unsorted";
     if (embedded.Series && fromName.Series && normalizeSeries(embedded.Series) !== normalizeSeries(fromName.Series)) {
       warnings.push(`The metadata inside the file says series "${embedded.Series}", but the file name suggests "${fromName.Series}". Check which is right.`);
     }
@@ -542,7 +546,7 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
   // standalone — the author (else the title). Comics/manga keep the reviewer's series.
   const book = mediaForLibraryType(library.type) === "book";
   const typedSeries = (input.seriesName || metadata.Series || "").trim();
-  const seriesName = safeSegment(book ? canonicalBookName({ ...metadata, Series: typedSeries }).series : typedSeries);
+  const seriesName = safeSegment(book ? canonicalBookName({ ...metadata, Series: typedSeries }).series : cleanName(typedSeries));
   if (!seriesName) throw new ReviewError(400, book ? "Enter a title or author." : "Enter a series name.");
 
   // Existing series (any capitalisation): file under the folder — and the exact name — Kavita already has.
@@ -555,7 +559,7 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
   const typedBase = splitName(input.filename.trim()).base ?? input.filename;
   const wantedBase = book
     ? canonicalBookName(typedSeries ? { ...metadata, Series: finalSeries } : metadata).filename
-    : typedBase;
+    : cleanName(typedBase);
   const base = safeSegment(wantedBase);
   if (!base) throw new ReviewError(400, "Enter a file name.");
   const filename = `${base}.${extension}`;
