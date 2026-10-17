@@ -16,5 +16,6 @@ kavita-companion/public/build/
 
 # Test artefacts
 tests/screenshots/
+docs/reviews/*/ui-ux-shots/
 __pycache__/
 *.pyc
