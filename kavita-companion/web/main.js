@@ -436,12 +436,65 @@ const pad = (value, width) => {
   return m ? m[1].padStart(width, "0") + (m[2] ?? "") : value;
 };
 
+// Mirror of the server's src/naming.ts, so the destination preview matches what the server writes.
+// The server cleans again, so a drift here can only change the suggestion, never the saved name.
+const RELEASE_WORDS = new Set([
+  "digital", "scan", "scans", "scanned", "scanlation", "cbz", "cbr", "cb7", "zip", "rar", "7z",
+  "epub", "mobi", "azw3", "repack", "repacks", "fixed", "complete", "c2c", "noads", "retail",
+  "webrip", "web", "hd", "sd", "remastered", "compressed", "uncensored", "decensored", "ongoing",
+  "ocr", "empire", "zone", "minutemen",
+]);
+function isNoiseGroup(inner) {
+  const text = inner.trim();
+  if (!text) return true;
+  if (/^\d{4}\s*[-–]\s*\d{4}$/.test(text)) return true;
+  if (/^\d{4}$/.test(text)) return true;
+  const words = text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  if (words.length && words.every((word) => RELEASE_WORDS.has(word))) return true;
+  return text.length <= 24 && !/[,.!?'’]/.test(text)
+    && (/[0-9]/.test(text) || /[0-9_+\-–]/.test(text) || /[A-Z]{2,}/.test(text) || /\p{Lu}\p{Ll}*\p{Lu}/u.test(text));
+}
+function dropOrphanBrackets(input) {
+  const pairs = { ")": "(", "]": "[" };
+  const stack = [];
+  const drop = new Set();
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (ch === "(" || ch === "[") stack.push(i);
+    else if (ch === ")" || ch === "]") {
+      if (stack.length && input[stack[stack.length - 1]] === pairs[ch]) stack.pop();
+      else drop.add(i);
+    }
+  }
+  for (const i of stack) drop.add(i);
+  return [...input].filter((_, i) => !drop.has(i)).join("");
+}
+function cleanName(input) {
+  let s = (input ?? "").normalize("NFC");
+  s = s.replace(/[(\[]([^()\[\]]*)[)\]]/g, (whole, inner) => (isNoiseGroup(inner) ? " " : whole));
+  s = dropOrphanBrackets(s);
+  s = s.replace(/\s+/g, " ").trim();
+  return s.replace(/^[\s._\-–]+/, "").replace(/[\s._\-–]+$/, "");
+}
+function cleanBookTitle(title, series = "") {
+  const cleaned = cleanName(title);
+  const name = cleanName(series);
+  if (!cleaned || !name) return cleaned;
+  const esc = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const out = cleaned
+    .replace(new RegExp(`^${esc}\\s*[:\\-–]\\s*`, "i"), "")
+    .replace(new RegExp(`\\s*[:\\-–]\\s*[^:]*\\b${esc}\\b[^:]*$`, "i"), "")
+    .replace(/\s*[:\-–]\s*(?:book|vol\.?|volume|part|#)\s*\d+\b.*$/i, "")
+    .trim();
+  return out || cleaned;
+}
+
 /** Suggested file name (without extension), following Kavita's naming guide per library type. */
 function templateName(libraryType, f) {
-  const series = f.Series?.trim() || "";
+  const series = cleanName(f.Series ?? "");
   const num = f.Number?.trim();
   const vol = f.Volume?.trim();
-  const title = f.Title?.trim();
+  const title = cleanBookTitle(f.Title ?? "", series);
   if (libraryType === 2 || libraryType === 4) { // Book / Light novel
     if (series) return `${series}${num ? ` #${num}` : ""}${title ? ` - ${title}` : ""}`;
     return title || series;
@@ -449,7 +502,7 @@ function templateName(libraryType, f) {
   if (libraryType === 0) { // Manga
     return `${series}${vol ? ` v${pad(vol, 2)}` : ""}${num ? ` c${pad(num, 3)}` : ""}`;
   }
-  return `${series}${vol ? ` v${vol}` : ""}${num ? ` #${pad(num, 3)}` : ""}`; // Comics
+  return `${series}${vol ? ` v${pad(vol, 2)}` : ""}${num ? ` #${pad(num, 3)}` : ""}`; // Comics
 }
 
 const SHARED_MORE = ["Writer", "Penciller", "Inker", "Colorist", "CoverArtist", "Publisher", "Imprint", "Genre", "Tags", "LanguageISO"];

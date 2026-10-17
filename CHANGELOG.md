@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+Added:
+- **Names are cleaned before they reach the library.** A new `cleanName()` drops release/scene tags
+  (`(2020) (Digital) (Zone-Empire)`, `(LuCaZ)`, `(-KS-)`), bare years and year ranges, and orphan
+  brackets (`(Dungeon Crawler Carl` becomes `Dungeon Crawler Carl`), then collapses whitespace. It is
+  applied to a comic/manga's series folder and file name at approval, and to the series the review
+  card suggests.
+- **A book's title is tidied too.** `cleanBookTitle()` drops a repeated series prefix
+  (`Dungeon Crawler Carl: A LitRPG/Gamelit Adventure` -> `A LitRPG/Gamelit Adventure`) and a trailing
+  series blurb (`The Gate of the Feral Gods: Dungeon Crawler Carl Book 4` ->
+  `The Gate of the Feral Gods`). A title with no series (`Dune: Messiah`) is left alone. The portal's
+  destination preview uses the same rules, so it matches what the server writes.
+
 Changed:
 - **The test suite refuses to run against the live library.** `tests/settings.py` — imported by every
   test, and checked by `tests/run.sh` before it restarts anything — aborts unless the `.env` sets
