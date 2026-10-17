@@ -81,3 +81,22 @@ export function cleanBookTitle(title: string, series = ""): string {
     .trim();
   return out || cleaned;
 }
+
+/** Does this series already name a volume, e.g. "Iron Man v1" / "Saga Vol. 2"? Returns it, or null. */
+function volumeInSeries(series: string): number | null {
+  const match = /(?:^|\s)(?:v|vol\.?|volume)\s*0*(\d+)\s*$/i.exec(cleanName(series));
+  return match ? Number(match[1]) : null;
+}
+
+/**
+ * Drop a volume token from a file name when the series already carries it: a reviewer who files
+ * "Iron Man v1 01.cbr" under the series "Iron Man v1" would otherwise get "Iron Man v1 v01 #001.cbz".
+ * Only the token right after the series prefix is removed, so a "v1" inside the series name survives.
+ */
+export function dedupeSeriesVolume(name: string, series: string, volume?: string): string {
+  const vol = (volume ?? "").trim();
+  const s = cleanName(series);
+  if (!vol || !s || volumeInSeries(s) !== Number(vol)) return name;
+  const esc = s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return name.replace(new RegExp(`^${esc}\\s+v0*${Number(vol)}(?=\\s|$)`, "i"), s);
+}

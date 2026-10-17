@@ -91,6 +91,9 @@ export function bookMediaDefaults(embedded: Metadata, filename: string): Metadat
   // years and orphan brackets out; a repeated series prefix and a series blurb out of the Title).
   if (out.Series?.trim()) out.Series = cleanName(out.Series);
   else delete out.Series;
+  // An author written as the series (a common calibre mistake) is not a series: a standalone book
+  // must not come back as "<Author> - <Title>" when its own file is re-uploaded.
+  if (out.Series && out.Writer && out.Series.trim().toLowerCase() === out.Writer.trim().toLowerCase()) delete out.Series;
   if (out.Title?.trim()) out.Title = cleanBookTitle(out.Title, out.Series ?? "");
   else delete out.Title;
   return out;

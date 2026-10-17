@@ -490,19 +490,25 @@ function cleanBookTitle(title, series = "") {
 }
 
 /** Suggested file name (without extension), following Kavita's naming guide per library type. */
+function volumeInSeries(series) {
+  const m = /(?:^|\s)(?:v|vol\.?|volume)\s*0*(\d+)\s*$/i.exec(cleanName(series));
+  return m ? Number(m[1]) : null;
+}
 function templateName(libraryType, f) {
   const series = cleanName(f.Series ?? "");
   const num = f.Number?.trim();
   const vol = f.Volume?.trim();
   const title = cleanBookTitle(f.Title ?? "", series);
+  // A series that already names the volume ("Iron Man v1") must not repeat it in the file name.
+  const showVol = vol && volumeInSeries(series) !== Number(vol) ? vol : "";
   if (libraryType === 2 || libraryType === 4) { // Book / Light novel
     if (series) return `${series}${num ? ` #${num}` : ""}${title ? ` - ${title}` : ""}`;
     return title || series;
   }
   if (libraryType === 0) { // Manga
-    return `${series}${vol ? ` v${pad(vol, 2)}` : ""}${num ? ` c${pad(num, 3)}` : ""}`;
+    return `${series}${showVol ? ` v${pad(showVol, 2)}` : ""}${num ? ` c${pad(num, 3)}` : ""}`;
   }
-  return `${series}${vol ? ` v${pad(vol, 2)}` : ""}${num ? ` #${pad(num, 3)}` : ""}`; // Comics
+  return `${series}${showVol ? ` v${pad(showVol, 2)}` : ""}${num ? ` #${pad(num, 3)}` : ""}`; // Comics
 }
 
 const SHARED_MORE = ["Writer", "Penciller", "Inker", "Colorist", "CoverArtist", "Publisher", "Imprint", "Genre", "Tags", "LanguageISO"];

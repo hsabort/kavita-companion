@@ -42,13 +42,15 @@ def cbz(info=None):
     return buf.getvalue()
 
 
-def epub(dc_title=None, calibre_series=None, calibre_index=None):
+def epub(dc_title=None, calibre_series=None, calibre_index=None, dc_creator=None):
     """A minimal but valid EPUB; each call is byte-unique so duplicate detection never trips."""
     global _seq
     _seq += 1
     meta = ""
     if dc_title is not None:
         meta += f"<dc:title>{dc_title}</dc:title>"
+    if dc_creator is not None:
+        meta += f"<dc:creator>{dc_creator}</dc:creator>"
     meta += f'<dc:identifier id="id">urn:uuid:{tag}-{_seq}</dc:identifier><dc:language>en</dc:language>'
     calibre = ""
     if calibre_series is not None:
@@ -91,8 +93,11 @@ try:
                       epub(dc_title="The Ultimate Hitchhiker's Guide to the Galaxy (2005)",
                            calibre_series="(Dungeon Crawler Carl", calibre_index="2"), BOOKS)
     id_colon = upload(uploader, f"Colon {tag}.epub", epub(dc_title="Dune: Messiah"), BOOKS)
+    id_author_series = upload(uploader, f"AuthorSeries {tag}.epub",
+                              epub(dc_title="The Ultimate Hitchhiker's Guide to the Galaxy",
+                                   dc_creator="Douglas Adams", calibre_series="Douglas Adams"), BOOKS)
 
-    uploaded += [id_comic, id_manga, id_blurb, id_prefix, id_dirty, id_colon]
+    uploaded += [id_comic, id_manga, id_blurb, id_prefix, id_dirty, id_colon, id_author_series]
 
     items = {}
     for _ in range(90):
@@ -129,6 +134,10 @@ try:
     y = defaults_of(items, id_colon)
     check("a standalone title with a colon is left alone",
           y.get("Title") == "Dune: Messiah", str(y))
+
+    s = defaults_of(items, id_author_series)
+    check("an author written as the series is not treated as a series",
+          not s.get("Series") and s.get("Title") == "The Ultimate Hitchhiker's Guide to the Galaxy", str(s))
 finally:
     for upload_id in uploaded:
         app("DELETE", f"/api/uploads/{upload_id}", uploader)
