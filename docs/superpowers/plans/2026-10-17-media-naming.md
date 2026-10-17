@@ -38,7 +38,7 @@ again), so a divergence can only change the suggestion, never the saved name.
 
 **Files:** Create `kavita-companion/src/naming.ts`; test `tests/test_naming.py` (new, fast tier).
 
-- [ ] Step 1: Write `tests/test_naming.py` — upload CBZs/EPUBs whose embedded metadata is dirty and
+- [x] Step 1: Write `tests/test_naming.py` — upload CBZs/EPUBs whose embedded metadata is dirty and
   read `/api/review` defaults (no library writes):
   - Comic CBZ, ComicInfo `Series=(Saga (1968-1996)`, `Title=Saga 001 (2020) (Digital) (Zone-Empire)`
     → `defaults.Series == "Saga"`.
@@ -53,37 +53,68 @@ again), so a divergence can only change the suggestion, never the saved name.
     `The Ultimate Hitchhiker's Guide to the Galaxy`.
   - EPUB dc:title `Dune: Messiah`, no series → Title stays `Dune: Messiah` (standalone titles with a
     colon are not shredded).
-- [ ] Step 2: Run `tests/run.sh --fast --only test_naming`; expect FAIL (tags/orphans retained).
-- [ ] Step 3: Implement `cleanName()` and `cleanBookTitle()` in `src/naming.ts`.
-- [ ] Step 4: Run again; expect PASS.
+- [x] Step 2: Run `tests/run.sh --fast --only test_naming`; expect FAIL (tags/orphans retained).
+- [x] Step 3: Implement `cleanName()` and `cleanBookTitle()` in `src/naming.ts`.
+- [x] Step 4: Run again; expect PASS.
 
 ### Task 2: Wire cleaning into identification and approval
 
 **Files:** `src/identify.ts` (`bookMediaDefaults`, `canonicalBookName`), `src/review.ts`
 (`defaultsFor`, `planApproval`); tests as above plus the slow approval test.
 
-- [ ] Step 1: Extend `tests/test_review.py` (slow): approve a comic with a dirty typed series
+- [x] Step 1: Extend `tests/test_review.py` (slow): approve a comic with a dirty typed series
   `"(Kc Name <tag>"` and a dirty file name `"Kc Name <tag> 001 (2020) (Digital) (Zone-Empire).cbr"`
   → destination `/data/comics/Kc Name <tag>/Kc Name <tag> 001.cbz`.
-- [ ] Step 2: Run `tests/run.sh --slow --only test_review`; expect FAIL.
-- [ ] Step 3: `bookMediaDefaults` cleans `Series` (and `Title` via `cleanBookTitle`); `canonicalBookName`
+- [x] Step 2: Run `tests/run.sh --slow --only test_review`; expect FAIL.
+- [x] Step 3: `bookMediaDefaults` cleans `Series` (and `Title` via `cleanBookTitle`); `canonicalBookName`
   cleans every segment; `defaultsFor` cleans the comic/manga series; `planApproval` runs `cleanName`
   over the typed series and file base before `safeSegment`.
-- [ ] Step 4: Run `--only test_review`; expect PASS; then the fast tier.
+- [x] Step 4: Run `--only test_review`; expect PASS; then the fast tier.
+
+### Task 2b: Round-trip traps found by the rehearsal
+
+The first rehearsal re-uploaded live files and exposed two defects, now fixed and tested:
+- A standalone book's own file came back as a series because approval wrote its author as
+  `calibre:series`. Now a standalone book carries no `calibre:series`, and an embedded series that
+  merely repeats the author is ignored.
+- `Iron Man v1 01.cbr` under the series `Iron Man v1` produced `Iron Man v1 v01 #001.cbz`; a volume
+  already named by the series is no longer repeated (`dedupeSeriesVolume`).
 
 ### Task 3: Mirror the helpers in the portal
 
 **Files:** `kavita-companion/web/main.js` (`templateName` and a JS `cleanName`/`cleanBookTitle`).
 
-- [ ] Step 1: Pad the comic volume to two digits and clean series/title in `templateName`, so the
+- [x] Step 1: Pad the comic volume to two digits and clean series/title in `templateName`, so the
   destination preview matches the server. Verify with `tests/run.sh --browser --only review_page`.
 
 ### Task 4: Full regression + CHANGELOG
 
-- [ ] Step 1: `tests/run.sh --fast` and `tests/run.sh --slow`; both green.
-- [ ] Step 2: `tests/run.sh --browser`; green.
-- [ ] Step 3: CHANGELOG `## Unreleased` entry; commit.
+- [x] Step 1: `tests/run.sh --fast` and `tests/run.sh --slow`; both green (27 files, all pass).
+- [x] Step 2: `tests/run.sh --browser --only review_page`; green.
+- [x] Step 3: CHANGELOG `## Unreleased` entry; commit (`1a5c6a9`, `8089dcb`).
 
-## Follow-on (separate): the round-trip
-Rehearse remove → re-upload → revalidate on the test stack with representative files, tabulate
-original → renamed, then (with explicit go-ahead and a `/srv/media` backup) repeat on live.
+## Rehearsal (test stack)
+
+Eight representative live files copied read-only to `/tmp/opencode/roundtrip`, re-uploaded through
+the test portal (test-uploader), approved (test-admin), verified on disk and in Kavita, then removed.
+The script (`/tmp/opencode/roundtrip/rehearse.py`) mirrors the portal's `templateName`.
+
+| Library | Original (as it is in the live library) | Renamed by the tool |
+|---|---|---|
+| Books | `(Dungeon Crawler Carl 04 - The Gate of the Feral Gods Dungeon Crawler Carl Book 4.epub` | `Dungeon Crawler Carl/Dungeon Crawler Carl #4 - The Gate of the Feral Gods.epub` |
+| Books | `The ultimate hitchhiker's guide to the galaxy.epub` | `Douglas Adams/The ultimate hitchhiker's guide to the galaxy.epub` |
+| Comics | `Sex Criminals 026 (2020) (Digital) (Zone-Empire).cbr` | `Sex Criminals/Sex Criminals #026.cbz` |
+| Comics | `The Wicked + The Divine Vol. 01 - The Faust Act (2014) (Digital) (Zone-Empire).cbr` | `The Wicked + The Divine/The Wicked + The Divine v01.cbz` |
+| Comics | `Iron Man v1 01.cbr` | `Iron Man v1/Iron Man v1 #001.cbz` |
+| Comics | `Saga #062.cbz` | `Saga/Saga #062.cbz` |
+| Manga | `Solo Leveling c159.cbz` | `Solo Leveling/Solo Leveling c159.cbz` |
+| Manga | `Solo Leveling v01.cbz` | `Solo Leveling/Solo Leveling v01.cbz` |
+
+Kavita indexed the six Comics/Manga/Books-with-series; `Douglas Adams` is not a Kavita series because
+Kavita's Books library uses a standalone book's title as its series (pre-existing behaviour, also true
+on live).
+
+## Follow-on (separate): the live round-trip
+The rehearsal passed. The live round-trip (remove → re-upload → revalidate) still needs an explicit
+go-ahead, a `/srv/media` backup, and a content-preservation check.
+
