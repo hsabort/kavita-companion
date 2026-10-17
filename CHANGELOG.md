@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.0 — 2026-10-17
+
+Added:
+- **Books identify from their file name and embedded metadata, title-first.** A bare or oddly-named
+  EPUB now yields a real Title instead of a mangled series: `Catch-22.epub` is the title `Catch-22`
+  (not series `Catch`), `Mistborn 01 - The Final Empire.epub` splits into Series/Number/Title, and
+  `Author - Title` keeps the title clean and supplies the author. Embedded metadata still wins over
+  the guess, and everything stays editable.
+- **Canonical book names.** An approved book is written as **`<Series> #<n> - <Title>.epub`**; a
+  standalone book as **`<Title>.epub`** in the author's folder (else the title's). A standalone book
+  no longer needs an invented series to be approved.
+- **A book is renamed to that canonical name before it reaches a reviewer**, and the review card
+  shows the renamed file (with the original upload name beside it).
+
+Changed:
+- **"Find metadata" searches books by Title**, with the series used only as a ranking hint (Hardcover's
+  featured series breaks a tie between equally-scored title matches). Comics and manga are unchanged.
+  Editing a book's Series field re-runs the search with that hint.
+
 ## 0.6.9 — 2026-10-16
 
 Added:
