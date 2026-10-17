@@ -18,7 +18,7 @@ import { fulfilRequests } from "./requests.js";
 import { config, providerCacheTtlMsFor } from "./config.js";
 import { audit, db } from "./db.js";
 import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackground, isInspecting, kindOf, removeCover } from "./inspect.js";
-import { bookMediaDefaults } from "./identify.js";
+import { bookMediaDefaults, canonicalBookName } from "./identify.js";
 import * as kavita from "./kavita.js";
 import { attributionFor } from "./providers/attribution.js";
 import { getCachedRecord, putCachedRecord } from "./providers/cache.js";
@@ -506,12 +506,19 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
   const libraryRoot = toLocalPath(library.folders[0]);
   if (!libraryRoot) throw new ReviewError(500, `Library folder ${library.folders[0]} is outside ${config.kavitaDataPrefix}.`);
 
-  const seriesName = safeSegment(input.seriesName);
-  if (!seriesName) throw new ReviewError(400, "Enter a series name.");
-  // The extension is decided by the file's kind, whatever was typed.
-  const base = safeSegment(splitName(input.filename.trim()).base) ?? safeSegment(input.filename);
+  const metadata = cleanMetadata(input.metadata);
+  const extension = targetExtension(kindOf(source.ext));
+  // A book's name is derived from its metadata, not typed: "<Series> #<n> - <Title>" in a folder named
+  // for the series (standalone: "<Title>" in the author's — else the title's — folder). Comics/manga
+  // keep the reviewer's series and file name.
+  const book = mediaForLibraryType(library.type) === "book";
+  const wantedSeries = input.seriesName || metadata.Series || "";
+  const canonical = book ? canonicalBookName({ ...metadata, Series: metadata.Series || wantedSeries }) : null;
+  const seriesName = safeSegment(book ? (canonical!.series || wantedSeries) : wantedSeries);
+  if (!seriesName) throw new ReviewError(400, book ? "Enter a title or author." : "Enter a series name.");
+  const base = safeSegment(book ? canonical!.filename : (splitName(input.filename.trim()).base ?? input.filename));
   if (!base) throw new ReviewError(400, "Enter a file name.");
-  const filename = `${base}.${targetExtension(kindOf(source.ext))}`;
+  const filename = `${base}.${extension}`;
 
   // Existing series (any capitalisation): use the folder Kavita already has for it.
   const existing = (await kavita.seriesInLibrary(library.id)).find(
@@ -529,7 +536,6 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
     throw new ReviewError(410, mode === "fix" ? "The file is no longer in the library folder." : "The uploaded file is no longer on the server.");
   }
 
-  const metadata = cleanMetadata(input.metadata);
   // The series the file is filed under is also what goes inside it, so Kavita can't disagree.
   metadata.Series = existing?.name ?? seriesName;
   return {

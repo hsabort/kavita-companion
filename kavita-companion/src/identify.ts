@@ -86,3 +86,24 @@ export function bookMediaDefaults(embedded: Metadata, filename: string): Metadat
   }
   return out;
 }
+
+/** The canonical library name for a book: the folder it goes in and the file name without extension. */
+export interface CanonicalBookName { series: string; filename: string }
+
+/**
+ * The one canonical naming rule for books, so the review card and approval cannot disagree:
+ * a series book is `"<Series> #<n> - <Title>"` in a folder named for the series; a standalone is
+ * `"<Title>"` in a folder named for the author (else the title). Returned unsanitised — callers run
+ * each part through `safeSegment` before touching the filesystem.
+ */
+export function canonicalBookName(meta: Metadata): CanonicalBookName {
+  const title = (meta.Title ?? "").trim();
+  const series = (meta.Series ?? "").trim();
+  const number = (meta.Number ?? "").trim();
+  const author = (meta.Writer ?? "").trim();
+  if (series) {
+    const suffix = number ? ` #${number}` : "";
+    return { series, filename: title ? `${series}${suffix} - ${title}` : `${series}${suffix}` };
+  }
+  return { series: author || title || "Unsorted", filename: title || "Untitled" };
+}

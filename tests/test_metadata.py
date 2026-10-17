@@ -226,7 +226,7 @@ status, res = app("POST", f"/api/review/{id_epub}/approve", admin, {
     "libraryId": BOOKS, "seriesName": series_book, "filename": "New Title",
     "metadata": {"Title": "New Title", "Writer": "Ann Lee, Bo Kim", "Number": "2"}})
 state, _ = wait_result(admin, id_epub)
-final_epub = MEDIA / "books" / series_book / "New Title.epub"
+final_epub = MEDIA / "books" / series_book / f"{series_book} #2 - New Title.epub"
 if final_epub.exists():
     with zipfile.ZipFile(final_epub) as z:
         first = z.infolist()[0]

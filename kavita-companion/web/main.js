@@ -443,7 +443,7 @@ function templateName(libraryType, f) {
   const vol = f.Volume?.trim();
   const title = f.Title?.trim();
   if (libraryType === 2 || libraryType === 4) { // Book / Light novel
-    if (series && title) return `${series}${num ? ` ${pad(num, 2)}` : ""} - ${title}`;
+    if (series) return `${series}${num ? ` #${num}` : ""}${title ? ` - ${title}` : ""}`;
     return title || series;
   }
   if (libraryType === 0) { // Manga
