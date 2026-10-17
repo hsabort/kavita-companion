@@ -15,9 +15,10 @@ from urllib.parse import parse_qs, urlparse
 
 from harness import app, check, finish, login, upload
 from provider_fake import ProviderFake
-from settings import env, library_ids
+from settings import INCOMING, env, library_ids
 
 BOOKS = library_ids()["Books"]
+PENDING = INCOMING / "pending"
 tag = "".join(secrets.choice("abcdefghjkmnpqrstuvwxyz") for _ in range(6))
 uploaded = []
 _seq = 0
@@ -94,6 +95,17 @@ try:
     e = defaults_of(items, id_embedded)
     check("embedded metadata wins over the filename guess",
           e.get("Series") == "Dune" and e.get("Title") == "Dune" and e.get("Number") == "1", str(e))
+
+    # --- a book is renamed to its canonical name before it is put in front of a reviewer (Task 4) ---
+    check("the review item shows the staged canonical name",
+          defaults_of(items, id_mistborn) is not None and (items.get(id_mistborn) or {}).get("stagedName")
+          == "Mistborn #1 - The Final Empire.epub", str((items.get(id_mistborn) or {}).get("stagedName")))
+    check("the staged file on disk is renamed to match",
+          (PENDING / f"{id_mistborn} Mistborn #1 - The Final Empire.epub").exists()
+          and not (PENDING / f"{id_mistborn}.epub").exists(),
+          str(sorted(p.name for p in PENDING.iterdir() if p.name.startswith(id_mistborn))))
+    check("a standalone book is staged under its title",
+          (PENDING / f"{id_dune} Dune.epub").exists(), str(sorted(p.name for p in PENDING.iterdir() if p.name.startswith(id_dune[:8]))))
 
     # --- the search key: a book searches by its Title, with its series as a hint (Task 2) ---
     ol_fake = ProviderFake(urlparse(env.get("PROVIDER_OPENLIBRARY_BASE", "")).port or 20906,

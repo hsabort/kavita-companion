@@ -70,6 +70,7 @@ const q = {
   expiredRejections: db.prepare(`SELECT id, stored_path, cover_path FROM uploads
     WHERE status = 'rejected' AND stored_path IS NOT NULL AND reviewed_at < ?`),
   forgetFile: db.prepare("UPDATE uploads SET stored_path = NULL, cover_path = NULL, updated_at = ? WHERE id = ?"),
+  setStoredPath: db.prepare("UPDATE uploads SET stored_path = ?, updated_at = ? WHERE id = ?"),
 };
 
 class ReviewError extends Error {
@@ -420,14 +421,42 @@ async function reviewItem(row: UploadRow, libraryTypes: Map<number, number>) {
     inspecting: !inspection || isInspecting(row.id),
   };
   if (!inspection) return { ...base, inspection: null, defaults: null, warnings: [] };
-  const { defaults, warnings } = await defaultsFor(row, inspection, libraryTypes.get(row.library_id) ?? 0);
+  const libraryType = libraryTypes.get(row.library_id) ?? 0;
+  const { defaults, warnings } = await defaultsFor(row, inspection, libraryType);
+  // A book is renamed to its canonical name before it is put in front of a reviewer, so the card
+  // shows the file's real name (see settleStagedBookName).
+  const stagedName = mediaForLibraryType(libraryType) === "book"
+    ? await settleStagedBookName(row, inspection)
+    : null;
   return {
     ...base,
     inspection: { pages: inspection.pages, hasCover: inspection.hasCover, hasEmbeddedMetadata: inspection.hasEmbeddedMetadata },
     embedded: inspection.embedded,
+    stagedName,
     defaults,
     warnings,
   };
+}
+
+/**
+ * Rename a staged book to the canonical name its metadata implies, so the file a reviewer is shown is
+ * the file on disk ("renamed before review"). Best-effort: if anything fails the staged file is left
+ * exactly as it was and the item still reviews. Returns the new base name, or null when unchanged.
+ */
+async function settleStagedBookName(row: UploadRow, inspection: Inspection): Promise<string | null> {
+  if (!row.stored_path) return null;
+  const stem = safeSegment(canonicalBookName(bookMediaDefaults(inspection.embedded, row.filename)).filename);
+  if (!stem) return null;
+  const target = join(config.incomingDir, "pending", `${row.id} ${stem}.${row.ext}`);
+  const display = `${stem}.${row.ext}`;
+  if (row.stored_path === target) return display;
+  try {
+    await rename(row.stored_path, target);
+  } catch {
+    return null;
+  }
+  q.setStoredPath.run(target, Date.now(), row.id);
+  return display;
 }
 
 /** Kavita's page for a series (Kavita's own route: /library/<libraryId>/series/<seriesId>). */
