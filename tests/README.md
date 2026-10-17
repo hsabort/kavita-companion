@@ -4,6 +4,16 @@ Acceptance tests that exercise the **running** stack described by `../.env` over
 address, the same way users do. They create their own uploads and clean up after themselves (including
 files they approve into the library and the matching Kavita series).
 
+## Safety
+
+The suite uploads into, renames and deletes files under the stack's media root and restarts the
+portal, so it refuses to run unless the checkout is clearly a test stack. `tests/settings.py` — imported
+by every test, and checked by `tests/run.sh` before it restarts anything — stops the run unless the
+`.env` sets `TEST_STACK=1` **and** its `MEDIA_ROOT` is not the live library (`/srv/media`). A live
+`.env` sets neither, so running these tests from a production checkout fails immediately with a clear
+message instead of touching the library. `.env.test.example` already sets `TEST_STACK=1`; a copy of it
+is a valid test `.env`.
+
 ## Test accounts
 
 The tests need three Kavita accounts, created in Kavita (Settings → Users) and listed in `.env`:
@@ -63,6 +73,7 @@ missing-field detection is checked against real Kavita state without the slow up
 | File | Covers |
 |---|---|
 | `test_auth.py` | Health, security headers, sign-in/out, session cookie flags, CSRF, permissions, rate limit |
+| `test_settings_guard.py` | The suite refuses a live-looking stack: `settings.py` aborts when `.env` lacks `TEST_STACK=1` or points `MEDIA_ROOT` at the live `/srv/media`, and accepts a marked test stack. Runs `settings.py` in a subprocess against crafted `.env` files; needs no running stack |
 | `test_uploads.py` | Resumable uploads incl. a dropped connection, refusals, type and duplicate checks, limits, ownership, withdraw |
 | `test_review.py` | Review queue: permissions, suggestions, approval into new/existing series, name clashes, `../` safety, reject/restore, Kavita shows the result |
 | `test_themes.py` | Theme sync: signed-out default, Dracula and Light via password sign-in, theme change via the sidebar link, an open session following changes made in Kavita (stored session encrypted), back to Dark. Temporarily installs catalogue themes and restores Kavita afterwards. |

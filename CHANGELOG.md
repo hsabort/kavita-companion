@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+Changed:
+- **The test suite refuses to run against the live library.** `tests/settings.py` — imported by every
+  test, and checked by `tests/run.sh` before it restarts anything — aborts unless the `.env` sets
+  `TEST_STACK=1` and its media root is not the live `/srv/media`. A live `.env` has neither, so a stray
+  `tests/run.sh` in the production checkout stops with a clear message instead of uploading into,
+  renaming or deleting real files.
+- **The image workflow scans before it publishes.** `.github/workflows/image.yml` now builds into the
+  local Docker store, runs Trivy, and only pushes to GHCR once the HIGH/CRITICAL gate passes, so a
+  flagged image is never published.
+- **The runtime image no longer ships pip, setuptools or the npm CLI.** The KindleUnpack venv keeps only
+  what `mobi` uses at runtime, and npm is dropped after `npm ci`; this clears the HIGH advisories Trivy
+  found in those packages' vendored dependencies (and shrinks the image), so the gate passes.
+
 ## 0.7.0 — 2026-10-17
 
 Added:

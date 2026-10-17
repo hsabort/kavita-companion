@@ -5,8 +5,9 @@
 #   - pull requests:         build only, no push
 #   - manual runs:           via workflow_dispatch
 #
-# Every build is scanned with Trivy: HIGH/CRITICAL vulnerabilities that have a fix fail the run, and
-# the report is uploaded as a SARIF artifact (and to the Security tab where code scanning is on).
+# Every build is scanned with Trivy before it is published: HIGH/CRITICAL vulnerabilities that have a
+# fix fail the run, so the image never reaches GHCR, and the report is uploaded as a SARIF artifact
+# (and to the Security tab where code scanning is on).
 #
 # The image is linux/amd64 only: the Dockerfile ships the x64 7-Zip build. The package is public, so
 # it can be pulled (e.g. by docker compose) without logging in (docs/operations.md).
@@ -51,37 +52,27 @@ jobs:
             type=edge,branch=main
             type=sha,format=short
 
-      - name: Build and push
+      - name: Build the image (loaded locally, not yet published)
         uses: docker/build-push-action@v6
         with:
           context: ./kavita-companion
           platforms: linux/amd64
-          # PRs only build; everything else pushes to GHCR. Attestations can only travel with a
-          # registry push (the local Docker store cannot hold them), so PRs load the image into the
-          # local store instead, giving Trivy something to scan.
-          push: ${{ github.event_name != 'pull_request' }}
-          load: ${{ github.event_name == 'pull_request' }}
+          # Build into the local Docker store so the scan below runs before anything reaches GHCR: a
+          # vulnerable image is never published. The push build further down publishes it once the scan
+          # passes (attestations cannot be loaded locally, so they are added there).
+          push: false
+          load: true
+          # Attestations cannot be loaded into the local store; the push build adds them.
+          provenance: false
+          sbom: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          # Provenance and SBOM attestations are pushed beside the image, as extra manifests in the
-          # image index, so consumers can check how the image was built. Tradeoff: the index then
-          # also lists an "unknown/unknown" entry. Current Docker ignores it and `docker pull` of
-          # this amd64-only image still resolves the linux/amd64 manifest; older tooling may show it
-          # awkwardly. They are only produced when pushing (see PR note above).
-          provenance: ${{ github.event_name != 'pull_request' }}
-          sbom: ${{ github.event_name != 'pull_request' }}
 
       - name: Set the image reference
         id: image
         run: echo "ref=ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
-
-      - name: Pull the pushed image for scanning
-        # On a push the image went straight to GHCR (attestations cannot be loaded locally), so fetch
-        # it back; on a PR it is already loaded under the same tag.
-        if: github.event_name != 'pull_request'
-        run: docker pull "${{ steps.image.outputs.ref }}"
 
       - name: Scan the image (SARIF for the Security tab / artifact)
         uses: aquasecurity/trivy-action@v0.36.0
@@ -120,3 +111,19 @@ jobs:
           ignore-unfixed: true
           vuln-type: os,library
           exit-code: "1"
+
+      - name: Push the image
+        # Only runs once the scan above passed, so a flagged image is never published. Attestations can
+        # only travel with a registry push (the local Docker store cannot hold them), so this rebuilds
+        # from the shared cache and pushes, adding the provenance and SBOM manifests.
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: ./kavita-companion
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          provenance: true
+          sbom: true
