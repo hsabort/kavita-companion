@@ -160,6 +160,12 @@ async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: 
     };
     // Embedded metadata wins (Kavita would use it anyway); the file name fills the gaps.
     defaults = { ...fromName, ...embedded };
+    // A "Vol. 5" trade has no issue number: Kavita sometimes reads one out of the subtitle
+    // ("... Part 01"), which would otherwise become a spurious "#001". An explicit "vol" marker
+    // means the number is noise, so drop it (the reviewer can still type one).
+    if (mediaForLibraryType(libraryType) === "comic" && defaults.Volume && /\bvol\.?\s*\d+/i.test(row.filename)) {
+      delete defaults.Number;
+    }
     // Clean the series so the card starts tidy (a scene tag or orphan bracket never reaches a folder).
     if (defaults.Series) defaults.Series = cleanName(defaults.Series);
     if (!defaults.Series?.trim()) delete defaults.Series;

@@ -17,6 +17,9 @@ Added:
   `calibre:series` (so re-uploading its own file cannot turn it into a series book), and an embedded
   series that merely repeats the author is ignored. A series that already names the volume
   (`Iron Man v1`) no longer produces a doubled volume (`Iron Man v1 v01 #001.cbz` -> `Iron Man v1 #001.cbz`).
+- **A `Vol.` trade no longer suggests an issue number.** Kavita sometimes reads one out of the
+  subtitle (`… Imperial Phase Part 01`), which would become a spurious `#001`; a file with an explicit
+  `Vol.` marker and a volume now suggests the volume alone (the reviewer can still type a number).
 
 Changed:
 - **The test suite refuses to run against the live library.** `tests/settings.py` — imported by every
