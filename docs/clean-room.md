@@ -46,7 +46,8 @@ Remediated on 2026-10-18 (clean-room audit, A1–A4):
 
 **Still outstanding** (tracked in the plan): the published image bundles GPL-3.0-only KindleUnpack
 and LGPL 7-Zip; those are isolated in Phase 3. Until then the *image* is a combined work even
-though this repository is not.
+though this repository is not — the image label names every licence it contains, and the image ships
+`LICENSE`, `NOTICE.md` and both third-party licence texts.
 
 ## Verify
 

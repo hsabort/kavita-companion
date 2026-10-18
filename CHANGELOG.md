@@ -3,6 +3,17 @@
 ## Unreleased
 
 Changed:
+- **Relicensed to Apache-2.0.** The repository was GPL-3.0-or-later; it is now the Apache License 2.0,
+  Copyright 2026 James VanTassel (`LICENSE`, `NOTICE.md`, `README.md`, `package.json`). Copies
+  distributed earlier keep their GPL-3.0-or-later rights — a licence change cannot withdraw them. New
+  contributions need a `Signed-off-by` sign-off; see the new `CONTRIBUTING.md`.
+- **The image now ships its licences.** `LICENSE` and `NOTICE.md` are copied into the image, along with
+  KindleUnpack's GPL text — previously absent, which was a real GPL gap — and 7-Zip's. The image's
+  `org.opencontainers.image.licenses` label now names every licence it contains, because the image
+  bundles GPL-3.0-only KindleUnpack and LGPL 7-Zip and is therefore *not* Apache-2.0 on its own. The
+  Docker build context is now the repository root, so the licence files have a single source of truth.
+- **A dependency licence gate runs in CI.** `npm run licences` fails on any GPL, AGPL, LGPL or
+  undeclared dependency.
 - **The portal's mark is our own.** The logo and favicon were Kavita assets (GPL-3.0); they are
   replaced by an original mark (`public/assets/img/logo.svg`, `favicon.svg`).
 - **Clean-room remediation.** Removed the vendored Kavita OpenAPI description

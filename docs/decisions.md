@@ -37,6 +37,7 @@ Short records of choices that shape this project, newest last. Each says what wa
     API runs inside the portal's image. Everything host-specific lives in `.env`.
 17. **GPL-3.0-or-later for this repository.** The repository includes Kavita's logo, favicon and API
     description (GPL v3) and reproduces Kavita's look, so the whole project uses Kavita's licence family.
+    *(Superseded by 20: the Kavita material has been removed and the repository is now Apache-2.0.)*
     All third-party code used is GPL-compatible (MIT, ISC, BSD, Apache-2.0, BlueOak); the OFL fonts ship
     with their licence. Details in `NOTICE.md`.
 18. **Follow the user's Kavita theme by reading colour variables only.** Any installed theme (built-in or
@@ -44,6 +45,26 @@ Short records of choices that shape this project, newest last. Each says what wa
     applied, so themes can't inject layout changes, third-party fonts or anything else.
 19. **Only failed sign-ins count toward sign-in limits**, so frequent or shared-network users are never
     locked out while password guessing still is.
+
+20. **Relicensed to Apache-2.0** (2026-10-18), from GPL-3.0-or-later, with `Copyright 2026 James
+    VanTassel`. The repository was sole-authored (one commit identity, no CLA, no third-party
+    contributions), so the grant is clean; copies distributed earlier keep their GPL-3.0-or-later
+    rights. The code is AI-written under human direction — the architecture, product decisions and
+    behaviour were chosen and reviewed by the owner — and the licence rests on that human
+    contribution. The signed statement is kept outside the repository
+    (`~/kavita-companion-relicensing.md`). Apache-2.0 rather than MIT for the explicit patent grant
+    and the NOTICE/attribution mechanics, since the rules are offered to a closed-source consumer.
+21. **The container image is a combined work, and is labelled as one.** It bundles KindleUnpack
+    (GPL-3.0-only) and 7-Zip (LGPL-2.1-or-later with the unRAR restriction), so it cannot be
+    Apache-2.0 on its own: the image label names all four licences, and the image now ships our
+    `LICENSE`, `NOTICE.md`, and 7-Zip's and KindleUnpack's licence texts. It previously shipped no
+    licence text at all, which was a real GPL gap.
+22. **The Docker build context is the repository root** (`dockerfile: kavita-companion/Dockerfile`), so
+    the Dockerfile can copy `LICENSE` and `NOTICE.md` from their single source of truth rather than
+    keeping copies inside the app directory.
+23. **A dependency licence gate runs in CI** (`npm run licences`): permissive licences only, failing on
+    copyleft or undeclared. `combine-errors` (transitive via `tus-js-client`, declares nothing
+    upstream) is a documented exception until its compliance item is resolved.
 
 ## Metadata providers — open items (docket)
 

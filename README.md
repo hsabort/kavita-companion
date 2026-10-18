@@ -98,7 +98,22 @@ Version 0.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's done and what's next.
 
 ## License
 
-GNU General Public License v3.0 or later ([LICENSE](LICENSE)), matching Kavita's GPL v3. Kavita's logo,
-favicon and API description (GPL v3) and the Poppins and League Spartan fonts (SIL OFL 1.1) are included
-unmodified; see [NOTICE.md](NOTICE.md). Kavita itself is a separate project, run here from the
-[linuxserver.io image](https://docs.linuxserver.io/images/docker-kavita/).
+Apache License 2.0 ([LICENSE](LICENSE)) — Copyright 2026 James VanTassel. Contributions are accepted
+under the same licence with a `Signed-off-by` sign-off; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+The **container image** is a combined work and is not Apache-2.0 on its own: it bundles 7-Zip
+(LGPL 2.1+ with the unRAR restriction) and KindleUnpack (GPL-3.0-only), so the image as a whole is
+distributed under GPL-3.0. The Poppins and League Spartan fonts (SIL OFL 1.1) are included
+unmodified. See [NOTICE.md](NOTICE.md) for the full set.
+
+Kavita itself is a separate project, run here from the
+[linuxserver.io image](https://docs.linuxserver.io/images/docker-kavita/); this repository contains no
+Kavita source, schema, strings or assets — see [docs/clean-room.md](docs/clean-room.md).
+
+## Provenance
+
+This project was written by AI coding agents working under human direction. The architecture, product
+decisions and behaviour were chosen and reviewed by James VanTassel; the code was produced by agents.
+It is developed under a clean-room discipline so that no third-party source, schema, strings or assets
+are carried into it, and every dependency is under a permissive licence. See
+[docs/clean-room.md](docs/clean-room.md).

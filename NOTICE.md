@@ -1,8 +1,27 @@
 # Notices
 
+## Copyright
+
+```
+kavita-companion
+Copyright 2026 James VanTassel
+```
+
+This file is the **NOTICE** text file for the purposes of Apache License 2.0 section 4(d):
+redistributions of this work (or derivative works) must keep the attribution above. Everything below
+that section records the licences of third-party material and is informational.
+
+## Licence
+
 This repository (the Docker configuration, `setup.sh`, scripts, tests, documentation and
-**kavita-companion**) is licensed under the **GNU General Public License v3.0 or later**; see
-[LICENSE](LICENSE).
+**kavita-companion**) is licensed under the **Apache License 2.0**; see [LICENSE](LICENSE).
+Contributions are accepted under the same licence and require a `Signed-off-by` sign-off — see
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+The **published container image** is a combined work and is *not* Apache-2.0 on its own: it bundles
+7-Zip and KindleUnpack (below), so the image as a whole is distributed under GPL-3.0. Isolating those
+from the image is tracked work; until then the `org.opencontainers.image.licenses` label on the image
+names every licence it actually contains.
 
 ## Third-party material included in this repository
 
@@ -28,7 +47,7 @@ Not stored in this repository; fetched at build time and pinned:
 | Uppy, Preact, tus-js-client and dependencies | bundled into the portal's web page | MIT |
 | TypeScript, esbuild | build only | Apache-2.0, MIT |
 | 7-Zip 26.01 (`7zzs`, official Linux build, SHA-256 pinned in the Dockerfile) | reading archives in the portal image | GNU LGPL 2.1+ with the unRAR licence restriction, BSD; licence text shipped in the image at `/usr/local/share/doc/7zip/License.txt`. The unRAR code is used only to extract, never to create RAR archives. |
-| KindleUnpack (the `mobi` PyPI package, pinned in the Dockerfile) | converting MOBI/AZW book uploads to EPUB | GNU GPL v3 (source at https://github.com/kevinhendricks/KindleUnpack) |
+| KindleUnpack (the `mobi` PyPI package, pinned in the Dockerfile) | converting MOBI/AZW book uploads to EPUB | GNU GPL v3 **only** (not "or later"); licence text shipped in the image at `/usr/local/share/doc/kindleunpack/LICENSE`. Source at https://github.com/kevinhendricks/KindleUnpack |
 | Caddy, Kavita, Node.js base images | containers | Apache-2.0, GPL-3.0, MIT (respectively) |
 
 ## Metadata provider credits

@@ -32,7 +32,7 @@ and the owner chose sensible defaults, recorded below.
   and a remediation plan; GitHub issues only for items the owner accepts.
 - **Scope:** the whole stack (compose + Kavita image + Caddy + portal); live **read-only**, test stack
   active; host notes documented, not changed.
-- **Redistribution:** assume public/redistributable (GPL-3.0-or-later) → ShareAlike/attribution in scope.
+- **Redistribution:** assume public/redistributable (Apache-2.0) → attribution in scope.
 - **Threat model:** a single self-hosted instance behind HTTPS, admin-reviewed uploads, on a shared
   (Incus/LXC) host; focus on exposure, secrets, SSRF/outbound, archive safety, and container blast radius.
 - **Providers:** ComicVine and Google Books stay excluded (decided).
