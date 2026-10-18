@@ -79,5 +79,6 @@ find /tmp -name '*.cs' -o -name 'Kavita.Server.dll'                             
 
 ## Contributing
 
-By contributing you confirm your work was produced under these rules, and you sign off your commits
-(DCO). See `CONTRIBUTING.md`.
+Development has ended, so contributions are closed; this section is kept for the record. While the
+project was active, contributing meant confirming your work was produced under these rules and signing
+off your commits (DCO). See `CONTRIBUTING.md`.

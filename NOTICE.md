@@ -14,9 +14,8 @@ that section records the licences of third-party material and is informational.
 ## Licence
 
 This repository (the Docker configuration, `setup.sh`, scripts, tests, documentation and
-**kavita-companion**) is licensed under the **Apache License 2.0**; see [LICENSE](LICENSE).
-Contributions are accepted under the same licence and require a `Signed-off-by` sign-off — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+**kavita-companion**) is licensed under the **Apache License 2.0**; see [LICENSE](LICENSE). The
+repository is frozen and contributions are closed — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Two container images are published from one Dockerfile:
 
