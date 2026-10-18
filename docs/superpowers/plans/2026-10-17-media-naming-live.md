@@ -2,6 +2,8 @@
 
 Deployed the naming code to live (`kavita-companion:0.7.2-naming`) and ran the portal's **Fix** on every approved file still in the library, so `planApproval` re-derived the clean folder and file name and Kavita rescanned. `/srv/media` was backed up first to `/srv/kavita/backups/media-20261017-231234` (8.0G).
 
+`0.7.2-naming` was only the interim deploy for the fix run: the work was then released as **0.8.0** and live was repinned to the published `ghcr.io/hsabort/kavita-companion:0.8.0` (see `CHANGELOG.md`).
+
 **Why not remove + re-upload:** the portal's duplicate guard refuses bytes that match an approved upload (all of them did), and there is no "remove approved file" action — only Fix, which renames in place. A literal remove + re-upload would have needed companion-DB surgery.
 
 **Fixed: 74 files.**
@@ -101,3 +103,22 @@ Deployed the naming code to live (`kavita-companion:0.7.2-naming`) and ran the p
 - **`books/Kavita Test Book/Kavita Test Book.epub`** has no approved row, so Fix cannot touch it.
 - **`Lord of the Rings.pdf`**: Kavita shows the series from the PDF's *internal* metadata (`TOLKIEN J.R.R - Lord of the Rin`). The companion only renames the file, so the folder is clean but Kavita's series name is not — a separate (content) issue.
 - A live user (`jp-kavita2`) approved ~9 more files during the run; they came out clean from the new code (e.g. `Saga v6 #006.cbz`, `Saga #007.cbz`).
+
+## Follow-up (2026-10-18): live cleanup
+
+Tied up the leftovers from the fix-in-place run. `/srv/media` and `companion.db` were backed up
+again first (`backups/media-20261018-004940`, `backups/companion.db.20261018-004940`).
+
+- **Test artifact removed.** `books/Kavita Test Book/Kavita Test Book.epub` (embedded author
+  `Setup Check`, no approved row) and its Kavita series were deleted.
+- **Dangling rows purged.** 84 `approved` rows left by test-suite runs on 2026-10-15
+  (`Kc Test Series`, `Browser Review`, `Kc5 Pdf`, `Kc5 Series`, `Kc5 Books`, `Kc6 After`,
+  `Kavita Test Book - Extra`, `Renamed.epub`) pointed at files that no longer existed yet still
+  counted as approved and fed the duplicate guard. Deleted (208 approved -> 124).
+- **LOTR embedded metadata fixed.** The three `Lord of the Rings/*.pdf` scans carried the scanner's
+  `/Title` (`TOLKIEN J.R.R - Lord of the Rin`) and `/Author` (`G. Mills`) — and Kavita uses that
+  `/Title` as the book *series* name. All three were rewritten in place (`/Info` + XMP) to
+  `Title = Lord of the Rings`, `Author = J.R.R. Tolkien`, and the stored `final_sha256` refreshed.
+  Kavita now shows one clean `Lord of the Rings` series (3 books, 262/211/181 pages).
+
+Live library after cleanup: **Books** 8, **Comics** 7, **Manga** 1; portal 124 approved / 0 dangling.
