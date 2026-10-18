@@ -28,7 +28,9 @@ Two container images are published from one Dockerfile:
 The **formats image** is a combined work and is *not* Apache-2.0 on its own: it bundles 7-Zip
 (LGPL-2.1-or-later with the unRAR restriction) and KindleUnpack (GPL-3.0-only), so that image as a
 whole is distributed under GPL-3.0. It is never tagged `latest`. Each image's label names every
-licence it actually contains.
+licence that imposes an obligation beyond permissive — our Apache-2.0, the OFL fonts, and, in the
+formats image, GPL-3.0-only and LGPL-2.1-or-later; permissive dependencies such as `loguru` (MIT) and
+`standard-imghdr` (PSF-2.0) are listed in the table below.
 
 ### Historical material, outside the grant
 

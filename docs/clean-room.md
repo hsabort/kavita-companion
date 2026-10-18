@@ -58,10 +58,13 @@ its accent, because that similarity is a design choice for a companion that sits
 is not a copying question. The mark's green and the accent green are therefore slightly different
 values by design.
 
-**Still outstanding** (tracked in the plan): the published image bundles GPL-3.0-only KindleUnpack
-and LGPL 7-Zip; those are isolated in Phase 3. Until then the *image* is a combined work even
-though this repository is not — the image label names every licence it contains, and the image ships
-`LICENSE`, `NOTICE.md` and both third-party licence texts.
+**Resolved in Phase 3 (the image split).** The GPL tools no longer sit in the default image. The
+`runtime` target — what a bare `docker build` and an unqualified pull (`:latest`) produce — is
+permissive (`Apache-2.0 AND OFL-1.1`) and carries no 7-Zip, no KindleUnpack and no Python. The
+GPL-3.0-only KindleUnpack and LGPL 7-Zip live only in the optional `runtime-formats` target
+(published as the `-formats` tags), which is the combined work and ships their licence texts
+alongside `LICENSE` and `NOTICE.md`. The repository itself was never the combined work; only that
+optional image is. See `NOTICE.md` for the two images and their labels.
 
 ## Verify
 

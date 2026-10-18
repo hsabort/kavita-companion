@@ -54,27 +54,34 @@ conversion. Everything else — `.zip`, `.cbz`, `.epub`, `.pdf`, and a `.cbr` wh
 zip — still works. An upload of a file the image can't handle is refused with a message naming the
 formats image, never a silent failure.
 
-To run a released build instead of building from source, set it in `.env` and re-run `./setup.sh`:
+### Run a released image (prebuilt)
+
+To run a released build instead of building from source, set `COMPANION_IMAGE` in `.env` and re-run
+`./setup.sh` (it pulls the image instead of building; `docker compose pull kavita-companion && docker
+compose up -d` does the same):
 
 ```dotenv
+# the permissive default; 0.2.1 is an old concrete release, shown as an example
 COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:0.2.1
 ```
 
-Need the formats image? Point `COMPANION_IMAGE` at the `-formats` tag for the release:
+For the formats image, append `-formats` to the release's tag — `X.Y.Z-formats` for release `X.Y.Z`:
 
 ```dotenv
 COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:X.Y.Z-formats
 ```
 
-Building from source, the switch is `COMPANION_BUILD_TARGET` in `.env`: the default `runtime` builds
-the permissive image, and `runtime-formats` builds the combined work:
+### Build from source
+
+Leave `COMPANION_IMAGE` empty (the default) and choose the target with `COMPANION_BUILD_TARGET`:
+`runtime` (the default) builds the permissive image, and `runtime-formats` builds the combined work:
 
 ```dotenv
 COMPANION_BUILD_TARGET=runtime-formats
 ```
 
-`./setup.sh` then pulls the image instead of building it (`docker compose pull kavita-companion &&
-docker compose up -d` does the same). Any other compose file can use the image directly, e.g.
+Then `./setup.sh` builds and starts it (`docker compose up -d --build kavita-companion` does the
+same). Any other compose file can use the image directly, e.g.
 `image: ghcr.io/hsabort/kavita-companion:latest`. Tags and rollback are in
 [docs/operations.md](docs/operations.md).
 

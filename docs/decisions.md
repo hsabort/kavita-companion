@@ -58,13 +58,24 @@ Short records of choices that shape this project, newest last. Each says what wa
     (GPL-3.0-only) and 7-Zip (LGPL-2.1-or-later with the unRAR restriction), so it cannot be
     Apache-2.0 on its own: the image label names all four licences, and the image now ships our
     `LICENSE`, `NOTICE.md`, and 7-Zip's and KindleUnpack's licence texts. It previously shipped no
-    licence text at all, which was a real GPL gap.
+    licence text at all, which was a real GPL gap. *(Superseded by 24: the GPL tools moved into an
+    optional `-formats` image, so the default image is permissive.)*
 22. **The Docker build context is the repository root** (`dockerfile: kavita-companion/Dockerfile`), so
     the Dockerfile can copy `LICENSE` and `NOTICE.md` from their single source of truth rather than
     keeping copies inside the app directory.
 23. **A dependency licence gate runs in CI** (`npm run licences`): permissive licences only, failing on
     copyleft or undeclared. `combine-errors` (transitive via `tus-js-client`, declares nothing
     upstream) is a documented exception until its compliance item is resolved.
+24. **The GPL tools are split into an optional `-formats` image; the default image is permissive.**
+    One Dockerfile builds two targets. `runtime` (the default, and what `latest` means) carries only
+    this repository's Apache-2.0 code and the OFL fonts — SPDX `Apache-2.0 AND OFL-1.1`.
+    `runtime-formats` adds 7-Zip and KindleUnpack — SPDX
+    `Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later`. Zip/EPUB/cbz reading moved
+    in-process (`yauzl`, MIT) so the permissive image keeps every format that has a permissive path
+    and gives up only `.rar`/`.cb7`/`.7z` reading and MOBI/AZW/AZW3 conversion, which have no
+    permissive implementation. A refusal names the `-formats` image instead of failing silently. This
+    supersedes 21: the repository and its default image are both permissive now, and only the
+    `-formats` image is a combined work.
 
 ## Metadata providers — open items (docket)
 
