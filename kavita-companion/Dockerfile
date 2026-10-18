@@ -1,5 +1,7 @@
 # Official 7-Zip static build: reads zip/rar/7z (Alpine's 7zip package has no RAR support) and
 # writes zip. Version and checksum pinned; RAR code is under the unRAR license (extract only).
+# This stage is reachable only from the optional `runtime-formats` target below, so the default
+# image builds none of it.
 FROM node:24.21.0-alpine AS sevenzip
 ARG SEVENZIP_URL=https://www.7-zip.org/a/7z2601-linux-x64.tar.xz
 ARG SEVENZIP_SHA256=8ea0fc8a135e7b848e80a4116fe22dff56c8c4518dde1f43cce67f4e340b437a
@@ -18,43 +20,15 @@ COPY kavita-companion/web ./web
 COPY kavita-companion/public ./public
 RUN npm run build
 
-FROM node:24.21.0-alpine
-# The image is a combined work, so this label names every licence it actually contains — it is NOT
-# "Apache-2.0" alone. Apache-2.0 is this repository's own code; GPL-3.0-only is KindleUnpack and
-# LGPL-2.1-or-later (with the unRAR restriction) is 7-Zip, both bundled below; OFL-1.1 is the fonts.
-LABEL org.opencontainers.image.title="kavita-companion" \
-      org.opencontainers.image.licenses="Apache-2.0 AND GPL-3.0-only AND LGPL-2.1-or-later AND OFL-1.1"
+# The shared application base. Both published targets (`runtime` and `runtime-formats`) extend this
+# stage, so every layer that makes up the application is identical between them and cannot drift.
+FROM node:24.21.0-alpine AS base
 WORKDIR /app
 ENV NODE_ENV=production
-# Apache-2.0 section 4(a) requires the licence to travel with a distribution, and the GPL-3.0-only
-# KindleUnpack below requires its own licence text. The build context is the repository root so both
-# can be copied from their single source of truth; 7-Zip's and the fonts' texts come with their own
-# payloads.
+# Apache-2.0 section 4(a) requires the licence to travel with a distribution. The build context is
+# the repository root so LICENSE and NOTICE.md come from their single source of truth; the OFL font
+# texts travel inside public/ (public/assets/fonts/OFL-*.txt).
 COPY LICENSE NOTICE.md /usr/local/share/doc/kavita-companion/
-COPY --from=sevenzip /7z/7zzs /usr/local/bin/7zzs
-COPY --from=sevenzip /7z/License.txt /usr/local/share/doc/7zip/License.txt
-# KindleUnpack (the `mobi` package, GPL-3.0) converts MOBI/AZW book uploads to EPUB; see NOTICE.md.
-# It goes into its own venv (Alpine's system pip is externally-managed, PEP 668) and onto PATH so the
-# server can spawn `mobiunpack`. mobi imports only the stdlib plus loguru and standard-imghdr. After the
-# install, the venv drops pip, setuptools and the packages pip seeds: none are used at runtime, and
-# Trivy flags the advisories in pip's and setuptools' own vendored copies (msgpack, urllib3,
-# jaraco.context, wheel).
-# The system pip goes too, so the runtime image carries no pip at all.
-RUN apk add --no-cache python3 py3-pip \
- && python3 -m venv /opt/kindleunpack \
- && /opt/kindleunpack/bin/pip install --no-cache-dir mobi==0.4.1 \
- && mkdir -p /usr/local/share/doc/kindleunpack \
- && cp /opt/kindleunpack/lib/python*/site-packages/mobi-0.4.1.dist-info/licenses/LICENSE \
-       /usr/local/share/doc/kindleunpack/LICENSE \
- && rm -rf /opt/kindleunpack/lib/python*/site-packages/pip* \
-           /opt/kindleunpack/lib/python*/site-packages/setuptools* \
-           /opt/kindleunpack/lib/python*/site-packages/wheel* \
-           /opt/kindleunpack/lib/python*/site-packages/msgpack* \
-           /opt/kindleunpack/lib/python*/site-packages/urllib3* \
-           /opt/kindleunpack/bin/pip* \
- && apk del py3-pip \
- && rm -rf /root/.cache /tmp/*
-ENV PATH=/opt/kindleunpack/bin:$PATH
 COPY kavita-companion/package.json kavita-companion/package-lock.json ./
 # npm is only needed to install dependencies; the server runs `node dist/server.js`. Dropping the CLI
 # after the install takes the base image's bundled npm (and its own dependencies) out of the runtime
@@ -67,3 +41,53 @@ COPY --from=build /app/public ./public
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://127.0.0.1:3000/api/health >/dev/null || exit 1
 CMD ["node", "dist/server.js"]
+
+# The optional formats target: the shared base plus the two GPL/LGPL tools. It is a combined work,
+# so its label names every licence it actually contains — it is NOT "Apache-2.0" alone. Apache-2.0
+# is this repository's own code; GPL-3.0-only is KindleUnpack (the `mobi` package) and
+# LGPL-2.1-or-later (with the unRAR restriction) is 7-Zip, both bundled below; OFL-1.1 is the fonts.
+# Selected explicitly with `--target runtime-formats`.
+FROM base AS runtime-formats
+LABEL org.opencontainers.image.title="kavita-companion" \
+      org.opencontainers.image.licenses="Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later"
+COPY --from=sevenzip /7z/7zzs /usr/local/bin/7zzs
+COPY --from=sevenzip /7z/License.txt /usr/local/share/doc/7zip/License.txt
+# KindleUnpack (the `mobi` package, GPL-3.0) converts MOBI/AZW book uploads to EPUB; see NOTICE.md.
+# It goes into its own venv (Alpine's system pip is externally-managed, PEP 668) and onto PATH so the
+# server can spawn `mobiunpack`. mobi imports only the stdlib plus loguru and standard-imghdr. After
+# the install, the venv drops pip, setuptools and the packages pip seeds: none are used at runtime,
+# and Trivy flags the advisories in pip's and setuptools' own vendored copies (msgpack, urllib3,
+# jaraco.context, wheel). The system pip goes too, so the formats image carries no pip at all.
+# loguru is pinned so the licence text fetched below matches the installed version. loguru's wheel
+# and sdist both ship no licence file, so its MIT text is fetched from the upstream repository at the
+# release tag, pinned by URL and SHA-256 exactly as 7-Zip is. standard-imghdr (PSF-2.0) ships its
+# own licence file, which is copied from its dist-info.
+ARG LOGURU_LICENSE_URL=https://raw.githubusercontent.com/Delgan/loguru/0.7.3/LICENSE
+ARG LOGURU_LICENSE_SHA256=b35d026cc7aca9d5859a02eb87ddf7a386a24c986838651bd1f283f94e003327
+RUN apk add --no-cache python3 py3-pip \
+ && python3 -m venv /opt/kindleunpack \
+ && /opt/kindleunpack/bin/pip install --no-cache-dir mobi==0.4.1 loguru==0.7.3 \
+ && mkdir -p /usr/local/share/doc/kindleunpack \
+ && cp /opt/kindleunpack/lib/python*/site-packages/mobi-0.4.1.dist-info/licenses/LICENSE \
+       /usr/local/share/doc/kindleunpack/LICENSE \
+ && cp /opt/kindleunpack/lib/python*/site-packages/standard_imghdr-*.dist-info/LICENSE \
+       /usr/local/share/doc/kindleunpack/standard-imghdr-LICENSE \
+ && wget -qO /tmp/loguru-LICENSE "$LOGURU_LICENSE_URL" \
+ && echo "$LOGURU_LICENSE_SHA256  /tmp/loguru-LICENSE" | sha256sum -c - \
+ && cp /tmp/loguru-LICENSE /usr/local/share/doc/kindleunpack/loguru-LICENSE \
+ && rm -rf /opt/kindleunpack/lib/python*/site-packages/pip* \
+           /opt/kindleunpack/lib/python*/site-packages/setuptools* \
+           /opt/kindleunpack/lib/python*/site-packages/wheel* \
+           /opt/kindleunpack/lib/python*/site-packages/msgpack* \
+           /opt/kindleunpack/lib/python*/site-packages/urllib3* \
+           /opt/kindleunpack/bin/pip* \
+ && apk del py3-pip \
+ && rm -rf /root/.cache /tmp/*
+ENV PATH=/opt/kindleunpack/bin:$PATH
+
+# The permissive default target. It is declared LAST on purpose: Docker's default target is the last
+# stage, so a bare `docker build` (no `--target`) produces this image and never the combined work.
+# It carries no 7-Zip, no KindleUnpack and no Python at all.
+FROM base AS runtime
+LABEL org.opencontainers.image.title="kavita-companion" \
+      org.opencontainers.image.licenses="Apache-2.0 AND OFL-1.1"
