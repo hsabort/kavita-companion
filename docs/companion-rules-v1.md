@@ -1197,3 +1197,64 @@ The following behaviours exist in the reference implementation **only to satisfy
 | `D1` | Duplicate guard | §7 |
 | `T1` | Library type → media class | §8.1 |
 | `T2` | File kind mapping | §8.2 |
+
+---
+
+## 11. What a reimplementation builds itself, and what it must not inherit
+
+This document specifies the *rules*. It does not specify a product, and it carries none of the
+reference implementation's defects. Both halves matter.
+
+### 11.1 Not specified here — build these yourself
+
+- **Accounts and sessions.** Every rule below assumes an authenticated, authorised reviewer. How that
+  identity is established — local accounts, an SSO provider, a role model — is your decision.
+- **The scanner.** Deciding when a file appeared or changed on disk, and reconciling that with the
+  database, is not a rule. Nothing here describes watching, crawling or de-duplicating a library.
+- **A durable job table and worker.** §5 describes the *statuses* an upload moves through and the
+  placement rule — not how work is queued, retried or resumed across a restart.
+- **Schema and migrations.** No table, column or index is specified.
+- **The archive layer.** Reading zip/rar/7z and writing a zip is a library choice (the reference pins
+  a 7-Zip build for RAR — see §11.2). Only the *page ordering* rule (`P4`) is specified.
+- **Cover images.** Extraction, storage, resizing and serving are not specified.
+- **Readers, collections, search, statistics, sharing.** Product surface, not rules.
+- **The HTTP API.** Routes, payloads and status codes are an integration choice.
+- **The external metadata HTTP layer.** Only the pure *merge* (`G1`) is specified. Search, fetch,
+  pagination, retry, rate limiting, caching and cooldowns are not — and if you fetch metadata, the
+  provider obligations below apply.
+
+### 11.2 Must not be inherited
+
+These are properties of the reference implementation or of its distribution, not of the rules.
+
+**Defects.** The reference has open security findings that following this document does *not* fix.
+They are stated here so a reimplementation does not reproduce them:
+
+- **SSRF in outbound notifications.** The URL guard was bypassable — an IPv6 literal, a trailing dot
+  in the host, and redirects followed after the check. Validate the *resolved* address, on every hop.
+- **A rate limit keyed on a client-controlled cookie**, which lets a caller bypass it and make the
+  server hammer the upstream library with the admin key. Key limits on the authenticated identity,
+  never on a value the caller supplies.
+- **Archive hardening applied late and never tested.** Entry-count, uncompressed-size and path checks
+  must run *before* extraction, on every entry.
+- **A login-CSRF gap** where a session could be established by a `GET` carrying an API key. State
+  changes must require a state-changing request and a CSRF token.
+
+**Provider obligations.** If you fetch external metadata these are contractual, and they travel with
+the *data*, not with the code:
+
+- **Metron and GCD are CC BY-SA 4.0.** Credit must reach the file you write, not just a screen:
+  attribute it ("Comic data from Metron"), link the licence, and indicate that you modified it.
+  ShareAlike attaches to anything you *distribute*.
+- **Metron cover images are excluded** from its CC BY-SA grant. Do not rehost them, cache them to
+  disk, or write them into a file.
+- **AniList and MangaDex** have storage and caching limits; a cache TTL is part of their terms.
+- **Identify yourself** — send a contact address in the `User-Agent`.
+- **One account per user** where a provider's terms require it; a single install-wide token shared by
+  every reviewer is not that.
+
+**Licence obligations.** The reference's container bundles GPL-3.0-only KindleUnpack (MOBI→EPUB) and
+7-Zip (LGPL-2.1-or-later with the unRAR field-of-use restriction). Neither is permissive, and neither
+is required by these rules. Choose permissive equivalents, or isolate them, before shipping a
+permissive-only product. §9 lists the reader-specific hacks that are likewise ours and not rules.
+

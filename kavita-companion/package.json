@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc -p . && node build-web.mjs",
     "start": "node dist/server.js",
-    "licences": "node scripts/check-licences.mjs"
+    "licences": "node scripts/check-licences.mjs",
+    "test": "npm run build && node --test ../tests/conformance/"
   },
   "dependencies": {
     "@fastify/cookie": "11.1.3",
