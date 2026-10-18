@@ -11,7 +11,7 @@
 // imports the backends to dispatch; every shared binding is used from inside a function, never at
 // import time, so the load-time cycle is harmless.
 import { createWriteStream } from "node:fs";
-import { lstat, mkdir, readdir, rm } from "node:fs/promises";
+import { lstat, mkdir, open, readdir, rm } from "node:fs/promises";
 import { join, relative, resolve, sep } from "node:path";
 import { pipeline } from "node:stream/promises";
 import yazl from "yazl";
@@ -96,9 +96,33 @@ async function requireArchiveExtras(): Promise<void> {
   requireCapability("archive-extras");
 }
 
-/** List entries without extracting: a zip in-process, anything else through 7-Zip. */
+/**
+ * Whether the file's leading bytes are a rar (`Rar!\x1a\x07`) or 7z (`7z\xbc\xaf\x27\x1c`) container:
+ * the two formats the 7-Zip backend reads, and the only ones worth a capability refusal. A file that
+ * is neither a zip nor one of these is corrupt or unsupported, and must not be answered with the
+ * capability message — on the default image that would tell a reviewer to run the formats image for
+ * a file that image could not open either. It is the same magic-byte test `detectType` uses.
+ */
+async function isRarOr7z(path: string): Promise<boolean> {
+  const handle = await open(path, "r");
+  try {
+    const head = Buffer.alloc(6);
+    const { bytesRead } = await handle.read(head, 0, 6, 0);
+    if (bytesRead < 6) return false;
+    return head.equals(Buffer.from("Rar!\x1a\x07", "binary"))
+      || head.equals(Buffer.from([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]));
+  } finally {
+    await handle.close();
+  }
+}
+
+/**
+ * List entries without extracting: a zip in-process, rar/7z through 7-Zip. Anything else is not a
+ * valid archive; the capability refusal is reserved for a real rar/7z this image cannot read.
+ */
 export async function listEntries(archive: string): Promise<ArchiveEntry[]> {
   if (await isZip(archive)) return listZipEntries(archive);
+  if (!(await isRarOr7z(archive))) throw new ArchiveError("not a valid archive");
   await requireArchiveExtras();
   return listSevenZipEntries(archive);
 }
@@ -106,6 +130,7 @@ export async function listEntries(archive: string): Promise<ArchiveEntry[]> {
 /** Read one entry into memory (small files only: ComicInfo.xml, OPF, a cover image). */
 export async function readEntry(archive: string, entryPath: string, maxBytes = 32 * 1024 * 1024): Promise<Buffer> {
   if (await isZip(archive)) return readZipEntry(archive, entryPath, maxBytes);
+  if (!(await isRarOr7z(archive))) throw new ArchiveError("not a valid archive");
   await requireArchiveExtras();
   return readSevenZipEntry(archive, entryPath, maxBytes);
 }
@@ -113,6 +138,7 @@ export async function readEntry(archive: string, entryPath: string, maxBytes = 3
 /** Extract everything into an empty directory and verify the tree (see extractVerified). */
 export async function extractAll(archive: string, intoDir: string, maxTotalBytes: number): Promise<ArchiveEntry[]> {
   if (await isZip(archive)) return extractZip(archive, intoDir, maxTotalBytes);
+  if (!(await isRarOr7z(archive))) throw new ArchiveError("not a valid archive");
   await requireArchiveExtras();
   return extractSevenZip(archive, intoDir, maxTotalBytes);
 }

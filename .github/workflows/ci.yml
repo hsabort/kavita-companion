@@ -26,6 +26,10 @@ jobs:
         run: npm run licences
       - name: Type-check and build (server + web bundle)
         run: npm run build
+      - name: Run the conformance corpus against the build
+        # `npm test` would rebuild (it runs `npm run build` first), so call the runner directly on the
+        # dist the previous step just produced — the same command, without a second build.
+        run: node --test ../tests/conformance/*.test.mjs
 
   docker:
     # Both image targets are built here, so a change that breaks either the permissive default or the

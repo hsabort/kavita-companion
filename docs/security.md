@@ -59,9 +59,13 @@ Kavita can't inject styles or load anything into the portal.
 - Uploaders can only see, resume or cancel their own uploads.
 - Staging (`MEDIA_ROOT/.incoming`) is outside every Kavita library, so nothing reaches readers before an
   admin approves it.
-- Archives are opened only during review/approval, by 7-Zip, after checking their listing: no absolute
-  paths, no `..`, no links, at most 20,000 entries, and an expanded size limit against zip bombs. The
-  extracted tree is checked again before use. Work happens in a per-upload folder that is deleted after.
+- Archives are opened only during review/approval, after checking their listing with the shared
+  `checkedEntry`/`verifyTree` checks: no absolute paths, no `..`, no links, at most 20,000 entries, and
+  an expanded size limit against zip bombs. Zip-family files (zip, EPUB, cbz, and a mislabelled
+  `.cbr`/`.cb7` whose bytes are really a zip) are read **in-process** by the zip reader the default
+  image always has; rar and 7z go to **7-Zip, which only the optional formats image carries** — on the
+  default image that path is refused with the capability message instead. The extracted tree is checked
+  again before use. Work happens in a per-upload folder that is deleted after.
 - Approved names are sanitised (no path separators, control or reserved characters, leading dots) and
   the destination is verified to be inside the chosen library; existing files are never overwritten.
 
@@ -80,7 +84,8 @@ that user's own file names and statuses, never other users' data or secrets.
 - Kavita (linuxserver image) needs root briefly at start-up and then runs as `PUID:PGID`.
 - Kavita's library mounts are read-only; only kavita-companion can write to the libraries.
 - Third-party versions are pinned: Kavita and Caddy image tags in `.env`, Node packages in
-  `package-lock.json`, 7-Zip by version and SHA-256 in the Dockerfile.
+  `package-lock.json`, and 7-Zip by version and SHA-256 in the Dockerfile — in the formats image only,
+  since the default image ships no 7-Zip.
 
 ## Secrets
 

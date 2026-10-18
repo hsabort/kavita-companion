@@ -99,6 +99,10 @@ const seven = await attempt(() => archive.listEntries(W + "/sample.7z"));
 check("the archive dispatcher refuses a 7z with CapabilityError('archive-extras')",
       seven.error instanceof caps.CapabilityError && seven.error.capability === "archive-extras",
       seven.error ? `${seven.error.name}: ${seven.message}` : "it resolved");
+const junk = await attempt(() => archive.listEntries(W + "/garbage.bin"));
+check("the dispatcher calls a non-archive 'not a valid archive', not a capability refusal",
+      junk.error && junk.error.name !== "CapabilityError" && /not a valid archive/.test(junk.message || ""),
+      junk.error ? `${junk.error.name}: ${junk.message}` : "it resolved");
 
 const mislabelled = await attempt(() => archive.listEntries(W + "/sample-mislabelled.cbr"));
 check("a .cbr whose bytes are really a zip is read in-process (mislabelled archives still work)",
@@ -138,6 +142,8 @@ def image_only() -> int:
     try:
         for name in needed:
             shutil.copy(FIXTURES / name, work / name)
+        # Neither zip nor rar/7z magic: the dispatcher must call it invalid, not ask for the formats image.
+        (work / "garbage.bin").write_bytes(b"not an archive, not a zip, not a rar or 7z container" + b"\x00" * 32)
         (work / "probe.mjs").write_text(IMAGE_PROBE)
         proc = subprocess.run(
             ["docker", "run", "--rm", "--user", "1001:1001",

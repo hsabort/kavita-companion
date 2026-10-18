@@ -1077,7 +1077,10 @@ async function openFix(id) {
     const reason = body.error ?? "This file can't be fixed right now.";
     area.replaceChildren(el("p", { className: "error", textContent: reason }));
     if (status === 415) {
-      const button = document.querySelector(`#review-recent li[data-id="${CSS.escape(id)}"] button`);
+      // Target the Fix button itself, not the first button in the row: an approved item whose Kavita
+      // status is "missing" carries a "Check again" button ahead of it, and disabling that one would
+      // leave Fix… enabled and the retry invited. The class is set on the Fix button in recentItem.
+      const button = document.querySelector(`#review-recent li[data-id="${CSS.escape(id)}"] button.fix-action`);
       if (button) { button.disabled = true; button.title = reason; }
     }
     return;
@@ -1101,7 +1104,7 @@ function recentItem(item) {
     if (line) li.append(line);
     if (item.reviewError) li.append(el("div", { className: "upload-error", textContent: item.reviewError }));
     if (item.canFix) {
-      const fix = el("button", { type: "button", className: "btn btn-outline small", textContent: "Fix…" });
+      const fix = el("button", { type: "button", className: "btn btn-outline small fix-action", textContent: "Fix…" });
       fix.addEventListener("click", () => openFix(item.id));
       li.append(fix);
     }

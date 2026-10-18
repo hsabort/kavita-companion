@@ -86,6 +86,12 @@ def build_archives(work):
     with zipfile.ZipFile(bomb, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("big.jpg", b"\x00" * 200_000)  # declares 200 KB from ~200 bytes of data
     (work / "encrypted.zip").write_bytes(encrypted_zip("secret.jpg", page(b"secret")))
+    # A zip whose entries use "\" separators (some Windows tools write them): the listing normalises
+    # them to "/", so readZipEntry must find the same path the listing reported.
+    stored_zip(work / "backslash.cbz", [("dir\\p1.jpg", page(b"bs1")), ("p2.jpg", page(b"bs2"))])
+    (work / "bs-p1.jpg").write_bytes(page(b"bs1"))
+    # Neither zip nor rar/7z magic: the dispatcher must call this invalid, not ask for the formats image.
+    (work / "garbage.bin").write_bytes(b"not an archive, not a zip, not a rar or 7z container" + b"\x00" * 32)
 
 
 # --- The module probe -------------------------------------------------------------------------
@@ -183,6 +189,19 @@ check("readZipEntry reads one entry's bytes",
 const capped = await attempt(() => zip.readZipEntry(W + "/mislabelled.cbr", "p001.jpg", 10));
 check("readZipEntry enforces its byte cap",
       capped.archiveError === true && /larger/i.test(capped.message || ""), JSON.stringify(capped));
+
+const bs = await attempt(() => zip.listZipEntries(W + "/backslash.cbz"));
+check("listZipEntries normalises a backslash-separated name to '/'",
+      !bs.error && bs.value.map((e) => e.path).includes("dir/p1.jpg"),
+      bs.error ? bs.message : JSON.stringify((bs.value || []).map((e) => e.path)));
+const bsRead = await attempt(() => zip.readZipEntry(W + "/backslash.cbz", "dir/p1.jpg"));
+check("readZipEntry finds an entry whose name used backslash separators",
+      !bsRead.error && bsRead.value.equals(readFileSync(W + "/bs-p1.jpg")),
+      bsRead.error ? bsRead.message : String(bsRead.value && bsRead.value.length));
+
+const junk = await attempt(() => archive.listEntries(W + "/garbage.bin"));
+check("the dispatcher calls a non-archive 'not a valid archive', not a capability refusal",
+      junk.archiveError === true && /not a valid archive/.test(junk.message || ""), JSON.stringify(junk));
 
 console.log(JSON.stringify({ results }));
 """

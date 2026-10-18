@@ -91,7 +91,10 @@ export async function readZipEntry(archive: string, entryPath: string, maxBytes 
   const zipfile = await openZip(archive);
   try {
     for await (const entry of zipfile.eachEntry()) {
-      if (entryName(entry) !== entryPath.replace(/\\/g, "/")) continue;
+      // Normalise the entry name the same way listZipEntries does (and the shared checkedEntry), so a
+      // zip whose entries use "\" separators — some Windows tools write them — is read by the path the
+      // listing reported ("a/b.jpg"), not the raw "a\b.jpg".
+      if (entryName(entry).replace(/\\/g, "/") !== entryPath.replace(/\\/g, "/")) continue;
       if (entry.isEncrypted()) throw new ArchiveError(`Archive is encrypted: ${entryPath}`);
       if (entry.uncompressedSize > maxBytes) throw new ArchiveError(`Entry ${entryPath} is larger than ${maxBytes} bytes.`);
       const stream = await zipfile.openReadStreamPromise(entry);
@@ -123,8 +126,11 @@ async function writeZipEntries(archive: string, intoDir: string): Promise<void> 
     for await (const entry of zipfile.eachEntry()) {
       const name = entryName(entry);
       if (entry.isEncrypted()) throw new ArchiveError(`Archive is encrypted: ${name}`);
-      // The listing already refused unsafe names; this keeps a file from ever being written outside
-      // the destination even if the archive changed between listing and extraction.
+      // The listing already refused unsafe names; this guard is deliberate defence-in-depth against a
+      // TOCTOU — the archive being swapped between that listing and this extraction — so a file can
+      // never be written outside the destination even then. It is intentionally not unit-tested on its
+      // own: listZipEntries refuses such a name first, so the only way to reach it is to mutate the
+      // archive between the two passes.
       const dest = resolve(root, name);
       if (dest !== root && !dest.startsWith(root + sep)) throw new ArchiveError(`Unsafe path in archive: ${name}`);
       if (isDirectory(entry, name)) {
