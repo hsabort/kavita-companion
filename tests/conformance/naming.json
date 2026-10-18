@@ -499,25 +499,25 @@
         {
           "id": "N3-001",
           "in": [
-            "(Saga"
+            "(Halcyon"
           ],
-          "out": "Saga",
+          "out": "Halcyon",
           "provenance": "spec §1.3 worked example"
         },
         {
           "id": "N3-002",
           "in": [
-            "Saga)"
+            "Halcyon)"
           ],
-          "out": "Saga",
+          "out": "Halcyon",
           "provenance": "spec §1.3 worked example"
         },
         {
           "id": "N3-003",
           "in": [
-            "[Solo Leveling"
+            "[Ascendant"
           ],
-          "out": "Solo Leveling",
+          "out": "Ascendant",
           "provenance": "spec §1.3 worked example"
         },
         {
@@ -608,41 +608,41 @@
         {
           "id": "N4-001",
           "in": [
-            "(Saga (1968-1996)"
+            "(Halcyon (1968-1996)"
           ],
-          "out": "Saga",
+          "out": "Halcyon",
           "provenance": "spec §1.4 worked example"
         },
         {
           "id": "N4-002",
           "in": [
-            "Solo Leveling (2021) (Digital) (LuCaZ)"
+            "Ascendant (2021) (Digital) (LuCaZ)"
           ],
-          "out": "Solo Leveling",
+          "out": "Ascendant",
           "provenance": "tests/test_naming.py::a manga's year and scanner tag are stripped from the series"
         },
         {
           "id": "N4-003",
           "in": [
-            "(Dungeon Crawler Carl"
+            "(Dungeon Delver"
           ],
-          "out": "Dungeon Crawler Carl",
+          "out": "Dungeon Delver",
           "provenance": "spec §1.4 worked example"
         },
         {
           "id": "N4-004",
           "in": [
-            "The Ultimate Hitchhiker's Guide to the Galaxy (2005)"
+            "The Utterly Complete Guide to Everything (2005)"
           ],
-          "out": "The Ultimate Hitchhiker's Guide to the Galaxy",
+          "out": "The Utterly Complete Guide to Everything",
           "provenance": "spec §1.4 worked example"
         },
         {
           "id": "N4-005",
           "in": [
-            "Saga 001 (2020) (Digital) (Zone-Empire)"
+            "Halcyon 001 (2020) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "spec §1.4 worked example"
         },
         {
@@ -656,33 +656,33 @@
         {
           "id": "N4-007",
           "in": [
-            "Saga 001"
+            "Halcyon 001"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (idempotence on an already-clean name)"
         },
         {
           "id": "N4-008",
           "in": [
-            "Sex Criminals 026 (2020) (Digital) (Zone-Empire)"
+            "Night Thieves 026 (2020) (Digital) (Zone-Empire)"
           ],
-          "out": "Sex Criminals 026",
+          "out": "Night Thieves 026",
           "provenance": "spec §1.4 intro example"
         },
         {
           "id": "N4-009",
           "in": [
-            "  ..Saga 001 (2020)..  "
+            "  ..Halcyon 001 (2020)..  "
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (leading/trailing separators)"
         },
         {
           "id": "N4-010",
           "in": [
-            "Saga    001"
+            "Halcyon    001"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (whitespace collapse)"
         },
         {
@@ -690,23 +690,23 @@
           "in": [
             "_Saga 001_"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (leading/trailing separators)"
         },
         {
           "id": "N4-012",
           "in": [
-            "- Saga 001 -"
+            "- Halcyon 001 -"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (leading/trailing separators)"
         },
         {
           "id": "N4-013",
           "in": [
-            "(2015) Saga (2016)"
+            "(2015) Halcyon (2016)"
           ],
-          "out": "Saga",
+          "out": "Halcyon",
           "provenance": "new edge case (noise groups on both sides)"
         },
         {
@@ -720,33 +720,33 @@
         {
           "id": "N4-015",
           "in": [
-            "Saga 001 [Digital]"
+            "Halcyon 001 [Digital]"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (square-bracket noise group)"
         },
         {
           "id": "N4-016",
           "in": [
-            "Saga 001 ()"
+            "Halcyon 001 ()"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (empty bracket group)"
         },
         {
           "id": "N4-017",
           "in": [
-            "Saga 001 [ ]"
+            "Halcyon 001 [ ]"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (whitespace-only bracket group)"
         },
         {
           "id": "N4-018",
           "in": [
-            "Saga 001 (Digital) (Zone-Empire) (2018)"
+            "Halcyon 001 (Digital) (Zone-Empire) (2018)"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (noise groups after the number)"
         },
         {
@@ -776,25 +776,25 @@
         {
           "id": "N4-022",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 .cbz",
+          "out": "Halcyon 055 .cbz",
           "provenance": "new edge case (extension is the caller's responsibility, not cleanName's)"
         },
         {
           "id": "N4-023",
           "in": [
-            "Batman #001 (2016)"
+            "Ironclad #001 (2016)"
           ],
-          "out": "Batman #001",
+          "out": "Ironclad #001",
           "provenance": "new edge case (realistic scene name)"
         },
         {
           "id": "N4-024",
           "in": [
-            "Iron Man v1 001 (1968) (Digital) (Minutemen)"
+            "Ironclad v1 001 (1968) (Digital) (Minutemen)"
           ],
-          "out": "Iron Man v1 001",
+          "out": "Ironclad v1 001",
           "provenance": "new edge case (realistic scene name)"
         },
         {
@@ -808,97 +808,97 @@
         {
           "id": "N4-026",
           "in": [
-            "Berserk volume 03 (2004) (Digital) (Dark)"
+            "Nightbloom volume 03 (2004) (Digital) (Dark)"
           ],
-          "out": "Berserk volume 03 (Dark)",
+          "out": "Nightbloom volume 03 (Dark)",
           "provenance": "new edge case (realistic scene name; unknown scanner group kept)"
         },
         {
           "id": "N4-027",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) extra"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) extra"
           ],
-          "out": "Saga 055 extra",
+          "out": "Halcyon 055 extra",
           "provenance": "new edge case (trailing word survives)"
         },
         {
           "id": "N4-028",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)"
           ],
-          "out": "Saga 055 (The Faust Act)",
+          "out": "Halcyon 055 (The Faust Act)",
           "provenance": "new edge case (bracketed subtitle kept)"
         },
         {
           "id": "N4-029",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-030",
           "in": [
-            "Saga 001 (2012) (Digital) (Zone-Empire)"
+            "Halcyon 001 (2012) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 001",
+          "out": "Halcyon 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-031",
           "in": [
-            "Saga 054 (2018) (Digital) (Zone-Empire)"
+            "Halcyon 054 (2018) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 054",
+          "out": "Halcyon 054",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-032",
           "in": [
-            "Batman #001 (2016)"
+            "Ironclad #001 (2016)"
           ],
-          "out": "Batman #001",
+          "out": "Ironclad #001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-033",
           "in": [
-            "Batman 001 (2016) (Digital) (Zone-Empire)"
+            "Ironclad 001 (2016) (Digital) (Zone-Empire)"
           ],
-          "out": "Batman 001",
+          "out": "Ironclad 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-034",
           "in": [
-            "Batman #050 (2018) (Digital) (Zone-Empire)"
+            "Ironclad #050 (2018) (Digital) (Zone-Empire)"
           ],
-          "out": "Batman #050",
+          "out": "Ironclad #050",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-035",
           "in": [
-            "Iron Man v1 001 (1968) (Digital) (Minutemen)"
+            "Ironclad v1 001 (1968) (Digital) (Minutemen)"
           ],
-          "out": "Iron Man v1 001",
+          "out": "Ironclad v1 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-036",
           "in": [
-            "Iron Man v1 012 (1969) (Digital) (Zone-Empire)"
+            "Ironclad v1 012 (1969) (Digital) (Zone-Empire)"
           ],
-          "out": "Iron Man v1 012",
+          "out": "Ironclad v1 012",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-037",
           "in": [
-            "Iron Man 001 (2020) (Digital)"
+            "Ironclad 001 (2020) (Digital)"
           ],
-          "out": "Iron Man 001",
+          "out": "Ironclad 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -920,33 +920,33 @@
         {
           "id": "N4-040",
           "in": [
-            "Berserk volume 03 (2004) (Digital) (Dark)"
+            "Nightbloom volume 03 (2004) (Digital) (Dark)"
           ],
-          "out": "Berserk volume 03 (Dark)",
+          "out": "Nightbloom volume 03 (Dark)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-041",
           "in": [
-            "Berserk v03 c007"
+            "Nightbloom v03 c007"
           ],
-          "out": "Berserk v03 c007",
+          "out": "Nightbloom v03 c007",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-042",
           "in": [
-            "Solo Leveling 159 (2021) (Digital) (LuCaZ)"
+            "Ascendant 159 (2021) (Digital) (LuCaZ)"
           ],
-          "out": "Solo Leveling 159",
+          "out": "Ascendant 159",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-043",
           "in": [
-            "Solo Leveling 160 (2021) (Digital) (LuCaZ)"
+            "Ascendant 160 (2021) (Digital) (LuCaZ)"
           ],
-          "out": "Solo Leveling 160",
+          "out": "Ascendant 160",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1184,17 +1184,17 @@
         {
           "id": "N4-073",
           "in": [
-            "Vinland Saga 001 (2005) (Digital) (LuCaZ)"
+            "Vinland Halcyon 001 (2005) (Digital) (LuCaZ)"
           ],
-          "out": "Vinland Saga 001",
+          "out": "Vinland Halcyon 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-074",
           "in": [
-            "Vinland Saga v01 c001"
+            "Vinland Halcyon v01 c001"
           ],
-          "out": "Vinland Saga v01 c001",
+          "out": "Vinland Halcyon v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1272,369 +1272,369 @@
         {
           "id": "N4-084",
           "in": [
-            "Saga Vol. 01 (2012) (Digital) (Zone-Empire)"
+            "Halcyon Vol. 01 (2012) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga Vol. 01",
+          "out": "Halcyon Vol. 01",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-085",
           "in": [
-            "Saga Vol. 02 (2013) (Digital) (Zone-Empire)"
+            "Halcyon Vol. 02 (2013) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga Vol. 02",
+          "out": "Halcyon Vol. 02",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-086",
           "in": [
-            "Saga Vol. 1 - Part 01 (2012)"
+            "Halcyon Vol. 1 - Part 01 (2012)"
           ],
-          "out": "Saga Vol. 1 - Part 01",
+          "out": "Halcyon Vol. 1 - Part 01",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-087",
           "in": [
-            "Batman Vol. 05 - Part 02 (2016) (Digital)"
+            "Ironclad Vol. 05 - Part 02 (2016) (Digital)"
           ],
-          "out": "Batman Vol. 05 - Part 02",
+          "out": "Ironclad Vol. 05 - Part 02",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-088",
           "in": [
-            "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen)"
+            "Ironclad v1 Vol. 02 (1969) (Digital) (Minutemen)"
           ],
-          "out": "Iron Man v1 Vol. 02",
+          "out": "Ironclad v1 Vol. 02",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-089",
           "in": [
-            "Berserk Volume 03 (2004) (Digital) (Dark)"
+            "Nightbloom Volume 03 (2004) (Digital) (Dark)"
           ],
-          "out": "Berserk Volume 03 (Dark)",
+          "out": "Nightbloom Volume 03 (Dark)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-090",
           "in": [
-            "Berserk v03 (2004) (Digital)"
+            "Nightbloom v03 (2004) (Digital)"
           ],
-          "out": "Berserk v03",
+          "out": "Nightbloom v03",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-091",
           "in": [
-            "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ)"
+            "Ascendant Vol. 05 (2020) (Digital) (LuCaZ)"
           ],
-          "out": "Solo Leveling Vol. 05",
+          "out": "Ascendant Vol. 05",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-092",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (c2c)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (c2c)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-093",
           "in": [
-            "Saga 055 (2018) (Webrip) (Zone-Empire)"
+            "Halcyon 055 (2018) (Webrip) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-094",
           "in": [
-            "Saga 055 (2018) (digital) (zone-empire)"
+            "Halcyon 055 (2018) (digital) (zone-empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-095",
           "in": [
-            "Saga 055 (2018) (Scan) (Minutemen)"
+            "Halcyon 055 (2018) (Scan) (Minutemen)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-096",
           "in": [
-            "Saga 055 (2018) (scanned) (Minutemen)"
+            "Halcyon 055 (2018) (scanned) (Minutemen)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-097",
           "in": [
-            "Saga 055 (2018) (Repack) (Zone-Empire)"
+            "Halcyon 055 (2018) (Repack) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-098",
           "in": [
-            "Saga 055 (2018) (Fixed) (Zone-Empire)"
+            "Halcyon 055 (2018) (Fixed) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-099",
           "in": [
-            "Saga 055 (2018) (Complete) (Zone-Empire)"
+            "Halcyon 055 (2018) (Complete) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-100",
           "in": [
-            "Saga 055 (2018) (NoAds) (Zone-Empire)"
+            "Halcyon 055 (2018) (NoAds) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-101",
           "in": [
-            "Saga 055 (2018) (Retail) (Zone-Empire)"
+            "Halcyon 055 (2018) (Retail) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-102",
           "in": [
-            "Saga 055 (2018) (Web) (Zone-Empire)"
+            "Halcyon 055 (2018) (Web) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-103",
           "in": [
-            "Saga 055 (2018) (HD) (Zone-Empire)"
+            "Halcyon 055 (2018) (HD) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-104",
           "in": [
-            "Saga 055 (2018) (SD) (Zone-Empire)"
+            "Halcyon 055 (2018) (SD) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-105",
           "in": [
-            "Saga 055 (2018) (Ongoing) (Zone-Empire)"
+            "Halcyon 055 (2018) (Ongoing) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-106",
           "in": [
-            "Saga 055 (2018) (OCR) (Zone-Empire)"
+            "Halcyon 055 (2018) (OCR) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-107",
           "in": [
-            "Saga 055 (2018) (Uncensored) (Zone-Empire)"
+            "Halcyon 055 (2018) (Uncensored) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-108",
           "in": [
-            "Saga 055 (2018) (Decensored) (Zone-Empire)"
+            "Halcyon 055 (2018) (Decensored) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-109",
           "in": [
-            "Saga 055 (2018) (Remastered) (Zone-Empire)"
+            "Halcyon 055 (2018) (Remastered) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-110",
           "in": [
-            "Saga 055 (2018) (Compressed) (Zone-Empire)"
+            "Halcyon 055 (2018) (Compressed) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-111",
           "in": [
-            "Saga 055 (2018) (Digital) (LuCaZ)"
+            "Halcyon 055 (2018) (Digital) (LuCaZ)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-112",
           "in": [
-            "Saga 055 (2018) (Digital) (-KS-)"
+            "Halcyon 055 (2018) (Digital) (-KS-)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-113",
           "in": [
-            "Saga 055 (1968-1996) (Digital)"
+            "Halcyon 055 (1968-1996) (Digital)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-114",
           "in": [
-            "Saga 055 (2020-2021) (Digital)"
+            "Halcyon 055 (2020-2021) (Digital)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-115",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) extra"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) extra"
           ],
-          "out": "Saga 055 extra",
+          "out": "Halcyon 055 extra",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-116",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) [hq]"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) [hq]"
           ],
-          "out": "Saga 055 [hq]",
+          "out": "Halcyon 055 [hq]",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-117",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)"
           ],
-          "out": "Saga 055 (The Faust Act)",
+          "out": "Halcyon 055 (The Faust Act)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-118",
           "in": [
-            "(Saga 055 (2018) (Digital) (Zone-Empire)"
+            "(Halcyon 055 (2018) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-119",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-120",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire)"
           ],
-          "out": "Saga 055",
+          "out": "Halcyon 055",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-121",
           "in": [
-            "Mistborn 01 - The Final Empire"
+            "Ashfall 01 - The Cinder Throne"
           ],
-          "out": "Mistborn 01 - The Final Empire",
+          "out": "Ashfall 01 - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-122",
           "in": [
-            "Mistborn 02 - The Well of Ascension"
+            "Ashfall 02 - The Well of Ascension"
           ],
-          "out": "Mistborn 02 - The Well of Ascension",
+          "out": "Ashfall 02 - The Well of Ascension",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-123",
           "in": [
-            "Mistborn 03 - The Hero of Ages"
+            "Ashfall 03 - The Hero of Ages"
           ],
-          "out": "Mistborn 03 - The Hero of Ages",
+          "out": "Ashfall 03 - The Hero of Ages",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-124",
           "in": [
-            "Dune"
+            "Vermilion"
           ],
-          "out": "Dune",
+          "out": "Vermilion",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-125",
           "in": [
-            "Dune Messiah"
+            "Vermilion Messiah"
           ],
-          "out": "Dune Messiah",
+          "out": "Vermilion Messiah",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-126",
           "in": [
-            "Frank Herbert - Dune"
+            "F. R. Halloway - Vermilion"
           ],
-          "out": "Frank Herbert - Dune",
+          "out": "F. R. Halloway - Vermilion",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-127",
           "in": [
-            "Frank Herbert - Dune Messiah"
+            "F. R. Halloway - Vermilion Messiah"
           ],
-          "out": "Frank Herbert - Dune Messiah",
+          "out": "F. R. Halloway - Vermilion Messiah",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-128",
           "in": [
-            "Brandon Sanderson - The Final Empire"
+            "B. A. Corwin - The Cinder Throne"
           ],
-          "out": "Brandon Sanderson - The Final Empire",
+          "out": "B. A. Corwin - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-129",
           "in": [
-            "Brandon Sanderson - Mistborn 01 - The Final Empire"
+            "B. A. Corwin - Ashfall 01 - The Cinder Throne"
           ],
-          "out": "Brandon Sanderson - Mistborn 01 - The Final Empire",
+          "out": "B. A. Corwin - Ashfall 01 - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1664,81 +1664,81 @@
         {
           "id": "N4-133",
           "in": [
-            "The Hobbit"
+            "The Lantern"
           ],
-          "out": "The Hobbit",
+          "out": "The Lantern",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-134",
           "in": [
-            "J R R Tolkien - The Hobbit"
+            "J R R Ashwood - The Lantern"
           ],
-          "out": "J R R Tolkien - The Hobbit",
+          "out": "J R R Ashwood - The Lantern",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-135",
           "in": [
-            "1984"
+            "2087"
           ],
-          "out": "1984",
+          "out": "2087",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-136",
           "in": [
-            "George Orwell - 1984"
+            "G. M. Ashcroft - 2087"
           ],
-          "out": "George Orwell - 1984",
+          "out": "G. M. Ashcroft - 2087",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-137",
           "in": [
-            "Catch-22"
+            "Cross-Fire"
           ],
-          "out": "Catch-22",
+          "out": "Cross-Fire",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-138",
           "in": [
-            "Joseph Heller - Catch-22"
+            "J. T. Calloway - Cross-Fire"
           ],
-          "out": "Joseph Heller - Catch-22",
+          "out": "J. T. Calloway - Cross-Fire",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-139",
           "in": [
-            "The 39 Steps"
+            "The 39 Rungs"
           ],
-          "out": "The 39 Steps",
+          "out": "The 39 Rungs",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-140",
           "in": [
-            "John Buchan - The 39 Steps"
+            "J. D. Fairweather - The 39 Rungs"
           ],
-          "out": "John Buchan - The 39 Steps",
+          "out": "J. D. Fairweather - The 39 Rungs",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-141",
           "in": [
-            "Dune (Dune #1)"
+            "Vermilion (Vermilion #1)"
           ],
-          "out": "Dune",
+          "out": "Vermilion",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-142",
           "in": [
-            "Mistborn 01 - The Final Empire (Mistborn #1)"
+            "Ashfall 01 - The Cinder Throne (Ashfall #1)"
           ],
-          "out": "Mistborn 01 - The Final Empire",
+          "out": "Ashfall 01 - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1837,7 +1837,7 @@
         {
           "id": "N5-001",
           "in": [
-            "Iron Man v1"
+            "Ironclad v1"
           ],
           "out": 1,
           "provenance": "spec §1.5 worked example"
@@ -1845,7 +1845,7 @@
         {
           "id": "N5-002",
           "in": [
-            "Saga Vol. 2"
+            "Halcyon Vol. 2"
           ],
           "out": 2,
           "provenance": "spec §1.5 worked example"
@@ -1853,7 +1853,7 @@
         {
           "id": "N5-003",
           "in": [
-            "Saga Volume 2"
+            "Halcyon Volume 2"
           ],
           "out": 2,
           "provenance": "new edge case (volume word)"
@@ -1861,7 +1861,7 @@
         {
           "id": "N5-004",
           "in": [
-            "Iron Man 2"
+            "Ironclad 2"
           ],
           "out": null,
           "provenance": "new edge case (bare number is not a volume token)"
@@ -1869,7 +1869,7 @@
         {
           "id": "N5-005",
           "in": [
-            "Saga"
+            "Halcyon"
           ],
           "out": null,
           "provenance": "spec §1.5 worked example"
@@ -1893,7 +1893,7 @@
         {
           "id": "N5-008",
           "in": [
-            "Saga v10"
+            "Halcyon v10"
           ],
           "out": 10,
           "provenance": "new edge case (two-digit volume)"
@@ -1901,7 +1901,7 @@
         {
           "id": "N5-009",
           "in": [
-            "Berserk volume 03"
+            "Nightbloom volume 03"
           ],
           "out": 3,
           "provenance": "spec §1.5 worked example (leading zero)"
@@ -1909,7 +1909,7 @@
         {
           "id": "N5-010",
           "in": [
-            "Iron Man Vol 1"
+            "Ironclad Vol 1"
           ],
           "out": 1,
           "provenance": "new edge case (Vol without period)"
@@ -1917,7 +1917,7 @@
         {
           "id": "N5-011",
           "in": [
-            "Saga Vol.2"
+            "Halcyon Vol.2"
           ],
           "out": 2,
           "provenance": "new edge case (no space after Vol.)"
@@ -1925,7 +1925,7 @@
         {
           "id": "N5-012",
           "in": [
-            "Saga v1 extra"
+            "Halcyon v1 extra"
           ],
           "out": null,
           "provenance": "new edge case (marker not at the end)"
@@ -1933,7 +1933,7 @@
         {
           "id": "N5-013",
           "in": [
-            "Iron Man v"
+            "Ironclad v"
           ],
           "out": null,
           "provenance": "new edge case (marker with no number)"
@@ -1941,7 +1941,7 @@
         {
           "id": "N5-014",
           "in": [
-            "Iron Man v1 (2020)"
+            "Ironclad v1 (2020)"
           ],
           "out": 1,
           "provenance": "new edge case (trailing noise cleaned first)"
@@ -1954,101 +1954,101 @@
         {
           "id": "N6-001",
           "in": [
-            "Iron Man v1 01",
-            "Iron Man v1",
+            "Ironclad v1 01",
+            "Ironclad v1",
             "1"
           ],
-          "out": "Iron Man v1 01",
+          "out": "Ironclad v1 01",
           "provenance": "spec §1.6 worked example"
         },
         {
           "id": "N6-002",
           "in": [
-            "Iron Man v1 v01 01",
-            "Iron Man v1",
+            "Ironclad v1 v01 01",
+            "Ironclad v1",
             "1"
           ],
-          "out": "Iron Man v1 01",
+          "out": "Ironclad v1 01",
           "provenance": "new edge case (repeated volume token dropped)"
         },
         {
           "id": "N6-003",
           "in": [
             "iron man v1 v01 01",
-            "Iron Man v1",
+            "Ironclad v1",
             "1"
           ],
-          "out": "Iron Man v1 01",
+          "out": "Ironclad v1 01",
           "provenance": "new edge case (case-insensitive match)"
         },
         {
           "id": "N6-004",
           "in": [
-            "Iron Man v1 V01 01",
-            "Iron Man v1",
+            "Ironclad v1 V01 01",
+            "Ironclad v1",
             "1"
           ],
-          "out": "Iron Man v1 01",
+          "out": "Ironclad v1 01",
           "provenance": "new edge case (upper-case token)"
         },
         {
           "id": "N6-005",
           "in": [
-            "Iron Man v1 v01 01",
-            "Iron Man v1",
+            "Ironclad v1 v01 01",
+            "Ironclad v1",
             "01"
           ],
-          "out": "Iron Man v1 01",
+          "out": "Ironclad v1 01",
           "provenance": "new edge case (zero-padded volume argument)"
         },
         {
           "id": "N6-006",
           "in": [
-            "Iron Man v1 v01 01",
-            "Iron Man v1",
+            "Ironclad v1 v01 01",
+            "Ironclad v1",
             "2"
           ],
-          "out": "Iron Man v1 v01 01",
+          "out": "Ironclad v1 v01 01",
           "provenance": "new edge case (volumes differ -> no-op)"
         },
         {
           "id": "N6-007",
           "in": [
-            "Iron Man v1 v01 01",
-            "Iron Man",
+            "Ironclad v1 v01 01",
+            "Ironclad",
             "1"
           ],
-          "out": "Iron Man v1 v01 01",
+          "out": "Ironclad v1 v01 01",
           "provenance": "new edge case (series names no volume -> no-op)"
         },
         {
           "id": "N6-008",
           "in": [
-            "Iron Man v1 v01 01",
+            "Ironclad v1 v01 01",
             "",
             "1"
           ],
-          "out": "Iron Man v1 v01 01",
+          "out": "Ironclad v1 v01 01",
           "provenance": "new edge case (no series -> no-op)"
         },
         {
           "id": "N6-009",
           "in": [
-            "Iron Man v1 v01 01",
-            "Iron Man v1",
+            "Ironclad v1 v01 01",
+            "Ironclad v1",
             ""
           ],
-          "out": "Iron Man v1 v01 01",
+          "out": "Ironclad v1 v01 01",
           "provenance": "new edge case (no volume -> no-op)"
         },
         {
           "id": "N6-010",
           "in": [
-            "Saga Vol. 2 v02 03",
-            "Saga Vol. 2",
+            "Halcyon Vol. 2 v02 03",
+            "Halcyon Vol. 2",
             "2"
           ],
-          "out": "Saga Vol. 2 03",
+          "out": "Halcyon Vol. 2 03",
           "provenance": "new edge case (Vol. styling normalised)"
         }
       ]
@@ -2059,8 +2059,8 @@
         {
           "id": "N7-001",
           "in": [
-            "Dungeon Crawler Carl: A LitRPG/Gamelit Adventure",
-            "Dungeon Crawler Carl"
+            "Dungeon Delver: A LitRPG/Gamelit Adventure",
+            "Dungeon Delver"
           ],
           "out": "A LitRPG/Gamelit Adventure",
           "provenance": "spec §1.7 worked example"
@@ -2068,44 +2068,44 @@
         {
           "id": "N7-002",
           "in": [
-            "The Gate of the Feral Gods: Dungeon Crawler Carl Book 4",
-            "Dungeon Crawler Carl"
+            "The Gate of the Silver Gods: Dungeon Delver Book 4",
+            "Dungeon Delver"
           ],
-          "out": "The Gate of the Feral Gods",
+          "out": "The Gate of the Silver Gods",
           "provenance": "spec §1.7 worked example"
         },
         {
           "id": "N7-003",
           "in": [
-            "Dune: Messiah",
+            "Vermilion: Requiem",
             ""
           ],
-          "out": "Dune: Messiah",
+          "out": "Vermilion: Requiem",
           "provenance": "spec §1.7 worked example (no series)"
         },
         {
           "id": "N7-004",
           "in": [
-            "The Ultimate Hitchhiker's Guide to the Galaxy (2005)",
-            "(Dungeon Crawler Carl"
+            "The Utterly Complete Guide to Everything (2005)",
+            "(Dungeon Delver"
           ],
-          "out": "The Ultimate Hitchhiker's Guide to the Galaxy",
+          "out": "The Utterly Complete Guide to Everything",
           "provenance": "spec §1.7 worked example"
         },
         {
           "id": "N7-005",
           "in": [
-            "Mistborn: The Final Empire",
-            "Mistborn"
+            "Ashfall: The Cinder Throne",
+            "Ashfall"
           ],
-          "out": "The Final Empire",
+          "out": "The Cinder Throne",
           "provenance": "new edge case (series prefix dropped)"
         },
         {
           "id": "N7-006",
           "in": [
-            "Mistborn: The Well of Ascension",
-            "Mistborn"
+            "Ashfall: The Well of Ascension",
+            "Ashfall"
           ],
           "out": "The Well of Ascension",
           "provenance": "new edge case (realistic book title)"
@@ -2113,17 +2113,17 @@
         {
           "id": "N7-007",
           "in": [
-            "The Final Empire: Mistborn Book 1",
-            "Mistborn"
+            "The Cinder Throne: Ashfall Book 1",
+            "Ashfall"
           ],
-          "out": "The Final Empire",
+          "out": "The Cinder Throne",
           "provenance": "new edge case (trailing 'Book 1' blurb dropped)"
         },
         {
           "id": "N7-008",
           "in": [
-            "The Hero of Ages: Mistborn Book 3",
-            "Mistborn"
+            "The Hero of Ages: Ashfall Book 3",
+            "Ashfall"
           ],
           "out": "The Hero of Ages",
           "provenance": "new edge case (trailing 'Book 3' blurb dropped)"
@@ -2131,17 +2131,17 @@
         {
           "id": "N7-009",
           "in": [
-            "The Final Empire - Mistborn",
-            "Mistborn"
+            "The Cinder Throne - Ashfall",
+            "Ashfall"
           ],
-          "out": "The Final Empire",
+          "out": "The Cinder Throne",
           "provenance": "new edge case (hyphen separator)"
         },
         {
           "id": "N7-010",
           "in": [
             "The Gate: Book 4",
-            "Dungeon Crawler Carl"
+            "Dungeon Delver"
           ],
           "out": "The Gate",
           "provenance": "new edge case (trailing ': Book 4' dropped)"
@@ -2158,8 +2158,8 @@
         {
           "id": "N7-012",
           "in": [
-            "Saga: Book 4",
-            "Saga"
+            "Halcyon: Book 4",
+            "Halcyon"
           ],
           "out": "Book 4",
           "provenance": "new edge case (leading series prefix rule fires before the ': Book 4' rule)"
@@ -2194,35 +2194,35 @@
         {
           "id": "N7-016",
           "in": [
-            "Saga Vol. 2",
-            "Saga"
+            "Halcyon Vol. 2",
+            "Halcyon"
           ],
-          "out": "Saga Vol. 2",
+          "out": "Halcyon Vol. 2",
           "provenance": "new edge case (no separator before Vol.)"
         },
         {
           "id": "N7-017",
           "in": [
-            "Saga Part 01",
-            "Saga"
+            "Halcyon Part 01",
+            "Halcyon"
           ],
-          "out": "Saga Part 01",
+          "out": "Halcyon Part 01",
           "provenance": "new edge case (no separator before Part)"
         },
         {
           "id": "N7-018",
           "in": [
-            "Catch-22",
+            "Cross-Fire",
             ""
           ],
-          "out": "Catch-22",
+          "out": "Cross-Fire",
           "provenance": "new edge case (no series, hyphen kept)"
         },
         {
           "id": "N7-019",
           "in": [
             "",
-            "Dungeon Crawler Carl"
+            "Dungeon Delver"
           ],
           "out": "",
           "provenance": "new edge case (empty title)"
@@ -2230,8 +2230,8 @@
         {
           "id": "N7-020",
           "in": [
-            "Dune: Messiah",
-            "Dune"
+            "Vermilion: Requiem",
+            "Vermilion"
           ],
           "out": "Messiah",
           "provenance": "new edge case (series prefix removed)"
@@ -2239,17 +2239,17 @@
         {
           "id": "N7-021",
           "in": [
-            "Dune: Messiah",
-            "Dune: Messiah"
+            "Vermilion: Requiem",
+            "Vermilion: Requiem"
           ],
-          "out": "Dune: Messiah",
+          "out": "Vermilion: Requiem",
           "provenance": "new edge case (series equals the whole title)"
         },
         {
           "id": "N7-022",
           "in": [
-            "The Hobbit: There and Back Again",
-            "The Hobbit"
+            "The Lantern: There and Back Again",
+            "The Lantern"
           ],
           "out": "There and Back Again",
           "provenance": "new edge case (series prefix removed)"

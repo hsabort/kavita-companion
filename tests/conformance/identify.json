@@ -8,9 +8,9 @@
         {
           "id": "I1-001",
           "in": [
-            "Dune.epub"
+            "Vermilion.epub"
           ],
-          "out": "Dune",
+          "out": "Vermilion",
           "provenance": "spec §2.1 worked example"
         },
         {
@@ -96,73 +96,73 @@
         {
           "id": "I1-012",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-013",
           "in": [
-            "Saga 001 (2012) (Digital) (Zone-Empire).cbr"
+            "Halcyon 001 (2012) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "Saga 001 (2012) (Digital) (Zone-Empire)",
+          "out": "Halcyon 001 (2012) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-014",
           "in": [
-            "Saga 054 (2018) (Digital) (Zone-Empire).cbz"
+            "Halcyon 054 (2018) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Saga 054 (2018) (Digital) (Zone-Empire)",
+          "out": "Halcyon 054 (2018) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-015",
           "in": [
-            "Batman #001 (2016).cbr"
+            "Ironclad #001 (2016).cbr"
           ],
-          "out": "Batman #001 (2016)",
+          "out": "Ironclad #001 (2016)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-016",
           "in": [
-            "Batman 001 (2016) (Digital) (Zone-Empire).cbz"
+            "Ironclad 001 (2016) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Batman 001 (2016) (Digital) (Zone-Empire)",
+          "out": "Ironclad 001 (2016) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-017",
           "in": [
-            "Batman #050 (2018) (Digital) (Zone-Empire).cbz"
+            "Ironclad #050 (2018) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Batman #050 (2018) (Digital) (Zone-Empire)",
+          "out": "Ironclad #050 (2018) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-018",
           "in": [
-            "Iron Man v1 001 (1968) (Digital) (Minutemen).cbr"
+            "Ironclad v1 001 (1968) (Digital) (Minutemen).cbr"
           ],
-          "out": "Iron Man v1 001 (1968) (Digital) (Minutemen)",
+          "out": "Ironclad v1 001 (1968) (Digital) (Minutemen)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-019",
           "in": [
-            "Iron Man v1 012 (1969) (Digital) (Zone-Empire).cbz"
+            "Ironclad v1 012 (1969) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Iron Man v1 012 (1969) (Digital) (Zone-Empire)",
+          "out": "Ironclad v1 012 (1969) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-020",
           "in": [
-            "Iron Man 001 (2020) (Digital).cbz"
+            "Ironclad 001 (2020) (Digital).cbz"
           ],
-          "out": "Iron Man 001 (2020) (Digital)",
+          "out": "Ironclad 001 (2020) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -184,33 +184,33 @@
         {
           "id": "I1-023",
           "in": [
-            "Berserk volume 03 (2004) (Digital) (Dark).cbz"
+            "Nightbloom volume 03 (2004) (Digital) (Dark).cbz"
           ],
-          "out": "Berserk volume 03 (2004) (Digital) (Dark)",
+          "out": "Nightbloom volume 03 (2004) (Digital) (Dark)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-024",
           "in": [
-            "Berserk v03 c007.cbz"
+            "Nightbloom v03 c007.cbz"
           ],
-          "out": "Berserk v03 c007",
+          "out": "Nightbloom v03 c007",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-025",
           "in": [
-            "Solo Leveling 159 (2021) (Digital) (LuCaZ).cbz"
+            "Ascendant 159 (2021) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Solo Leveling 159 (2021) (Digital) (LuCaZ)",
+          "out": "Ascendant 159 (2021) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-026",
           "in": [
-            "Solo Leveling 160 (2021) (Digital) (LuCaZ).cbz"
+            "Ascendant 160 (2021) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Solo Leveling 160 (2021) (Digital) (LuCaZ)",
+          "out": "Ascendant 160 (2021) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -448,17 +448,17 @@
         {
           "id": "I1-056",
           "in": [
-            "Vinland Saga 001 (2005) (Digital) (LuCaZ).cbz"
+            "Vinland Halcyon 001 (2005) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Vinland Saga 001 (2005) (Digital) (LuCaZ)",
+          "out": "Vinland Halcyon 001 (2005) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-057",
           "in": [
-            "Vinland Saga v01 c001.cbz"
+            "Vinland Halcyon v01 c001.cbz"
           ],
-          "out": "Vinland Saga v01 c001",
+          "out": "Vinland Halcyon v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -536,369 +536,369 @@
         {
           "id": "I1-067",
           "in": [
-            "Saga Vol. 01 (2012) (Digital) (Zone-Empire).cbz"
+            "Halcyon Vol. 01 (2012) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Saga Vol. 01 (2012) (Digital) (Zone-Empire)",
+          "out": "Halcyon Vol. 01 (2012) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-068",
           "in": [
-            "Saga Vol. 02 (2013) (Digital) (Zone-Empire).cbz"
+            "Halcyon Vol. 02 (2013) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Saga Vol. 02 (2013) (Digital) (Zone-Empire)",
+          "out": "Halcyon Vol. 02 (2013) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-069",
           "in": [
-            "Saga Vol. 1 - Part 01 (2012).cbz"
+            "Halcyon Vol. 1 - Part 01 (2012).cbz"
           ],
-          "out": "Saga Vol. 1 - Part 01 (2012)",
+          "out": "Halcyon Vol. 1 - Part 01 (2012)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-070",
           "in": [
-            "Batman Vol. 05 - Part 02 (2016) (Digital).cbz"
+            "Ironclad Vol. 05 - Part 02 (2016) (Digital).cbz"
           ],
-          "out": "Batman Vol. 05 - Part 02 (2016) (Digital)",
+          "out": "Ironclad Vol. 05 - Part 02 (2016) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-071",
           "in": [
-            "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen).cbz"
+            "Ironclad v1 Vol. 02 (1969) (Digital) (Minutemen).cbz"
           ],
-          "out": "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen)",
+          "out": "Ironclad v1 Vol. 02 (1969) (Digital) (Minutemen)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-072",
           "in": [
-            "Berserk Volume 03 (2004) (Digital) (Dark).cbz"
+            "Nightbloom Volume 03 (2004) (Digital) (Dark).cbz"
           ],
-          "out": "Berserk Volume 03 (2004) (Digital) (Dark)",
+          "out": "Nightbloom Volume 03 (2004) (Digital) (Dark)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-073",
           "in": [
-            "Berserk v03 (2004) (Digital).cbz"
+            "Nightbloom v03 (2004) (Digital).cbz"
           ],
-          "out": "Berserk v03 (2004) (Digital)",
+          "out": "Nightbloom v03 (2004) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-074",
           "in": [
-            "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ).cbz"
+            "Ascendant Vol. 05 (2020) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ)",
+          "out": "Ascendant Vol. 05 (2020) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-075",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (c2c).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (c2c).cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire) (c2c)",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire) (c2c)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-076",
           "in": [
-            "Saga 055 (2018) (Webrip) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Webrip) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Webrip) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Webrip) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-077",
           "in": [
-            "Saga 055 (2018) (digital) (zone-empire).cbz"
+            "Halcyon 055 (2018) (digital) (zone-empire).cbz"
           ],
-          "out": "Saga 055 (2018) (digital) (zone-empire)",
+          "out": "Halcyon 055 (2018) (digital) (zone-empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-078",
           "in": [
-            "Saga 055 (2018) (Scan) (Minutemen).cbz"
+            "Halcyon 055 (2018) (Scan) (Minutemen).cbz"
           ],
-          "out": "Saga 055 (2018) (Scan) (Minutemen)",
+          "out": "Halcyon 055 (2018) (Scan) (Minutemen)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-079",
           "in": [
-            "Saga 055 (2018) (scanned) (Minutemen).cbz"
+            "Halcyon 055 (2018) (scanned) (Minutemen).cbz"
           ],
-          "out": "Saga 055 (2018) (scanned) (Minutemen)",
+          "out": "Halcyon 055 (2018) (scanned) (Minutemen)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-080",
           "in": [
-            "Saga 055 (2018) (Repack) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Repack) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Repack) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Repack) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-081",
           "in": [
-            "Saga 055 (2018) (Fixed) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Fixed) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Fixed) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Fixed) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-082",
           "in": [
-            "Saga 055 (2018) (Complete) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Complete) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Complete) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Complete) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-083",
           "in": [
-            "Saga 055 (2018) (NoAds) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (NoAds) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (NoAds) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (NoAds) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-084",
           "in": [
-            "Saga 055 (2018) (Retail) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Retail) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Retail) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Retail) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-085",
           "in": [
-            "Saga 055 (2018) (Web) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Web) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Web) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Web) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-086",
           "in": [
-            "Saga 055 (2018) (HD) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (HD) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (HD) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (HD) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-087",
           "in": [
-            "Saga 055 (2018) (SD) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (SD) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (SD) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (SD) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-088",
           "in": [
-            "Saga 055 (2018) (Ongoing) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Ongoing) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Ongoing) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Ongoing) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-089",
           "in": [
-            "Saga 055 (2018) (OCR) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (OCR) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (OCR) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (OCR) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-090",
           "in": [
-            "Saga 055 (2018) (Uncensored) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Uncensored) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Uncensored) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Uncensored) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-091",
           "in": [
-            "Saga 055 (2018) (Decensored) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Decensored) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Decensored) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Decensored) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-092",
           "in": [
-            "Saga 055 (2018) (Remastered) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Remastered) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Remastered) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Remastered) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-093",
           "in": [
-            "Saga 055 (2018) (Compressed) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Compressed) (Zone-Empire).cbz"
           ],
-          "out": "Saga 055 (2018) (Compressed) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Compressed) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-094",
           "in": [
-            "Saga 055 (2018) (Digital) (LuCaZ).cbz"
+            "Halcyon 055 (2018) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (LuCaZ)",
+          "out": "Halcyon 055 (2018) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-095",
           "in": [
-            "Saga 055 (2018) (Digital) (-KS-).cbz"
+            "Halcyon 055 (2018) (Digital) (-KS-).cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (-KS-)",
+          "out": "Halcyon 055 (2018) (Digital) (-KS-)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-096",
           "in": [
-            "Saga 055 (1968-1996) (Digital).cbz"
+            "Halcyon 055 (1968-1996) (Digital).cbz"
           ],
-          "out": "Saga 055 (1968-1996) (Digital)",
+          "out": "Halcyon 055 (1968-1996) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-097",
           "in": [
-            "Saga 055 (2020-2021) (Digital).cbz"
+            "Halcyon 055 (2020-2021) (Digital).cbz"
           ],
-          "out": "Saga 055 (2020-2021) (Digital)",
+          "out": "Halcyon 055 (2020-2021) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-098",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) extra.cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) extra.cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire) extra",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire) extra",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-099",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) [hq].cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) [hq].cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire) [hq]",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire) [hq]",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-100",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-101",
           "in": [
-            "(Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+            "(Halcyon 055 (2018) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "(Saga 055 (2018) (Digital) (Zone-Empire)",
+          "out": "(Halcyon 055 (2018) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-102",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cbr"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-103",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cb7"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cb7"
           ],
-          "out": "Saga 055 (2018) (Digital) (Zone-Empire)",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-104",
           "in": [
-            "Mistborn 01 - The Final Empire.epub"
+            "Ashfall 01 - The Cinder Throne.epub"
           ],
-          "out": "Mistborn 01 - The Final Empire",
+          "out": "Ashfall 01 - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-105",
           "in": [
-            "Mistborn 02 - The Well of Ascension.epub"
+            "Ashfall 02 - The Well of Ascension.epub"
           ],
-          "out": "Mistborn 02 - The Well of Ascension",
+          "out": "Ashfall 02 - The Well of Ascension",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-106",
           "in": [
-            "Mistborn 03 - The Hero of Ages.epub"
+            "Ashfall 03 - The Hero of Ages.epub"
           ],
-          "out": "Mistborn 03 - The Hero of Ages",
+          "out": "Ashfall 03 - The Hero of Ages",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-107",
           "in": [
-            "Dune.epub"
+            "Vermilion.epub"
           ],
-          "out": "Dune",
+          "out": "Vermilion",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-108",
           "in": [
-            "Dune Messiah.epub"
+            "Vermilion Messiah.epub"
           ],
-          "out": "Dune Messiah",
+          "out": "Vermilion Messiah",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-109",
           "in": [
-            "Frank Herbert - Dune.epub"
+            "F. R. Halloway - Vermilion.epub"
           ],
-          "out": "Frank Herbert - Dune",
+          "out": "F. R. Halloway - Vermilion",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-110",
           "in": [
-            "Frank Herbert - Dune Messiah.epub"
+            "F. R. Halloway - Vermilion Messiah.epub"
           ],
-          "out": "Frank Herbert - Dune Messiah",
+          "out": "F. R. Halloway - Vermilion Messiah",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-111",
           "in": [
-            "Brandon Sanderson - The Final Empire.epub"
+            "B. A. Corwin - The Cinder Throne.epub"
           ],
-          "out": "Brandon Sanderson - The Final Empire",
+          "out": "B. A. Corwin - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-112",
           "in": [
-            "Brandon Sanderson - Mistborn 01 - The Final Empire.epub"
+            "B. A. Corwin - Ashfall 01 - The Cinder Throne.epub"
           ],
-          "out": "Brandon Sanderson - Mistborn 01 - The Final Empire",
+          "out": "B. A. Corwin - Ashfall 01 - The Cinder Throne",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -928,81 +928,81 @@
         {
           "id": "I1-116",
           "in": [
-            "The Hobbit.epub"
+            "The Lantern.epub"
           ],
-          "out": "The Hobbit",
+          "out": "The Lantern",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-117",
           "in": [
-            "J R R Tolkien - The Hobbit.epub"
+            "J R R Ashwood - The Lantern.epub"
           ],
-          "out": "J R R Tolkien - The Hobbit",
+          "out": "J R R Ashwood - The Lantern",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-118",
           "in": [
-            "1984.epub"
+            "2087.epub"
           ],
-          "out": "1984",
+          "out": "2087",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-119",
           "in": [
-            "George Orwell - 1984.epub"
+            "G. M. Ashcroft - 2087.epub"
           ],
-          "out": "George Orwell - 1984",
+          "out": "G. M. Ashcroft - 2087",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-120",
           "in": [
-            "Catch-22.epub"
+            "Cross-Fire.epub"
           ],
-          "out": "Catch-22",
+          "out": "Cross-Fire",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-121",
           "in": [
-            "Joseph Heller - Catch-22.epub"
+            "J. T. Calloway - Cross-Fire.epub"
           ],
-          "out": "Joseph Heller - Catch-22",
+          "out": "J. T. Calloway - Cross-Fire",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-122",
           "in": [
-            "The 39 Steps.epub"
+            "The 39 Rungs.epub"
           ],
-          "out": "The 39 Steps",
+          "out": "The 39 Rungs",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-123",
           "in": [
-            "John Buchan - The 39 Steps.epub"
+            "J. D. Fairweather - The 39 Rungs.epub"
           ],
-          "out": "John Buchan - The 39 Steps",
+          "out": "J. D. Fairweather - The 39 Rungs",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-124",
           "in": [
-            "Dune (Dune #1).epub"
+            "Vermilion (Vermilion #1).epub"
           ],
-          "out": "Dune (Dune #1)",
+          "out": "Vermilion (Vermilion #1)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-125",
           "in": [
-            "Mistborn 01 - The Final Empire (Mistborn #1).epub"
+            "Ashfall 01 - The Cinder Throne (Ashfall #1).epub"
           ],
-          "out": "Mistborn 01 - The Final Empire (Mistborn #1)",
+          "out": "Ashfall 01 - The Cinder Throne (Ashfall #1)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1256,10 +1256,10 @@
         {
           "id": "I3-001",
           "in": [
-            "Mistborn 01 - The Final Empire (Mistborn #1)"
+            "Ashfall 01 - The Cinder Throne (Ashfall #1)"
           ],
           "out": {
-            "name": "Mistborn 01 - The Final Empire",
+            "name": "Ashfall 01 - The Cinder Throne",
             "number": "1"
           },
           "provenance": "spec §2.3 worked example"
@@ -1267,10 +1267,10 @@
         {
           "id": "I3-002",
           "in": [
-            "Mistborn 01 - The Final Empire [x #1.5]"
+            "Ashfall 01 - The Cinder Throne [x #1.5]"
           ],
           "out": {
-            "name": "Mistborn 01 - The Final Empire",
+            "name": "Ashfall 01 - The Cinder Throne",
             "number": "1.5"
           },
           "provenance": "new edge case (square brackets, decimal)"
@@ -1278,10 +1278,10 @@
         {
           "id": "I3-003",
           "in": [
-            "Dune"
+            "Vermilion"
           ],
           "out": {
-            "name": "Dune",
+            "name": "Vermilion",
             "number": null
           },
           "provenance": "new edge case (no marker)"
@@ -1289,10 +1289,10 @@
         {
           "id": "I3-004",
           "in": [
-            "Dune (Mistborn #1) extra"
+            "Vermilion (Ashfall #1) extra"
           ],
           "out": {
-            "name": "Dune (Mistborn #1) extra",
+            "name": "Vermilion (Ashfall #1) extra",
             "number": null
           },
           "provenance": "new edge case (marker not at the end)"
@@ -1311,10 +1311,10 @@
         {
           "id": "I3-006",
           "in": [
-            "Dune (x#1)"
+            "Vermilion (x#1)"
           ],
           "out": {
-            "name": "Dune",
+            "name": "Vermilion",
             "number": "1"
           },
           "provenance": "new edge case (no space before #)"
@@ -1322,10 +1322,10 @@
         {
           "id": "I3-007",
           "in": [
-            "Dune (x # 007)"
+            "Vermilion (x # 007)"
           ],
           "out": {
-            "name": "Dune",
+            "name": "Vermilion",
             "number": "7"
           },
           "provenance": "new edge case (spaces around #, leading zero)"
@@ -1333,10 +1333,10 @@
         {
           "id": "I3-008",
           "in": [
-            "Dune (series #3)   "
+            "Vermilion (series #3)   "
           ],
           "out": {
-            "name": "Dune",
+            "name": "Vermilion",
             "number": "3"
           },
           "provenance": "new edge case (trailing whitespace)"
@@ -1344,7 +1344,7 @@
         {
           "id": "I3-009",
           "in": [
-            "(Mistborn #1)"
+            "(Ashfall #1)"
           ],
           "out": {
             "name": "",
@@ -1355,10 +1355,10 @@
         {
           "id": "I3-010",
           "in": [
-            "Dune (x #12345)"
+            "Vermilion (x #12345)"
           ],
           "out": {
-            "name": "Dune (x #12345)",
+            "name": "Vermilion (x #12345)",
             "number": null
           },
           "provenance": "new edge case (more than 4 digits -> no match)"
@@ -1371,10 +1371,10 @@
         {
           "id": "I4-001",
           "in": [
-            "Dune.epub"
+            "Vermilion.epub"
           ],
           "out": {
-            "title": "Dune",
+            "title": "Vermilion",
             "series": null,
             "number": null,
             "author": null
@@ -1384,11 +1384,11 @@
         {
           "id": "I4-002",
           "in": [
-            "Mistborn 01 - The Final Empire.epub"
+            "Ashfall 01 - The Cinder Throne.epub"
           ],
           "out": {
-            "title": "The Final Empire",
-            "series": "Mistborn",
+            "title": "The Cinder Throne",
+            "series": "Ashfall",
             "number": "1",
             "author": null
           },
@@ -1397,23 +1397,23 @@
         {
           "id": "I4-003",
           "in": [
-            "Brandon Sanderson - The Final Empire.epub"
+            "B. A. Corwin - The Cinder Throne.epub"
           ],
           "out": {
-            "title": "The Final Empire",
+            "title": "The Cinder Throne",
             "series": null,
             "number": null,
-            "author": "Brandon Sanderson"
+            "author": "B. A. Corwin"
           },
           "provenance": "spec §2.4 worked example"
         },
         {
           "id": "I4-004",
           "in": [
-            "Catch-22.epub"
+            "Cross-Fire.epub"
           ],
           "out": {
-            "title": "Catch-22",
+            "title": "Cross-Fire",
             "series": null,
             "number": null,
             "author": null
@@ -1423,10 +1423,10 @@
         {
           "id": "I4-005",
           "in": [
-            "1984.epub"
+            "2087.epub"
           ],
           "out": {
-            "title": "1984",
+            "title": "2087",
             "series": null,
             "number": null,
             "author": null
@@ -1475,11 +1475,11 @@
         {
           "id": "I4-009",
           "in": [
-            "Mistborn 01 - The Final Empire (Mistborn #1).epub"
+            "Ashfall 01 - The Cinder Throne (Ashfall #1).epub"
           ],
           "out": {
-            "title": "The Final Empire",
-            "series": "Mistborn",
+            "title": "The Cinder Throne",
+            "series": "Ashfall",
             "number": "1",
             "author": null
           },
@@ -1488,10 +1488,10 @@
         {
           "id": "I4-010",
           "in": [
-            "Dune (Dune #1).epub"
+            "Vermilion (Vermilion #1).epub"
           ],
           "out": {
-            "title": "Dune",
+            "title": "Vermilion",
             "series": null,
             "number": "1",
             "author": null
@@ -1657,10 +1657,10 @@
         {
           "id": "I4-023",
           "in": [
-            "The 39 Steps.epub"
+            "The 39 Rungs.epub"
           ],
           "out": {
-            "title": "The 39 Steps",
+            "title": "The 39 Rungs",
             "series": null,
             "number": null,
             "author": null
@@ -1696,10 +1696,10 @@
         {
           "id": "I4-026",
           "in": [
-            "Catch-22 (Catch-22 #1).epub"
+            "Cross-Fire (Cross-Fire #1).epub"
           ],
           "out": {
-            "title": "Catch-22",
+            "title": "Cross-Fire",
             "series": null,
             "number": "1",
             "author": null
@@ -1709,10 +1709,10 @@
         {
           "id": "I4-027",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1722,10 +1722,10 @@
         {
           "id": "I4-028",
           "in": [
-            "Saga 001 (2012) (Digital) (Zone-Empire).cbr"
+            "Halcyon 001 (2012) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "Saga 001 (2012) (Digital) (Zone-Empire)",
+            "title": "Halcyon 001 (2012) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1735,10 +1735,10 @@
         {
           "id": "I4-029",
           "in": [
-            "Saga 054 (2018) (Digital) (Zone-Empire).cbz"
+            "Halcyon 054 (2018) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 054 (2018) (Digital) (Zone-Empire)",
+            "title": "Halcyon 054 (2018) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1748,10 +1748,10 @@
         {
           "id": "I4-030",
           "in": [
-            "Batman #001 (2016).cbr"
+            "Ironclad #001 (2016).cbr"
           ],
           "out": {
-            "title": "Batman #001 (2016)",
+            "title": "Ironclad #001 (2016)",
             "series": null,
             "number": null,
             "author": null
@@ -1761,10 +1761,10 @@
         {
           "id": "I4-031",
           "in": [
-            "Batman 001 (2016) (Digital) (Zone-Empire).cbz"
+            "Ironclad 001 (2016) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Batman 001 (2016) (Digital) (Zone-Empire)",
+            "title": "Ironclad 001 (2016) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1774,10 +1774,10 @@
         {
           "id": "I4-032",
           "in": [
-            "Batman #050 (2018) (Digital) (Zone-Empire).cbz"
+            "Ironclad #050 (2018) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Batman #050 (2018) (Digital) (Zone-Empire)",
+            "title": "Ironclad #050 (2018) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1787,10 +1787,10 @@
         {
           "id": "I4-033",
           "in": [
-            "Iron Man v1 001 (1968) (Digital) (Minutemen).cbr"
+            "Ironclad v1 001 (1968) (Digital) (Minutemen).cbr"
           ],
           "out": {
-            "title": "Iron Man v1 001 (1968) (Digital) (Minutemen)",
+            "title": "Ironclad v1 001 (1968) (Digital) (Minutemen)",
             "series": null,
             "number": null,
             "author": null
@@ -1800,10 +1800,10 @@
         {
           "id": "I4-034",
           "in": [
-            "Iron Man v1 012 (1969) (Digital) (Zone-Empire).cbz"
+            "Ironclad v1 012 (1969) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Iron Man v1 012 (1969) (Digital) (Zone-Empire)",
+            "title": "Ironclad v1 012 (1969) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1813,10 +1813,10 @@
         {
           "id": "I4-035",
           "in": [
-            "Iron Man 001 (2020) (Digital).cbz"
+            "Ironclad 001 (2020) (Digital).cbz"
           ],
           "out": {
-            "title": "Iron Man 001 (2020) (Digital)",
+            "title": "Ironclad 001 (2020) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -1852,10 +1852,10 @@
         {
           "id": "I4-038",
           "in": [
-            "Berserk volume 03 (2004) (Digital) (Dark).cbz"
+            "Nightbloom volume 03 (2004) (Digital) (Dark).cbz"
           ],
           "out": {
-            "title": "Berserk volume 03 (2004) (Digital) (Dark)",
+            "title": "Nightbloom volume 03 (2004) (Digital) (Dark)",
             "series": null,
             "number": null,
             "author": null
@@ -1865,10 +1865,10 @@
         {
           "id": "I4-039",
           "in": [
-            "Berserk v03 c007.cbz"
+            "Nightbloom v03 c007.cbz"
           ],
           "out": {
-            "title": "Berserk v03 c007",
+            "title": "Nightbloom v03 c007",
             "series": null,
             "number": null,
             "author": null
@@ -1878,10 +1878,10 @@
         {
           "id": "I4-040",
           "in": [
-            "Solo Leveling 159 (2021) (Digital) (LuCaZ).cbz"
+            "Ascendant 159 (2021) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Solo Leveling 159 (2021) (Digital) (LuCaZ)",
+            "title": "Ascendant 159 (2021) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -1891,10 +1891,10 @@
         {
           "id": "I4-041",
           "in": [
-            "Solo Leveling 160 (2021) (Digital) (LuCaZ).cbz"
+            "Ascendant 160 (2021) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Solo Leveling 160 (2021) (Digital) (LuCaZ)",
+            "title": "Ascendant 160 (2021) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2281,10 +2281,10 @@
         {
           "id": "I4-071",
           "in": [
-            "Vinland Saga 001 (2005) (Digital) (LuCaZ).cbz"
+            "Vinland Halcyon 001 (2005) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Vinland Saga 001 (2005) (Digital) (LuCaZ)",
+            "title": "Vinland Halcyon 001 (2005) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2294,10 +2294,10 @@
         {
           "id": "I4-072",
           "in": [
-            "Vinland Saga v01 c001.cbz"
+            "Vinland Halcyon v01 c001.cbz"
           ],
           "out": {
-            "title": "Vinland Saga v01 c001",
+            "title": "Vinland Halcyon v01 c001",
             "series": null,
             "number": null,
             "author": null
@@ -2424,10 +2424,10 @@
         {
           "id": "I4-082",
           "in": [
-            "Saga Vol. 01 (2012) (Digital) (Zone-Empire).cbz"
+            "Halcyon Vol. 01 (2012) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga Vol. 01 (2012) (Digital) (Zone-Empire)",
+            "title": "Halcyon Vol. 01 (2012) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2437,10 +2437,10 @@
         {
           "id": "I4-083",
           "in": [
-            "Saga Vol. 02 (2013) (Digital) (Zone-Empire).cbz"
+            "Halcyon Vol. 02 (2013) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga Vol. 02 (2013) (Digital) (Zone-Empire)",
+            "title": "Halcyon Vol. 02 (2013) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2450,11 +2450,11 @@
         {
           "id": "I4-084",
           "in": [
-            "Saga Vol. 1 - Part 01 (2012).cbz"
+            "Halcyon Vol. 1 - Part 01 (2012).cbz"
           ],
           "out": {
             "title": "Part 01 (2012)",
-            "series": "Saga Vol.",
+            "series": "Halcyon Vol.",
             "number": "1",
             "author": null
           },
@@ -2463,11 +2463,11 @@
         {
           "id": "I4-085",
           "in": [
-            "Batman Vol. 05 - Part 02 (2016) (Digital).cbz"
+            "Ironclad Vol. 05 - Part 02 (2016) (Digital).cbz"
           ],
           "out": {
             "title": "Part 02 (2016) (Digital)",
-            "series": "Batman Vol.",
+            "series": "Ironclad Vol.",
             "number": "5",
             "author": null
           },
@@ -2476,10 +2476,10 @@
         {
           "id": "I4-086",
           "in": [
-            "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen).cbz"
+            "Ironclad v1 Vol. 02 (1969) (Digital) (Minutemen).cbz"
           ],
           "out": {
-            "title": "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen)",
+            "title": "Ironclad v1 Vol. 02 (1969) (Digital) (Minutemen)",
             "series": null,
             "number": null,
             "author": null
@@ -2489,10 +2489,10 @@
         {
           "id": "I4-087",
           "in": [
-            "Berserk Volume 03 (2004) (Digital) (Dark).cbz"
+            "Nightbloom Volume 03 (2004) (Digital) (Dark).cbz"
           ],
           "out": {
-            "title": "Berserk Volume 03 (2004) (Digital) (Dark)",
+            "title": "Nightbloom Volume 03 (2004) (Digital) (Dark)",
             "series": null,
             "number": null,
             "author": null
@@ -2502,10 +2502,10 @@
         {
           "id": "I4-088",
           "in": [
-            "Berserk v03 (2004) (Digital).cbz"
+            "Nightbloom v03 (2004) (Digital).cbz"
           ],
           "out": {
-            "title": "Berserk v03 (2004) (Digital)",
+            "title": "Nightbloom v03 (2004) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2515,10 +2515,10 @@
         {
           "id": "I4-089",
           "in": [
-            "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ).cbz"
+            "Ascendant Vol. 05 (2020) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ)",
+            "title": "Ascendant Vol. 05 (2020) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2528,10 +2528,10 @@
         {
           "id": "I4-090",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (c2c).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (c2c).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire) (c2c)",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire) (c2c)",
             "series": null,
             "number": null,
             "author": null
@@ -2541,10 +2541,10 @@
         {
           "id": "I4-091",
           "in": [
-            "Saga 055 (2018) (Webrip) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Webrip) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Webrip) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Webrip) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2554,10 +2554,10 @@
         {
           "id": "I4-092",
           "in": [
-            "Saga 055 (2018) (digital) (zone-empire).cbz"
+            "Halcyon 055 (2018) (digital) (zone-empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (digital) (zone-empire)",
+            "title": "Halcyon 055 (2018) (digital) (zone-empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2567,10 +2567,10 @@
         {
           "id": "I4-093",
           "in": [
-            "Saga 055 (2018) (Scan) (Minutemen).cbz"
+            "Halcyon 055 (2018) (Scan) (Minutemen).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Scan) (Minutemen)",
+            "title": "Halcyon 055 (2018) (Scan) (Minutemen)",
             "series": null,
             "number": null,
             "author": null
@@ -2580,10 +2580,10 @@
         {
           "id": "I4-094",
           "in": [
-            "Saga 055 (2018) (scanned) (Minutemen).cbz"
+            "Halcyon 055 (2018) (scanned) (Minutemen).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (scanned) (Minutemen)",
+            "title": "Halcyon 055 (2018) (scanned) (Minutemen)",
             "series": null,
             "number": null,
             "author": null
@@ -2593,10 +2593,10 @@
         {
           "id": "I4-095",
           "in": [
-            "Saga 055 (2018) (Repack) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Repack) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Repack) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Repack) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2606,10 +2606,10 @@
         {
           "id": "I4-096",
           "in": [
-            "Saga 055 (2018) (Fixed) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Fixed) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Fixed) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Fixed) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2619,10 +2619,10 @@
         {
           "id": "I4-097",
           "in": [
-            "Saga 055 (2018) (Complete) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Complete) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Complete) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Complete) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2632,10 +2632,10 @@
         {
           "id": "I4-098",
           "in": [
-            "Saga 055 (2018) (NoAds) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (NoAds) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (NoAds) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (NoAds) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2645,10 +2645,10 @@
         {
           "id": "I4-099",
           "in": [
-            "Saga 055 (2018) (Retail) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Retail) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Retail) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Retail) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2658,10 +2658,10 @@
         {
           "id": "I4-100",
           "in": [
-            "Saga 055 (2018) (Web) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Web) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Web) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Web) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2671,10 +2671,10 @@
         {
           "id": "I4-101",
           "in": [
-            "Saga 055 (2018) (HD) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (HD) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (HD) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (HD) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2684,10 +2684,10 @@
         {
           "id": "I4-102",
           "in": [
-            "Saga 055 (2018) (SD) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (SD) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (SD) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (SD) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2697,10 +2697,10 @@
         {
           "id": "I4-103",
           "in": [
-            "Saga 055 (2018) (Ongoing) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Ongoing) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Ongoing) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Ongoing) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2710,10 +2710,10 @@
         {
           "id": "I4-104",
           "in": [
-            "Saga 055 (2018) (OCR) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (OCR) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (OCR) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (OCR) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2723,10 +2723,10 @@
         {
           "id": "I4-105",
           "in": [
-            "Saga 055 (2018) (Uncensored) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Uncensored) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Uncensored) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Uncensored) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2736,10 +2736,10 @@
         {
           "id": "I4-106",
           "in": [
-            "Saga 055 (2018) (Decensored) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Decensored) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Decensored) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Decensored) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2749,10 +2749,10 @@
         {
           "id": "I4-107",
           "in": [
-            "Saga 055 (2018) (Remastered) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Remastered) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Remastered) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Remastered) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2762,10 +2762,10 @@
         {
           "id": "I4-108",
           "in": [
-            "Saga 055 (2018) (Compressed) (Zone-Empire).cbz"
+            "Halcyon 055 (2018) (Compressed) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Compressed) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Compressed) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2775,10 +2775,10 @@
         {
           "id": "I4-109",
           "in": [
-            "Saga 055 (2018) (Digital) (LuCaZ).cbz"
+            "Halcyon 055 (2018) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (LuCaZ)",
+            "title": "Halcyon 055 (2018) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2788,10 +2788,10 @@
         {
           "id": "I4-110",
           "in": [
-            "Saga 055 (2018) (Digital) (-KS-).cbz"
+            "Halcyon 055 (2018) (Digital) (-KS-).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (-KS-)",
+            "title": "Halcyon 055 (2018) (Digital) (-KS-)",
             "series": null,
             "number": null,
             "author": null
@@ -2801,10 +2801,10 @@
         {
           "id": "I4-111",
           "in": [
-            "Saga 055 (1968-1996) (Digital).cbz"
+            "Halcyon 055 (1968-1996) (Digital).cbz"
           ],
           "out": {
-            "title": "Saga 055 (1968-1996) (Digital)",
+            "title": "Halcyon 055 (1968-1996) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2814,10 +2814,10 @@
         {
           "id": "I4-112",
           "in": [
-            "Saga 055 (2020-2021) (Digital).cbz"
+            "Halcyon 055 (2020-2021) (Digital).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2020-2021) (Digital)",
+            "title": "Halcyon 055 (2020-2021) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2827,10 +2827,10 @@
         {
           "id": "I4-113",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) extra.cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) extra.cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire) extra",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire) extra",
             "series": null,
             "number": null,
             "author": null
@@ -2840,10 +2840,10 @@
         {
           "id": "I4-114",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) [hq].cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) [hq].cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire) [hq]",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire) [hq]",
             "series": null,
             "number": null,
             "author": null
@@ -2853,10 +2853,10 @@
         {
           "id": "I4-115",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
             "series": null,
             "number": null,
             "author": null
@@ -2866,10 +2866,10 @@
         {
           "id": "I4-116",
           "in": [
-            "(Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+            "(Halcyon 055 (2018) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "(Saga 055 (2018) (Digital) (Zone-Empire)",
+            "title": "(Halcyon 055 (2018) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2879,10 +2879,10 @@
         {
           "id": "I4-117",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cbr"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2892,10 +2892,10 @@
         {
           "id": "I4-118",
           "in": [
-            "Saga 055 (2018) (Digital) (Zone-Empire).cb7"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire).cb7"
           ],
           "out": {
-            "title": "Saga 055 (2018) (Digital) (Zone-Empire)",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2905,11 +2905,11 @@
         {
           "id": "I4-119",
           "in": [
-            "Mistborn 01 - The Final Empire.epub"
+            "Ashfall 01 - The Cinder Throne.epub"
           ],
           "out": {
-            "title": "The Final Empire",
-            "series": "Mistborn",
+            "title": "The Cinder Throne",
+            "series": "Ashfall",
             "number": "1",
             "author": null
           },
@@ -2918,11 +2918,11 @@
         {
           "id": "I4-120",
           "in": [
-            "Mistborn 02 - The Well of Ascension.epub"
+            "Ashfall 02 - The Well of Ascension.epub"
           ],
           "out": {
             "title": "The Well of Ascension",
-            "series": "Mistborn",
+            "series": "Ashfall",
             "number": "2",
             "author": null
           },
@@ -2931,11 +2931,11 @@
         {
           "id": "I4-121",
           "in": [
-            "Mistborn 03 - The Hero of Ages.epub"
+            "Ashfall 03 - The Hero of Ages.epub"
           ],
           "out": {
             "title": "The Hero of Ages",
-            "series": "Mistborn",
+            "series": "Ashfall",
             "number": "3",
             "author": null
           },
@@ -2944,10 +2944,10 @@
         {
           "id": "I4-122",
           "in": [
-            "Dune.epub"
+            "Vermilion.epub"
           ],
           "out": {
-            "title": "Dune",
+            "title": "Vermilion",
             "series": null,
             "number": null,
             "author": null
@@ -2957,10 +2957,10 @@
         {
           "id": "I4-123",
           "in": [
-            "Dune Messiah.epub"
+            "Vermilion Messiah.epub"
           ],
           "out": {
-            "title": "Dune Messiah",
+            "title": "Vermilion Messiah",
             "series": null,
             "number": null,
             "author": null
@@ -2970,50 +2970,50 @@
         {
           "id": "I4-124",
           "in": [
-            "Frank Herbert - Dune.epub"
+            "F. R. Halloway - Vermilion.epub"
           ],
           "out": {
-            "title": "Dune",
+            "title": "Vermilion",
             "series": null,
             "number": null,
-            "author": "Frank Herbert"
+            "author": "F. R. Halloway"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-125",
           "in": [
-            "Frank Herbert - Dune Messiah.epub"
+            "F. R. Halloway - Vermilion Messiah.epub"
           ],
           "out": {
-            "title": "Dune Messiah",
+            "title": "Vermilion Messiah",
             "series": null,
             "number": null,
-            "author": "Frank Herbert"
+            "author": "F. R. Halloway"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-126",
           "in": [
-            "Brandon Sanderson - The Final Empire.epub"
+            "B. A. Corwin - The Cinder Throne.epub"
           ],
           "out": {
-            "title": "The Final Empire",
+            "title": "The Cinder Throne",
             "series": null,
             "number": null,
-            "author": "Brandon Sanderson"
+            "author": "B. A. Corwin"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-127",
           "in": [
-            "Brandon Sanderson - Mistborn 01 - The Final Empire.epub"
+            "B. A. Corwin - Ashfall 01 - The Cinder Throne.epub"
           ],
           "out": {
-            "title": "The Final Empire",
-            "series": "Brandon Sanderson - Mistborn",
+            "title": "The Cinder Throne",
+            "series": "B. A. Corwin - Ashfall",
             "number": "1",
             "author": null
           },
@@ -3061,10 +3061,10 @@
         {
           "id": "I4-131",
           "in": [
-            "The Hobbit.epub"
+            "The Lantern.epub"
           ],
           "out": {
-            "title": "The Hobbit",
+            "title": "The Lantern",
             "series": null,
             "number": null,
             "author": null
@@ -3074,23 +3074,23 @@
         {
           "id": "I4-132",
           "in": [
-            "J R R Tolkien - The Hobbit.epub"
+            "J R R Ashwood - The Lantern.epub"
           ],
           "out": {
-            "title": "The Hobbit",
+            "title": "The Lantern",
             "series": null,
             "number": null,
-            "author": "J R R Tolkien"
+            "author": "J R R Ashwood"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-133",
           "in": [
-            "1984.epub"
+            "2087.epub"
           ],
           "out": {
-            "title": "1984",
+            "title": "2087",
             "series": null,
             "number": null,
             "author": null
@@ -3100,23 +3100,23 @@
         {
           "id": "I4-134",
           "in": [
-            "George Orwell - 1984.epub"
+            "G. M. Ashcroft - 2087.epub"
           ],
           "out": {
-            "title": "1984",
+            "title": "2087",
             "series": null,
             "number": null,
-            "author": "George Orwell"
+            "author": "G. M. Ashcroft"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-135",
           "in": [
-            "Catch-22.epub"
+            "Cross-Fire.epub"
           ],
           "out": {
-            "title": "Catch-22",
+            "title": "Cross-Fire",
             "series": null,
             "number": null,
             "author": null
@@ -3126,23 +3126,23 @@
         {
           "id": "I4-136",
           "in": [
-            "Joseph Heller - Catch-22.epub"
+            "J. T. Calloway - Cross-Fire.epub"
           ],
           "out": {
-            "title": "Catch-22",
+            "title": "Cross-Fire",
             "series": null,
             "number": null,
-            "author": "Joseph Heller"
+            "author": "J. T. Calloway"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-137",
           "in": [
-            "The 39 Steps.epub"
+            "The 39 Rungs.epub"
           ],
           "out": {
-            "title": "The 39 Steps",
+            "title": "The 39 Rungs",
             "series": null,
             "number": null,
             "author": null
@@ -3152,23 +3152,23 @@
         {
           "id": "I4-138",
           "in": [
-            "John Buchan - The 39 Steps.epub"
+            "J. D. Fairweather - The 39 Rungs.epub"
           ],
           "out": {
-            "title": "The 39 Steps",
+            "title": "The 39 Rungs",
             "series": null,
             "number": null,
-            "author": "John Buchan"
+            "author": "J. D. Fairweather"
           },
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I4-139",
           "in": [
-            "Dune (Dune #1).epub"
+            "Vermilion (Vermilion #1).epub"
           ],
           "out": {
-            "title": "Dune",
+            "title": "Vermilion",
             "series": null,
             "number": "1",
             "author": null
@@ -3178,11 +3178,11 @@
         {
           "id": "I4-140",
           "in": [
-            "Mistborn 01 - The Final Empire (Mistborn #1).epub"
+            "Ashfall 01 - The Cinder Throne (Ashfall #1).epub"
           ],
           "out": {
-            "title": "The Final Empire",
-            "series": "Mistborn",
+            "title": "The Cinder Throne",
+            "series": "Ashfall",
             "number": "1",
             "author": null
           },
@@ -3341,11 +3341,11 @@
           "id": "I5-001",
           "in": [
             {},
-            "Mistborn 01 - The Final Empire.epub"
+            "Ashfall 01 - The Cinder Throne.epub"
           ],
           "out": {
-            "Title": "The Final Empire",
-            "Series": "Mistborn",
+            "Title": "The Cinder Throne",
+            "Series": "Ashfall",
             "Number": "1",
             "Writer": null
           },
@@ -3355,13 +3355,13 @@
           "id": "I5-002",
           "in": [
             {},
-            "Brandon Sanderson - The Final Empire.epub"
+            "B. A. Corwin - The Cinder Throne.epub"
           ],
           "out": {
-            "Title": "The Final Empire",
+            "Title": "The Cinder Throne",
             "Series": null,
             "Number": null,
-            "Writer": "Brandon Sanderson"
+            "Writer": "B. A. Corwin"
           },
           "provenance": "spec §2.5 worked example"
         },
@@ -3369,17 +3369,17 @@
           "id": "I5-003",
           "in": [
             {
-              "Title": "Dune",
-              "Series": "Dune",
+              "Title": "Vermilion",
+              "Series": "Vermilion",
               "Number": "1"
             },
-            "Frank Herbert - Dune.epub"
+            "F. R. Halloway - Vermilion.epub"
           ],
           "out": {
-            "Title": "Dune",
-            "Series": "Dune",
+            "Title": "Vermilion",
+            "Series": "Vermilion",
             "Number": "1",
-            "Writer": "Frank Herbert"
+            "Writer": "F. R. Halloway"
           },
           "provenance": "spec §2.5 worked example (embedded wins)"
         },
@@ -3387,17 +3387,17 @@
           "id": "I5-004",
           "in": [
             {
-              "Title": "The Ultimate Hitchhiker's Guide to the Galaxy",
-              "Writer": "Douglas Adams",
-              "Series": "Douglas Adams"
+              "Title": "The Utterly Complete Guide to Everything",
+              "Writer": "Dana Aldridge",
+              "Series": "Dana Aldridge"
             },
             "AuthorSeries.epub"
           ],
           "out": {
-            "Title": "The Ultimate Hitchhiker's Guide to the Galaxy",
+            "Title": "The Utterly Complete Guide to Everything",
             "Series": null,
             "Number": null,
-            "Writer": "Douglas Adams"
+            "Writer": "Dana Aldridge"
           },
           "provenance": "spec §2.5 worked example (author-as-series dropped)"
         },
@@ -3405,15 +3405,15 @@
           "id": "I5-005",
           "in": [
             {
-              "Title": "The Gate of the Feral Gods: Dungeon Crawler Carl Book 4",
-              "Series": "Dungeon Crawler Carl",
+              "Title": "The Gate of the Silver Gods: Dungeon Delver Book 4",
+              "Series": "Dungeon Delver",
               "Number": "4"
             },
             "Blurb.epub"
           ],
           "out": {
-            "Title": "The Gate of the Feral Gods",
-            "Series": "Dungeon Crawler Carl",
+            "Title": "The Gate of the Silver Gods",
+            "Series": "Dungeon Delver",
             "Number": "4",
             "Writer": null
           },
@@ -3423,10 +3423,10 @@
           "id": "I5-006",
           "in": [
             {},
-            "Dune.epub"
+            "Vermilion.epub"
           ],
           "out": {
-            "Title": "Dune",
+            "Title": "Vermilion",
             "Series": null,
             "Number": null,
             "Writer": null
@@ -3439,10 +3439,10 @@
             {
               "Title": "  "
             },
-            "Dune.epub"
+            "Vermilion.epub"
           ],
           "out": {
-            "Title": "Dune",
+            "Title": "Vermilion",
             "Series": null,
             "Number": null,
             "Writer": null
@@ -3453,13 +3453,13 @@
           "id": "I5-008",
           "in": [
             {
-              "Series": "Saga (2020) (Digital)"
+              "Series": "Halcyon (2020) (Digital)"
             },
             "Whatever.epub"
           ],
           "out": {
             "Title": "Whatever",
-            "Series": "Saga",
+            "Series": "Halcyon",
             "Number": null,
             "Writer": null
           },
@@ -3469,15 +3469,15 @@
           "id": "I5-009",
           "in": [
             {
-              "Writer": "Brandon Sanderson"
+              "Writer": "B. A. Corwin"
             },
-            "Brandon Sanderson - The Final Empire.epub"
+            "B. A. Corwin - The Cinder Throne.epub"
           ],
           "out": {
-            "Title": "The Final Empire",
+            "Title": "The Cinder Throne",
             "Series": null,
             "Number": null,
-            "Writer": "Brandon Sanderson"
+            "Writer": "B. A. Corwin"
           },
           "provenance": "new edge case (embedded Writer wins)"
         },
@@ -3485,16 +3485,16 @@
           "id": "I5-010",
           "in": [
             {
-              "Series": "Mistborn",
-              "Writer": "Mistborn"
+              "Series": "Ashfall",
+              "Writer": "Ashfall"
             },
-            "Mistborn 01 - X.epub"
+            "Ashfall 01 - X.epub"
           ],
           "out": {
             "Title": "X",
             "Series": null,
             "Number": "1",
-            "Writer": "Mistborn"
+            "Writer": "Ashfall"
           },
           "provenance": "new edge case (author-as-series dropped)"
         },
@@ -3502,15 +3502,15 @@
           "id": "I5-011",
           "in": [
             {
-              "Title": "Dune"
+              "Title": "Vermilion"
             },
-            "Frank Herbert - Dune.epub"
+            "F. R. Halloway - Vermilion.epub"
           ],
           "out": {
-            "Title": "Dune",
+            "Title": "Vermilion",
             "Series": null,
             "Number": null,
-            "Writer": "Frank Herbert"
+            "Writer": "F. R. Halloway"
           },
           "provenance": "new edge case (filename fills the Writer)"
         },
@@ -3520,10 +3520,10 @@
             {
               "Number": "1"
             },
-            "Dune.epub"
+            "Vermilion.epub"
           ],
           "out": {
-            "Title": "Dune",
+            "Title": "Vermilion",
             "Series": null,
             "Number": "1",
             "Writer": null
@@ -3566,13 +3566,13 @@
           "id": "I5-015",
           "in": [
             {},
-            "Frank Herbert - Dune.epub"
+            "F. R. Halloway - Vermilion.epub"
           ],
           "out": {
-            "Title": "Dune",
+            "Title": "Vermilion",
             "Series": null,
             "Number": null,
-            "Writer": "Frank Herbert"
+            "Writer": "F. R. Halloway"
           },
           "provenance": "new edge case (realistic author shape)"
         },
@@ -3580,10 +3580,10 @@
           "id": "I5-016",
           "in": [
             {},
-            "Catch-22.epub"
+            "Cross-Fire.epub"
           ],
           "out": {
-            "Title": "Catch-22",
+            "Title": "Cross-Fire",
             "Series": null,
             "Number": null,
             "Writer": null
@@ -3594,10 +3594,10 @@
           "id": "I5-017",
           "in": [
             {},
-            "1984.epub"
+            "2087.epub"
           ],
           "out": {
-            "Title": "1984",
+            "Title": "2087",
             "Series": null,
             "Number": null,
             "Writer": null
@@ -3657,14 +3657,14 @@
           "id": "I6-001",
           "in": [
             {
-              "Series": "Dungeon Crawler Carl",
+              "Series": "Dungeon Delver",
               "Number": "4",
-              "Title": "The Gate of the Feral Gods"
+              "Title": "The Gate of the Silver Gods"
             }
           ],
           "out": {
-            "series": "Dungeon Crawler Carl",
-            "filename": "Dungeon Crawler Carl #4 - The Gate of the Feral Gods"
+            "series": "Dungeon Delver",
+            "filename": "Dungeon Delver #4 - The Gate of the Silver Gods"
           },
           "provenance": "spec §2.6 worked example"
         },
@@ -3672,14 +3672,14 @@
           "id": "I6-002",
           "in": [
             {
-              "Series": "Mistborn",
+              "Series": "Ashfall",
               "Number": "1",
-              "Title": "The Final Empire"
+              "Title": "The Cinder Throne"
             }
           ],
           "out": {
-            "series": "Mistborn",
-            "filename": "Mistborn #1 - The Final Empire"
+            "series": "Ashfall",
+            "filename": "Ashfall #1 - The Cinder Throne"
           },
           "provenance": "spec §2.6 worked example"
         },
@@ -3687,13 +3687,13 @@
           "id": "I6-003",
           "in": [
             {
-              "Writer": "Douglas Adams",
-              "Title": "The Ultimate Hitchhiker's Guide to the Galaxy"
+              "Writer": "Dana Aldridge",
+              "Title": "The Utterly Complete Guide to Everything"
             }
           ],
           "out": {
-            "series": "Douglas Adams",
-            "filename": "The Ultimate Hitchhiker's Guide to the Galaxy"
+            "series": "Dana Aldridge",
+            "filename": "The Utterly Complete Guide to Everything"
           },
           "provenance": "spec §2.6 worked example (standalone with author)"
         },
@@ -3701,12 +3701,12 @@
           "id": "I6-004",
           "in": [
             {
-              "Title": "Dune"
+              "Title": "Vermilion"
             }
           ],
           "out": {
-            "series": "Dune",
-            "filename": "Dune"
+            "series": "Vermilion",
+            "filename": "Vermilion"
           },
           "provenance": "spec §2.6 worked example (standalone)"
         },
@@ -3714,12 +3714,12 @@
           "id": "I6-005",
           "in": [
             {
-              "Series": "Saga"
+              "Series": "Halcyon"
             }
           ],
           "out": {
-            "series": "Saga",
-            "filename": "Saga"
+            "series": "Halcyon",
+            "filename": "Halcyon"
           },
           "provenance": "spec §2.6 worked example (series, no number/title)"
         },
@@ -3727,13 +3727,13 @@
           "id": "I6-006",
           "in": [
             {
-              "Series": "Saga",
+              "Series": "Halcyon",
               "Number": "5"
             }
           ],
           "out": {
-            "series": "Saga",
-            "filename": "Saga #5"
+            "series": "Halcyon",
+            "filename": "Halcyon #5"
           },
           "provenance": "new edge case (series without title)"
         },
@@ -3741,14 +3741,14 @@
           "id": "I6-007",
           "in": [
             {
-              "Series": "Saga (2020) (Digital)",
+              "Series": "Halcyon (2020) (Digital)",
               "Number": "5",
-              "Title": "Saga 005 (2020)"
+              "Title": "Halcyon 005 (2020)"
             }
           ],
           "out": {
-            "series": "Saga",
-            "filename": "Saga #5 - Saga 005"
+            "series": "Halcyon",
+            "filename": "Halcyon #5 - Halcyon 005"
           },
           "provenance": "new edge case (series and title cleaned)"
         },
@@ -3771,12 +3771,12 @@
           "id": "I6-009",
           "in": [
             {
-              "Writer": "Douglas Adams",
+              "Writer": "Dana Aldridge",
               "Title": ""
             }
           ],
           "out": {
-            "series": "Douglas Adams",
+            "series": "Dana Aldridge",
             "filename": "Untitled"
           },
           "provenance": "new edge case (author but no title)"
@@ -3785,14 +3785,14 @@
           "id": "I6-010",
           "in": [
             {
-              "Series": "Dungeon Crawler Carl",
+              "Series": "Dungeon Delver",
               "Number": "",
-              "Title": "The Gate of the Feral Gods"
+              "Title": "The Gate of the Silver Gods"
             }
           ],
           "out": {
-            "series": "Dungeon Crawler Carl",
-            "filename": "Dungeon Crawler Carl - The Gate of the Feral Gods"
+            "series": "Dungeon Delver",
+            "filename": "Dungeon Delver - The Gate of the Silver Gods"
           },
           "provenance": "new edge case (series without number)"
         },
@@ -3800,14 +3800,14 @@
           "id": "I6-011",
           "in": [
             {
-              "Series": "Dungeon Crawler Carl",
+              "Series": "Dungeon Delver",
               "Number": "4",
               "Title": ""
             }
           ],
           "out": {
-            "series": "Dungeon Crawler Carl",
-            "filename": "Dungeon Crawler Carl #4"
+            "series": "Dungeon Delver",
+            "filename": "Dungeon Delver #4"
           },
           "provenance": "new edge case (series without title)"
         },
@@ -3815,14 +3815,14 @@
           "id": "I6-012",
           "in": [
             {
-              "Series": "Mistborn",
+              "Series": "Ashfall",
               "Number": "1",
-              "Title": "Mistborn: The Final Empire"
+              "Title": "Ashfall: The Cinder Throne"
             }
           ],
           "out": {
-            "series": "Mistborn",
-            "filename": "Mistborn #1 - The Final Empire"
+            "series": "Ashfall",
+            "filename": "Ashfall #1 - The Cinder Throne"
           },
           "provenance": "new edge case (repeated series prefix dropped from title)"
         },
@@ -3830,13 +3830,13 @@
           "id": "I6-013",
           "in": [
             {
-              "Title": "Dune",
-              "Writer": "Frank Herbert"
+              "Title": "Vermilion",
+              "Writer": "F. R. Halloway"
             }
           ],
           "out": {
-            "series": "Frank Herbert",
-            "filename": "Dune"
+            "series": "F. R. Halloway",
+            "filename": "Vermilion"
           },
           "provenance": "new edge case (standalone with author and title)"
         },
@@ -3844,12 +3844,12 @@
           "id": "I6-014",
           "in": [
             {
-              "Title": "The Ultimate Hitchhiker's Guide to the Galaxy"
+              "Title": "The Utterly Complete Guide to Everything"
             }
           ],
           "out": {
-            "series": "The Ultimate Hitchhiker's Guide to the Galaxy",
-            "filename": "The Ultimate Hitchhiker's Guide to the Galaxy"
+            "series": "The Utterly Complete Guide to Everything",
+            "filename": "The Utterly Complete Guide to Everything"
           },
           "provenance": "new edge case (standalone, no author: folder is the title)"
         }
@@ -3865,13 +3865,13 @@
           "in": [
             {
               "media": "manga",
-              "Series": "Solo Leveling",
+              "Series": "Ascendant",
               "Number": "159"
             }
           ],
           "out": {
-            "series": "Solo Leveling",
-            "filename": "Solo Leveling c159"
+            "series": "Ascendant",
+            "filename": "Ascendant c159"
           },
           "provenance": "spec §2.7 worked example"
         },
@@ -3880,14 +3880,14 @@
           "in": [
             {
               "media": "manga",
-              "Series": "Berserk",
+              "Series": "Nightbloom",
               "Volume": "3",
               "Number": "7"
             }
           ],
           "out": {
-            "series": "Berserk",
-            "filename": "Berserk v03 c007"
+            "series": "Nightbloom",
+            "filename": "Nightbloom v03 c007"
           },
           "provenance": "spec §2.7 worked example"
         },
@@ -3896,14 +3896,14 @@
           "in": [
             {
               "media": "comic",
-              "Series": "Saga",
+              "Series": "Halcyon",
               "Volume": "1",
               "Number": "5"
             }
           ],
           "out": {
-            "series": "Saga",
-            "filename": "Saga v01 #005"
+            "series": "Halcyon",
+            "filename": "Halcyon v01 #005"
           },
           "provenance": "spec §2.7 worked example"
         },
@@ -3912,14 +3912,14 @@
           "in": [
             {
               "media": "comic",
-              "Series": "Iron Man v1",
+              "Series": "Ironclad v1",
               "Volume": "1",
               "Number": "1"
             }
           ],
           "out": {
-            "series": "Iron Man v1",
-            "filename": "Iron Man v1 #001"
+            "series": "Ironclad v1",
+            "filename": "Ironclad v1 #001"
           },
           "provenance": "spec §2.7 worked example (volume token suppressed)"
         },
@@ -3928,13 +3928,13 @@
           "in": [
             {
               "media": "manga",
-              "Series": "Berserk",
+              "Series": "Nightbloom",
               "Volume": "3"
             }
           ],
           "out": {
-            "series": "Berserk",
-            "filename": "Berserk v03"
+            "series": "Nightbloom",
+            "filename": "Nightbloom v03"
           },
           "provenance": "new edge case (volume, no number)"
         },
@@ -3943,13 +3943,13 @@
           "in": [
             {
               "media": "comic",
-              "Series": "Saga",
+              "Series": "Halcyon",
               "Number": "5"
             }
           ],
           "out": {
-            "series": "Saga",
-            "filename": "Saga #005"
+            "series": "Halcyon",
+            "filename": "Halcyon #005"
           },
           "provenance": "new edge case (number, no volume)"
         },
@@ -3958,12 +3958,12 @@
           "in": [
             {
               "media": "manga",
-              "Series": "Solo Leveling"
+              "Series": "Ascendant"
             }
           ],
           "out": {
-            "series": "Solo Leveling",
-            "filename": "Solo Leveling"
+            "series": "Ascendant",
+            "filename": "Ascendant"
           },
           "provenance": "new edge case (no volume or number)"
         },
@@ -3972,14 +3972,14 @@
           "in": [
             {
               "media": "comic",
-              "Series": "Batman",
+              "Series": "Ironclad",
               "Volume": "5",
               "Number": "50"
             }
           ],
           "out": {
-            "series": "Batman",
-            "filename": "Batman v05 #050"
+            "series": "Ironclad",
+            "filename": "Ironclad v05 #050"
           },
           "provenance": "new edge case (zero-padding both parts)"
         }

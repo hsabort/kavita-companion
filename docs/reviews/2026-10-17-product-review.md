@@ -5,7 +5,7 @@ image, Caddy, portal) · **Method:** read-only review agents, test stack only ·
 `docs/product-review-plan.md`
 
 **Stacks.** Live (`/srv/kavita`, portal `…:20004`) was **never touched**; everything ran against the
-**test stack** (`/srv/kavita-test`, portal `…:20006`, Kavita `…:20007`). State was left as found.
+**test stack** (the test worktree, portal `…:20006`, Kavita `…:20007`). State was left as found.
 
 **Anti-goals honoured:** no rewrites, no new features, no live/host changes, no vibes-only findings — every
 finding below carries `file:line` / a repro / an output.

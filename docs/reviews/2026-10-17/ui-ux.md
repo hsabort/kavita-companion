@@ -1,7 +1,7 @@
 # UI/UX baseline review — kavita-companion portal
 
 **Date:** 2026-10-17 · **Area:** 1 (UI/UX) of `docs/product-review-plan.md` · **Reviewer:** UI/UX review agent
-**Stack:** **test** only — portal `https://paragon.greyarea.contact:20006`, Kavita `…:20007`, worktree `/srv/kavita-test` (branch
+**Stack:** **test** only — portal `https://kavita.example.com:20006`, Kavita `…:20007`, the test worktree (branch
 `develop`, portal `0.6.9`). The live stack (`…:20004`) was never touched.
 **Method:** Playwright (Chromium, `mcr.microsoft.com/playwright/python:v1.62.0-noble`) driving the real portal as the three test
 accounts, plus a read of `kavita-companion/web/main.js`, `public/index.html`, `public/style.css` and `src/*.ts`.
@@ -54,7 +54,7 @@ happy-path console/network (0 errors on all 7 tabs, both viewports). Details in 
 ### H1 — A failed `/api/me` renders a blank page (no sign-in, no error, no retry)
 
 * **Repro**
-  1. Open `https://paragon.greyarea.contact:20006/` with `/api/me` failing — e.g. DevTools → Network → *Block request URL* `me`,
+  1. Open `https://kavita.example.com:20006/` with `/api/me` failing — e.g. DevTools → Network → *Block request URL* `me`,
      or take the connection down for that request (a proxy/Caddy hiccup, or a flaky mobile link, hits the same path).
   2. Load the page and wait ~3 s.
 * **Expected:** either the sign-in card, or the session view with an inline "the portal is unreachable, retrying" message and a retry.

@@ -8,7 +8,7 @@ nothing here is built yet.
 Each feature below lists what it adds, how it works, the data it needs, the Kavita API it calls, the UI,
 security notes and the tests it needs. New settings go in `.env` → `compose.yaml` → `src/config.ts`; new
 columns/tables go in `src/db.ts` with the `PRAGMA table_info` migration; every user-visible change gets a
-`CHANGELOG.md` entry and relevant doc updates. Features ship on a branch in `/srv/kavita-test`, pass
+`CHANGELOG.md` entry and relevant doc updates. Features ship on a branch in the test worktree, pass
 `tests/run.sh --browser --roles`, merge to `main`, and are published to GHCR on the next version tag
 ([development.md](development.md)).
 

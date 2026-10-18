@@ -39,9 +39,9 @@ deployment runs in one).
    only `/.well-known/acme-challenge/` to the container's `ACME_HTTP_PORT` (Apache/nginx examples in
    `docs/install.md`).
 
-## The original deployment
+## An example deployment
 
-For reference (paragon / instance `jim`): ports 20001–20099 forwarded with `proxy_protocol=true`,
-SSH on 20000 on its own device, Apache on the host forwarding ACME checks for
-`paragon.greyarea.contact` to the container's port 20003
-(`/etc/apache2/sites-available/paragon-acme.conf`), Docker on btrfs, user 1001:1001.
+For reference, a working deployment looks like this: the container's HTTPS ports forwarded with
+`proxy_protocol=true`, SSH on its own device (it cannot parse the header), and the host's web server
+forwarding ACME checks for the domain to the container's `ACME_HTTP_PORT` — Docker on btrfs, container
+user matching `PUID`/`PGID`. Substitute your own instance name, address range, domain and config path.

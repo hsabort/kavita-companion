@@ -1402,7 +1402,7 @@ roles, estimates and gates.
 ## 0. Assumptions & estimate method
 
 - Same architecture and workflow: TypeScript/Fastify/SQLite in `src/`, browser code in `web/main.js`,
-  Python acceptance tests in `tests/`, work on a branch in `/srv/kavita-test`, verify with
+  Python acceptance tests in `tests/`, work on a branch in the test worktree, verify with
   `tests/run.sh --browser --roles`, merge to `main`, tag → GHCR.
 - **Team:** a handful of single-role AI agents plus one human owner/reviewer, coordinated by the
   orchestrator (me). Agents work fast but every deliverable passes human review and integration, so

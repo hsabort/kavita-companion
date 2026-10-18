@@ -63,11 +63,11 @@ rollback.
 
 Tests create series, approve files and (with `--roles`) change roles, so they must not run against the
 live stack. A second, fully isolated stack runs beside it as its own compose project: a git worktree
-at `/srv/kavita-test` on a development branch.
+at `../kavita-test` on a development branch.
 
 ```bash
-git worktree add -b develop /srv/kavita-test main      # once
-cd /srv/kavita-test
+git worktree add -b develop ../kavita-test main      # once
+cd ../kavita-test
 cp .env.test.example .env && chmod 600 .env            # once (never committed)
 COMPOSE_ENV_FILES=.env KAVITA_ADMIN_USERNAME=admin KAVITA_ADMIN_PASSWORD='...' \
   ./setup.sh --non-interactive                         # once: creates the test Kavita + libraries

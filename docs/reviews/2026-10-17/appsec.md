@@ -1,7 +1,7 @@
 # AppSec review — kavita-companion runtime attack surface (area 5)
 
 **Date:** 2026-10-17 · **Reviewer:** security subagent (area 5) · **Repo:** `/srv/kavita` (read-only)
-**Target:** test stack only (`kavita-test`, portal `https://paragon.greyarea.contact:20006`). Live stack never touched.
+**Target:** test stack only (`kavita-test`, portal `https://kavita.example.com:20006`). Live stack never touched.
 **Scope:** auth/session handling (`src/auth.ts`, `src/server.ts`), tus upload path (`src/uploads.ts`,
 `src/archive.ts`), SSRF/outbound (`src/providers/http.ts`, `src/notify.ts`), review/apply/fix writes
 (`src/review.ts`), CSRF/Origin, error-message leaks.
@@ -158,7 +158,7 @@ control on all unauthenticated routes.
 ### Evidence
 
 ```
-$ P=https://paragon.greyarea.contact:20006
+$ P=https://kavita.example.com:20006
 $ echo "--- same cookie x5 (counts down normally) ---"
   for i in 1 2 3 4 5; do curl -sk "$P/api/health" -H "Cookie: __Host-kc_session=$TOK" ...; done
 x-ratelimit-remaining: 599

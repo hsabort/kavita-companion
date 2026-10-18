@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-17 · **Reviewer:** QA agent (adversarial: edge cases, negative tests, fuzzed uploads,
 failure injection, partial failure, permission boundaries)
-**Target:** `/srv/kavita-test` (test worktree @ `2749325`, release 0.6.9) · portal `https://paragon.greyarea.contact:20006`
+**Target:** the test worktree @ `2749325`, release 0.6.9 · portal `https://kavita.example.com:20006`
 **Never used:** the live stack (`…:20004`) — verified reachable but untouched.
 **Method:** read `kavita-companion/src/*.ts`, then black-box probes over the portal + tus API (Python/curl),
 plus in-container `7zzs` experiments. Repo untouched; no code or tests changed.
@@ -28,9 +28,9 @@ download route then announces a Content-Length that does not match the file it s
 ```bash
 cat > /tmp/mobi_upload.py <<'PY'
 import base64, json, ssl, time, urllib.request, urllib.error
-ORIGIN = "https://paragon.greyarea.contact:20006"
+ORIGIN = "https://kavita.example.com:20006"
 CTX = ssl._create_unverified_context()          # self-signed chain on the test stack
-data = open("/srv/kavita-test/tests/fixtures/sample.mobi", "rb").read()   # 9122 bytes
+data = open("tests/fixtures/sample.mobi", "rb").read()   # 9122 bytes
 b64 = lambda v: base64.b64encode(str(v).encode()).decode()
 
 def req(method, url, body=None, headers=None):
@@ -72,7 +72,7 @@ Then, as **admin** (`curl -c admin.jar … /api/login` with the admin test accou
 
 ```bash
 curl -sk -b admin.jar -D - -o out.epub --max-time 15 \
-  "https://paragon.greyarea.contact:20006/api/review/<upload-id>/download"
+  "https://kavita.example.com:20006/api/review/<upload-id>/download"
 # -> hangs, exit 28, out.epub not created (no bytes at all through Caddy/H2)
 ```
 
@@ -234,7 +234,7 @@ and the refusal blames a healthy queue.
 ### Repro
 
 ```bash
-ORIGIN=https://paragon.greyarea.contact:20006
+ORIGIN=https://kavita.example.com:20006
 C=$(curl -sk -c /tmp/qa.jar -o /dev/null -H "Content-Type: application/json" -H "Origin: $ORIGIN" \
       -d '{"username":"test-uploader","password":"<TEST_UPLOADER_PASSWORD>"}' $ORIGIN/api/login \
       && grep -o '__Host-kc_session[^ ]*' /tmp/qa.jar | head -1 | cut -f7)
@@ -275,9 +275,9 @@ window (or a "no bytes yet" predicate) is the fix.
 
 ```bash
 curl -sk -b admin.jar -H "Origin: $ORIGIN" \
-  'https://paragon.greyarea.contact:20006/api/review/series?libraryId=abc'
+  'https://kavita.example.com:20006/api/review/series?libraryId=abc'
 curl -sk -b admin.jar -H "Origin: $ORIGIN" \
-  'https://paragon.greyarea.contact:20006/api/review/series-contents?name=x'
+  'https://kavita.example.com:20006/api/review/series-contents?name=x'
 ```
 
 ### Observed
@@ -313,10 +313,10 @@ the victim's subsequent uploads land in the attacker's account (and the victim s
 ```bash
 # no Origin at all, still processed (302 -> /?signin=link-failed, i.e. the key went through the login path)
 curl -sk -o /dev/null -w '%{http_code} %{redirect_url}\n' \
-  'https://paragon.greyarea.contact:20006/login?apiKey=AAAAAAAAAAAAAAAA'
+  'https://kavita.example.com:20006/login?apiKey=AAAAAAAAAAAAAAAA'
 # control: the JSON login correctly refuses a body-changing POST with no Origin
 curl -sk -o /dev/null -w '%{http_code}\n' -H 'Content-Type: application/json' \
-  -d '{"username":"x","password":"y"}' https://paragon.greyarea.contact:20006/api/login
+  -d '{"username":"x","password":"y"}' https://kavita.example.com:20006/api/login
 ```
 
 ### Observed
@@ -456,7 +456,7 @@ refused *before* review.
 
 ## Environment / artifacts (test stack only)
 
-* Portal `:20006`, Kavita `:20007`, DB `/srv/kavita-test/data-test/companion/companion.db`.
+* Portal `:20006`, Kavita `:20007`, DB `data-test/companion/companion.db` in the test worktree.
 * Files created by the probes in the **test** library: `/srv/media-test/comics/QA Probe 2026-10-17/`,
   `QA Bomb 2026-10-17/` (the 126 MB F2 artifact), `QA Trav/`, `QA Race 2026-10-17/`, `tmp pwned/`,
   `a b c/` — all inside `…/comics`, all sanitised names. Left in place as evidence; safe to delete.

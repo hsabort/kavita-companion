@@ -67,18 +67,38 @@
     },
     "M3": {
       "signature": "readComicInfo(xml: string) -> Metadata",
+      "note": "`out` lists all 24 field names (M1) with null for an absent key; the reader omits empty elements, which the runner treats as absent.",
       "cases": [
         {
           "id": "M3-001",
           "in": [
-            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Saga</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>"
+            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Halcyon</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>"
           ],
           "out": {
             "Title": "The Fifth",
-            "Series": "Saga",
+            "Series": "Halcyon",
             "Number": "026",
+            "Count": null,
+            "Volume": null,
             "Summary": "keep me",
-            "PageCount": "9"
+            "Year": null,
+            "Month": null,
+            "Day": null,
+            "Writer": null,
+            "Penciller": null,
+            "Inker": null,
+            "Colorist": null,
+            "Letterer": null,
+            "CoverArtist": null,
+            "Editor": null,
+            "Publisher": null,
+            "Imprint": null,
+            "Genre": null,
+            "Tags": null,
+            "Web": null,
+            "PageCount": "9",
+            "LanguageISO": null,
+            "AgeRating": null
           },
           "provenance": "spec §4.3.1 (unknown element ignored; values trimmed; Number kept as text)"
         },
@@ -88,7 +108,30 @@
             "<ComicInfo><Volume>3</Volume></ComicInfo>"
           ],
           "out": {
-            "Volume": "3"
+            "Title": null,
+            "Series": null,
+            "Number": null,
+            "Count": null,
+            "Volume": "3",
+            "Summary": null,
+            "Year": null,
+            "Month": null,
+            "Day": null,
+            "Writer": null,
+            "Penciller": null,
+            "Inker": null,
+            "Colorist": null,
+            "Letterer": null,
+            "CoverArtist": null,
+            "Editor": null,
+            "Publisher": null,
+            "Imprint": null,
+            "Genre": null,
+            "Tags": null,
+            "Web": null,
+            "PageCount": null,
+            "LanguageISO": null,
+            "AgeRating": null
           },
           "provenance": "new edge case (single field)"
         },
@@ -97,7 +140,32 @@
           "in": [
             "<ComicInfo></ComicInfo>"
           ],
-          "out": {},
+          "out": {
+            "Title": null,
+            "Series": null,
+            "Number": null,
+            "Count": null,
+            "Volume": null,
+            "Summary": null,
+            "Year": null,
+            "Month": null,
+            "Day": null,
+            "Writer": null,
+            "Penciller": null,
+            "Inker": null,
+            "Colorist": null,
+            "Letterer": null,
+            "CoverArtist": null,
+            "Editor": null,
+            "Publisher": null,
+            "Imprint": null,
+            "Genre": null,
+            "Tags": null,
+            "Web": null,
+            "PageCount": null,
+            "LanguageISO": null,
+            "AgeRating": null
+          },
           "provenance": "new edge case (empty ComicInfo)"
         },
         {
@@ -105,16 +173,64 @@
           "in": [
             "<Other><Title>X</Title></Other>"
           ],
-          "out": {},
+          "out": {
+            "Title": null,
+            "Series": null,
+            "Number": null,
+            "Count": null,
+            "Volume": null,
+            "Summary": null,
+            "Year": null,
+            "Month": null,
+            "Day": null,
+            "Writer": null,
+            "Penciller": null,
+            "Inker": null,
+            "Colorist": null,
+            "Letterer": null,
+            "CoverArtist": null,
+            "Editor": null,
+            "Publisher": null,
+            "Imprint": null,
+            "Genre": null,
+            "Tags": null,
+            "Web": null,
+            "PageCount": null,
+            "LanguageISO": null,
+            "AgeRating": null
+          },
           "provenance": "new edge case (no ComicInfo root)"
         },
         {
           "id": "M3-005",
           "in": [
-            "<ComicInfo><Title/><Series>Saga</Series></ComicInfo>"
+            "<ComicInfo><Title/><Series>Halcyon</Series></ComicInfo>"
           ],
           "out": {
-            "Series": "Saga"
+            "Title": null,
+            "Series": "Halcyon",
+            "Number": null,
+            "Count": null,
+            "Volume": null,
+            "Summary": null,
+            "Year": null,
+            "Month": null,
+            "Day": null,
+            "Writer": null,
+            "Penciller": null,
+            "Inker": null,
+            "Colorist": null,
+            "Letterer": null,
+            "CoverArtist": null,
+            "Editor": null,
+            "Publisher": null,
+            "Imprint": null,
+            "Genre": null,
+            "Tags": null,
+            "Web": null,
+            "PageCount": null,
+            "LanguageISO": null,
+            "AgeRating": null
           },
           "provenance": "new edge case (empty element treated as absent)"
         }
@@ -122,7 +238,7 @@
     },
     "M4": {
       "signature": "writeComicInfo(existingXml, updates, drop) -> xml",
-      "note": "`out` is the result of readComicInfo() on the returned XML (the semantic assertion); the `xml` field is the reference serialization (declaration + 2-space indent).",
+      "note": "`out` is the exact XML the writer returns: the XML declaration, then the document, 2-space indent (spec §4.3.2's emit format). The `updates`/`drop` semantics are checked by reading `out` back with the M3 reader.",
       "cases": [
         {
           "id": "M4-001",
@@ -130,23 +246,18 @@
             null,
             {
               "Title": "New",
-              "Series": "Saga",
+              "Series": "Halcyon",
               "Number": "5"
             },
             []
           ],
-          "out": {
-            "Title": "New",
-            "Series": "Saga",
-            "Number": "5"
-          },
-          "provenance": "spec §4.3.2 (new document, attributes added)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <Title>New</Title>\n  <Series>Saga</Series>\n  <Number>5</Number>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <Title>New</Title>\n  <Series>Halcyon</Series>\n  <Number>5</Number>\n</ComicInfo>\n",
+          "provenance": "spec §4.3.2 (new document, attributes added)"
         },
         {
           "id": "M4-002",
           "in": [
-            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Saga</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>",
+            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Halcyon</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>",
             {
               "Number": "5",
               "Year": "2001",
@@ -159,18 +270,8 @@
               "Volume"
             ]
           ],
-          "out": {
-            "Title": "The Fifth",
-            "Series": "Saga",
-            "Number": "5",
-            "Summary": "keep me",
-            "Year": "2001",
-            "Writer": "Jane Writer",
-            "PageCount": "3",
-            "AgeRating": "Teen"
-          },
-          "provenance": "spec §4.3.2 worked example (unedited fields and unknown elements preserved)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <Title>The Fifth</Title>\n  <Series>Saga</Series>\n  <Number>5</Number>\n  <Summary>keep me</Summary>\n  <Year>2001</Year>\n  <Writer>Jane Writer</Writer>\n  <PageCount>3</PageCount>\n  <AgeRating>Teen</AgeRating>\n  <Unknown>ignored</Unknown>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <Title>The Fifth</Title>\n  <Series>Halcyon</Series>\n  <Number>5</Number>\n  <Summary>keep me</Summary>\n  <Year>2001</Year>\n  <Writer>Jane Writer</Writer>\n  <PageCount>3</PageCount>\n  <AgeRating>Teen</AgeRating>\n  <Unknown>ignored</Unknown>\n</ComicInfo>\n",
+          "provenance": "spec §4.3.2 worked example (unedited fields and unknown elements preserved)"
         },
         {
           "id": "M4-003",
@@ -183,11 +284,8 @@
               "Volume"
             ]
           ],
-          "out": {
-            "Title": "X"
-          },
-          "provenance": "spec §4.3.2 (drop removes a field)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo>\n  <Title>X</Title>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo>\n  <Title>X</Title>\n</ComicInfo>\n",
+          "provenance": "spec §4.3.2 (drop removes a field)"
         },
         {
           "id": "M4-004",
@@ -198,9 +296,8 @@
               "Volume"
             ]
           ],
-          "out": {},
-          "provenance": "new edge case (drop of an absent field is a no-op)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo/>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo/>\n",
+          "provenance": "new edge case (drop of an absent field is a no-op)"
         },
         {
           "id": "M4-005",
@@ -213,52 +310,32 @@
             },
             []
           ],
-          "out": {
-            "Title": "A",
-            "Volume": "3",
-            "Year": "2001",
-            "Publisher": "P"
-          },
-          "provenance": "spec §4.3.2 (new fields inserted in schema order)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo>\n  <Title>A</Title>\n  <Volume>3</Volume>\n  <Year>2001</Year>\n  <Publisher>P</Publisher>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo>\n  <Title>A</Title>\n  <Volume>3</Volume>\n  <Year>2001</Year>\n  <Publisher>P</Publisher>\n</ComicInfo>\n",
+          "provenance": "spec §4.3.2 (new fields inserted in schema order)"
         },
         {
           "id": "M4-006",
           "in": [
-            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Saga</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>",
+            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Halcyon</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>",
             {
               "Title": ""
             },
             []
           ],
-          "out": {
-            "Title": "The Fifth",
-            "Series": "Saga",
-            "Number": "026",
-            "Summary": "keep me",
-            "PageCount": "9"
-          },
-          "provenance": "spec §4.3.2 (an empty update never erases)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <Title>The Fifth</Title>\n  <Series>Saga</Series>\n  <Number>026</Number>\n  <Summary>keep me</Summary>\n  <PageCount>9</PageCount>\n  <Unknown>ignored</Unknown>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <Title>The Fifth</Title>\n  <Series>Halcyon</Series>\n  <Number>026</Number>\n  <Summary>keep me</Summary>\n  <PageCount>9</PageCount>\n  <Unknown>ignored</Unknown>\n</ComicInfo>\n",
+          "provenance": "spec §4.3.2 (an empty update never erases)"
         },
         {
           "id": "M4-007",
           "in": [
-            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Saga</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>",
+            "<?xml version=\"1.0\"?><ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><Title>The Fifth</Title><Series>Halcyon</Series><Number>026</Number><Summary> keep me </Summary><PageCount>9</PageCount><Unknown>ignored</Unknown></ComicInfo>",
             {
               "Title": "   "
             },
             []
           ],
-          "out": {
-            "Title": "The Fifth",
-            "Series": "Saga",
-            "Number": "026",
-            "Summary": "keep me",
-            "PageCount": "9"
-          },
-          "provenance": "spec §4.3.2 (a blank update never erases)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <Title>The Fifth</Title>\n  <Series>Saga</Series>\n  <Number>026</Number>\n  <Summary>keep me</Summary>\n  <PageCount>9</PageCount>\n  <Unknown>ignored</Unknown>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <Title>The Fifth</Title>\n  <Series>Halcyon</Series>\n  <Number>026</Number>\n  <Summary>keep me</Summary>\n  <PageCount>9</PageCount>\n  <Unknown>ignored</Unknown>\n</ComicInfo>\n",
+          "provenance": "spec §4.3.2 (a blank update never erases)"
         },
         {
           "id": "M4-008",
@@ -269,47 +346,17 @@
             },
             []
           ],
-          "out": {
-            "Series": "S"
-          },
-          "provenance": "new edge case (write into an empty existing document)",
-          "xml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo>\n  <Series>S</Series>\n</ComicInfo>\n"
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ComicInfo>\n  <Series>S</Series>\n</ComicInfo>\n",
+          "provenance": "new edge case (write into an empty existing document)"
         }
       ]
     },
     "M5": {
-      "signature": "readEpubMetadata(opfXml) -> Metadata ; opfPathFromContainer(containerXml) -> string | null",
-      "note": "Each case names the function it exercises in the `fn` field.",
+      "signature": "readEpubMetadata(opfXml) -> Metadata",
+      "note": "`out` lists the nine fields the §4.4.1 table names, null for an absent key. The container.xml lookup (`opfPathFromContainer`) is context in §4.4, not part of the M5 read rule, so it is not cased here.",
       "cases": [
         {
           "id": "M5-001",
-          "in": [
-            "<?xml version=\"1.0\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>"
-          ],
-          "out": "OEBPS/content.opf",
-          "provenance": "spec §4.4.1 (rootfile full-path)",
-          "fn": "opfPathFromContainer"
-        },
-        {
-          "id": "M5-002",
-          "in": [
-            "<container/>"
-          ],
-          "out": null,
-          "provenance": "new edge case (no rootfile)",
-          "fn": "opfPathFromContainer"
-        },
-        {
-          "id": "M5-003",
-          "in": [
-            "<rootfile full-path='a/b.opf'/>"
-          ],
-          "out": null,
-          "provenance": "new edge case (single-quoted attribute: the reference only recognises double quotes)",
-          "fn": "opfPathFromContainer"
-        },
-        {
-          "id": "M5-004",
           "in": [
             "<?xml version=\"1.0\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\"><dc:title>Old Title</dc:title><dc:creator>Old Author</dc:creator><dc:creator>Second Author</dc:creator><dc:publisher>Pub</dc:publisher><dc:description>Desc</dc:description><dc:language>en</dc:language><dc:subject>Fantasy</dc:subject><dc:subject>Adventure</dc:subject><dc:date>2001-05-03</dc:date><dc:identifier id=\"id\">urn:uuid:x</dc:identifier><meta name=\"calibre:series\" content=\"Kc5 Books\"/><meta name=\"calibre:series_index\" content=\"2\"/></metadata><manifest/><spine/></package>"
           ],
@@ -324,59 +371,85 @@
             "Series": "Kc5 Books",
             "Number": "2"
           },
-          "provenance": "spec §4.4.1 (dc: and calibre: elements; creators/subjects joined)",
-          "fn": "readEpubMetadata"
+          "provenance": "spec §4.4.1 (dc: and calibre: elements; creators/subjects joined)"
         },
         {
-          "id": "M5-005",
+          "id": "M5-002",
           "in": [
             "<package><metadata></metadata></package>"
           ],
-          "out": {},
-          "provenance": "new edge case (empty metadata)",
-          "fn": "readEpubMetadata"
+          "out": {
+            "Title": null,
+            "Writer": null,
+            "Publisher": null,
+            "Summary": null,
+            "LanguageISO": null,
+            "Genre": null,
+            "Year": null,
+            "Series": null,
+            "Number": null
+          },
+          "provenance": "new edge case (empty metadata)"
         },
         {
-          "id": "M5-006",
+          "id": "M5-003",
           "in": [
             "<package><metadata><dc:title>D</dc:title><dc:date>2001</dc:date></metadata></package>"
           ],
           "out": {
             "Title": "D",
-            "Year": "2001"
+            "Writer": null,
+            "Publisher": null,
+            "Summary": null,
+            "LanguageISO": null,
+            "Genre": null,
+            "Year": "2001",
+            "Series": null,
+            "Number": null
           },
-          "provenance": "new edge case (date with no month/day)",
-          "fn": "readEpubMetadata"
+          "provenance": "new edge case (date with no month/day)"
         },
         {
-          "id": "M5-007",
+          "id": "M5-004",
           "in": [
             "<opf:package xmlns:opf=\"http://www.idpf.org/2007/opf\"><opf:metadata><dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\">D</dc:title></opf:metadata></opf:package>"
           ],
           "out": {
-            "Title": "D"
+            "Title": "D",
+            "Writer": null,
+            "Publisher": null,
+            "Summary": null,
+            "LanguageISO": null,
+            "Genre": null,
+            "Year": null,
+            "Series": null,
+            "Number": null
           },
-          "provenance": "new edge case (prefixed package/metadata tags)",
-          "fn": "readEpubMetadata"
+          "provenance": "new edge case (prefixed package/metadata tags)"
         },
         {
-          "id": "M5-008",
+          "id": "M5-005",
           "in": [
             "<package><metadata><dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\">T</dc:title><meta name=\"calibre:series\" content=\"S\"/><meta name=\"calibre:series_index\" content=\"3\"/></metadata></package>"
           ],
           "out": {
             "Title": "T",
+            "Writer": null,
+            "Publisher": null,
+            "Summary": null,
+            "LanguageISO": null,
+            "Genre": null,
+            "Year": null,
             "Series": "S",
             "Number": "3"
           },
-          "provenance": "new edge case (calibre series and index)",
-          "fn": "readEpubMetadata"
+          "provenance": "new edge case (calibre series and index)"
         }
       ]
     },
     "M6": {
       "signature": "writeEpubMetadata(opfXml, updates) -> xml",
-      "note": "`out` is the result of readEpubMetadata() on the returned XML (the semantic assertion). Read-modify-write preserves everything not named in `updates` (verified in the M5 reader).",
+      "note": "`out` is the exact XML the writer returns: the XML declaration, then the document, 2-space indent. Read-modify-write preservation is checked by reading `out` back with the M5 reader.",
       "cases": [
         {
           "id": "M6-001",
@@ -389,17 +462,7 @@
               "Series": "Kc5 Books"
             }
           ],
-          "out": {
-            "Title": "New Title",
-            "Writer": "Ann Lee, Bo Kim",
-            "Publisher": "Pub",
-            "Summary": "Desc",
-            "LanguageISO": "en",
-            "Genre": "Fantasy, Adventure",
-            "Year": "2001",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>New Title</dc:title>\n    <dc:creator>Ann Lee</dc:creator>\n    <dc:creator>Bo Kim</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>Desc</dc:description>\n    <dc:language>en</dc:language>\n    <dc:subject>Fantasy</dc:subject>\n    <dc:subject>Adventure</dc:subject>\n    <dc:date>2001-05-03</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 worked example (identifier preserved)"
         },
         {
@@ -410,17 +473,7 @@
               "Year": "2001"
             }
           ],
-          "out": {
-            "Title": "Old Title",
-            "Writer": "Old Author, Second Author",
-            "Publisher": "Pub",
-            "Summary": "Desc",
-            "LanguageISO": "en",
-            "Genre": "Fantasy, Adventure",
-            "Year": "2001",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>Old Title</dc:title>\n    <dc:creator>Old Author</dc:creator>\n    <dc:creator>Second Author</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>Desc</dc:description>\n    <dc:language>en</dc:language>\n    <dc:subject>Fantasy</dc:subject>\n    <dc:subject>Adventure</dc:subject>\n    <dc:date>2001-05-03</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 (a matching year keeps the fuller existing date)"
         },
         {
@@ -431,17 +484,7 @@
               "Year": "1999"
             }
           ],
-          "out": {
-            "Title": "Old Title",
-            "Writer": "Old Author, Second Author",
-            "Publisher": "Pub",
-            "Summary": "Desc",
-            "LanguageISO": "en",
-            "Genre": "Fantasy, Adventure",
-            "Year": "1999",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>Old Title</dc:title>\n    <dc:creator>Old Author</dc:creator>\n    <dc:creator>Second Author</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>Desc</dc:description>\n    <dc:language>en</dc:language>\n    <dc:subject>Fantasy</dc:subject>\n    <dc:subject>Adventure</dc:subject>\n    <dc:date>1999</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 (a different year replaces the date)"
         },
         {
@@ -452,17 +495,7 @@
               "Genre": "Sci-Fi; Horror"
             }
           ],
-          "out": {
-            "Title": "Old Title",
-            "Writer": "Old Author, Second Author",
-            "Publisher": "Pub",
-            "Summary": "Desc",
-            "LanguageISO": "en",
-            "Genre": "Sci-Fi, Horror",
-            "Year": "2001",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>Old Title</dc:title>\n    <dc:creator>Old Author</dc:creator>\n    <dc:creator>Second Author</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>Desc</dc:description>\n    <dc:language>en</dc:language>\n    <dc:subject>Sci-Fi</dc:subject>\n    <dc:subject>Horror</dc:subject>\n    <dc:date>2001-05-03</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 (subject is a list split on , or ;)"
         },
         {
@@ -473,17 +506,7 @@
               "LanguageISO": "fr"
             }
           ],
-          "out": {
-            "Title": "Old Title",
-            "Writer": "Old Author, Second Author",
-            "Publisher": "Pub",
-            "Summary": "Desc",
-            "LanguageISO": "fr",
-            "Genre": "Fantasy, Adventure",
-            "Year": "2001",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>Old Title</dc:title>\n    <dc:creator>Old Author</dc:creator>\n    <dc:creator>Second Author</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>Desc</dc:description>\n    <dc:language>fr</dc:language>\n    <dc:subject>Fantasy</dc:subject>\n    <dc:subject>Adventure</dc:subject>\n    <dc:date>2001-05-03</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 (language replaced)"
         },
         {
@@ -495,17 +518,7 @@
               "Writer": ""
             }
           ],
-          "out": {
-            "Title": "Old Title",
-            "Writer": "Old Author, Second Author",
-            "Publisher": "Pub",
-            "Summary": "Desc",
-            "LanguageISO": "en",
-            "Genre": "Fantasy, Adventure",
-            "Year": "2001",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>Old Title</dc:title>\n    <dc:creator>Old Author</dc:creator>\n    <dc:creator>Second Author</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>Desc</dc:description>\n    <dc:language>en</dc:language>\n    <dc:subject>Fantasy</dc:subject>\n    <dc:subject>Adventure</dc:subject>\n    <dc:date>2001-05-03</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 (blank updates never erase)"
         },
         {
@@ -516,17 +529,7 @@
               "Summary": "New summary"
             }
           ],
-          "out": {
-            "Title": "Old Title",
-            "Writer": "Old Author, Second Author",
-            "Publisher": "Pub",
-            "Summary": "New summary",
-            "LanguageISO": "en",
-            "Genre": "Fantasy, Adventure",
-            "Year": "2001",
-            "Series": "Kc5 Books",
-            "Number": "2"
-          },
+          "out": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"id\">\n  <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">\n    <dc:title>Old Title</dc:title>\n    <dc:creator>Old Author</dc:creator>\n    <dc:creator>Second Author</dc:creator>\n    <dc:publisher>Pub</dc:publisher>\n    <dc:description>New summary</dc:description>\n    <dc:language>en</dc:language>\n    <dc:subject>Fantasy</dc:subject>\n    <dc:subject>Adventure</dc:subject>\n    <dc:date>2001-05-03</dc:date>\n    <dc:identifier id=\"id\">urn:uuid:x</dc:identifier>\n    <meta name=\"calibre:series\" content=\"Kc5 Books\"/>\n    <meta name=\"calibre:series_index\" content=\"2\"/>\n  </metadata>\n  <manifest/>\n  <spine/>\n</package>\n",
           "provenance": "spec §4.4.2 (description replaced)"
         }
       ]

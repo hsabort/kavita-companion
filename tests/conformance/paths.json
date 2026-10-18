@@ -9,9 +9,9 @@
         {
           "id": "P1-001",
           "in": [
-            "Saga: Volume 1?"
+            "Halcyon: Volume 1?"
           ],
-          "out": "Saga Volume 1",
+          "out": "Halcyon Volume 1",
           "provenance": "spec \u00a73.1 worked example"
         },
         {
@@ -137,9 +137,9 @@
         {
           "id": "P1-017",
           "in": [
-            "Saga  Volume   1"
+            "Halcyon  Volume   1"
           ],
-          "out": "Saga Volume 1",
+          "out": "Halcyon Volume 1",
           "provenance": "spec \u00a73.1 (whitespace collapsed)"
         },
         {
@@ -266,10 +266,10 @@
         {
           "id": "P2-001",
           "in": [
-            "Saga #005.CBZ"
+            "Halcyon #005.CBZ"
           ],
           "out": {
-            "base": "Saga #005",
+            "base": "Halcyon #005",
             "ext": "cbz"
           },
           "provenance": "spec \u00a73.2 worked example (extension lower-cased)"
@@ -446,8 +446,8 @@
         {
           "id": "P4-004",
           "in": [
-            "Solo Leveling 2",
-            "Solo Leveling 10"
+            "Ascendant 2",
+            "Ascendant 10"
           ],
           "out": -1,
           "provenance": "spec \u00a73.4 worked example"
@@ -455,8 +455,8 @@
         {
           "id": "P4-005",
           "in": [
-            "Solo Leveling 10",
-            "Solo Leveling 2"
+            "Ascendant 10",
+            "Ascendant 2"
           ],
           "out": 1,
           "provenance": "spec \u00a73.4 worked example (reverse)"

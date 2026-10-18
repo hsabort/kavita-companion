@@ -14,7 +14,7 @@
                 {
                   "provider": "A",
                   "fields": {
-                    "Series": "Saga (Image)",
+                    "Series": "Halcyon (Image)",
                     "Number": "5"
                   }
                 },
@@ -27,7 +27,7 @@
                 }
               ],
               "current": {
-                "Series": "Saga",
+                "Series": "Halcyon",
                 "Year": "2020"
               }
             }
@@ -44,8 +44,8 @@
             "conflicts": [
               {
                 "field": "Series",
-                "current": "Saga",
-                "proposed": "Saga (Image)",
+                "current": "Halcyon",
+                "proposed": "Halcyon (Image)",
                 "source": "A"
               },
               {
@@ -66,7 +66,7 @@
                 {
                   "provider": "A",
                   "fields": {
-                    "Series": "Saga (Image)",
+                    "Series": "Halcyon (Image)",
                     "Number": "5"
                   }
                 },
@@ -79,7 +79,7 @@
                 }
               ],
               "current": {
-                "Series": "Saga",
+                "Series": "Halcyon",
                 "Year": "2020"
               },
               "force": [
@@ -89,7 +89,7 @@
           ],
           "out": {
             "fields": {
-              "Series": "Saga (Image)",
+              "Series": "Halcyon (Image)",
               "Number": "5",
               "Publisher": "Image"
             },
@@ -117,7 +117,7 @@
                 {
                   "provider": "A",
                   "fields": {
-                    "Series": "Saga",
+                    "Series": "Halcyon",
                     "Number": "5"
                   }
                 }
@@ -244,7 +244,7 @@
                 {
                   "provider": "A",
                   "fields": {
-                    "Series": "Saga"
+                    "Series": "Halcyon"
                   }
                 },
                 {
@@ -260,7 +260,7 @@
           ],
           "out": {
             "fields": {
-              "Series": "Saga",
+              "Series": "Halcyon",
               "Number": "1"
             },
             "provenance": {
@@ -280,7 +280,7 @@
                   "provider": "A",
                   "fields": {
                     "Year": "19x",
-                    "Series": "Saga"
+                    "Series": "Halcyon"
                   }
                 },
                 {
@@ -295,7 +295,7 @@
           ],
           "out": {
             "fields": {
-              "Series": "Saga",
+              "Series": "Halcyon",
               "Year": "2019"
             },
             "provenance": {
@@ -315,7 +315,7 @@
                   "provider": "A",
                   "fields": {
                     "Number": 5,
-                    "Series": "Saga"
+                    "Series": "Halcyon"
                   }
                 }
               ],
@@ -324,7 +324,7 @@
           ],
           "out": {
             "fields": {
-              "Series": "Saga"
+              "Series": "Halcyon"
             },
             "provenance": {
               "Series": "A"
