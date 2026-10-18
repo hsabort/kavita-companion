@@ -151,3 +151,12 @@ EPUB branch of `buildFinalFile` (`review.ts`) before repacking, so an approved b
 `tests/test_epub_repair.py` uploads a deliberately broken EPUB, approves it, checks the stored copy is
 sanitised, and waits for Kavita to list it. Released as **0.8.1** (`0634fa4`, tag `v0.8.1`) and live
 was repinned to `ghcr.io/hsabort/kavita-companion:0.8.1` (healthy; portal 200).
+
+## Follow-up (2026-10-18): dead bytes cleared
+
+- **7 orphan staged files** in `/srv/media/.incoming/pending` (6 `.cbz` + the rejected Excession
+  `.epub`; none had a DB row) deleted. Backed up to `backups/incoming-pending-20261018-022827`.
+- **198 terminal portal rows** purged (101 withdrawn, 42 cancelled, 29 invalid, 18 duplicate,
+  7 rejected, 1 expired) — nothing referenced them (`requests` has no FK to `uploads`, and its one
+  `fulfilled_upload_id` points at an approved row). Backed up to `backups/companion.db.20261018-022827`.
+  `uploads` now holds only the 161 approved rows; `requests` untouched.
