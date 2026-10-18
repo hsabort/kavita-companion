@@ -26,7 +26,7 @@ export interface CapabilityReport {
 
 /** The extensions each capability covers, named in a refusal so the uploader knows what is refused. */
 const FORMATS: Record<Capability, string> = {
-  "archive-extras": "`.cbr`, `.rar`, `.7z`",
+  "archive-extras": "`.cbr`, `.cb7`, `.rar`, `.7z`",
   kindle: "`.mobi`, `.azw`, `.azw3`",
 };
 
@@ -63,8 +63,9 @@ export function isCapabilityError(err: unknown): err is CapabilityError {
 }
 
 // The last probe result. Pessimistic until the boot probe finishes, so a missing tool never reads
-// as present if something asks before the probe completes.
-let snapshot: CapabilityReport = { zip: true, archiveExtras: false, kindle: false };
+// as present if something asks before the probe completes. Frozen so a caller cannot mutate the
+// cache through `capabilities()`.
+let snapshot: CapabilityReport = Object.freeze<CapabilityReport>({ zip: true, archiveExtras: false, kindle: false });
 
 /**
  * Is `command` runnable? A harmless invocation decides it. Only ENOENT (no such file) means the
@@ -82,12 +83,14 @@ function toolAvailable(command: string, args: string[]): Promise<boolean> {
 
 /** Probe the optional tools once at boot. The result is cached for `capabilities()`. */
 export async function probeCapabilities(): Promise<CapabilityReport> {
-  const sevenZip = process.env.SEVEN_ZIP ?? "7zzs";
+  // `||`, not `??`: a blank SEVEN_ZIP must fall back to the PATH default rather than spawn an empty
+  // executable path. `mobiunpack` is a fixed name, so it has no such hazard.
+  const sevenZip = process.env.SEVEN_ZIP || "7zzs";
   const [archiveExtras, kindle] = await Promise.all([
     toolAvailable(sevenZip, ["i"]),
     toolAvailable("mobiunpack", ["--help"]),
   ]);
-  snapshot = { zip: true, archiveExtras, kindle };
+  snapshot = Object.freeze<CapabilityReport>({ zip: true, archiveExtras, kindle });
   return snapshot;
 }
 
