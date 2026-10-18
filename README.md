@@ -125,7 +125,7 @@ data/                 runtime data: databases, certificates (not in git)
 
 ## Status
 
-Version 0.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's done and what's next.
+Version 0.9.0. See [CHANGELOG.md](CHANGELOG.md) for what's done and what's next.
 
 ## License
 

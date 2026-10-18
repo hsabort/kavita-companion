@@ -1,17 +1,33 @@
 # Changelog
 
-## Unreleased
+## 0.9.0 — 2026-10-18
 
 Changed:
+- **The default image is now permissive.** The published default (`:X.Y.Z`, and what `:latest` means)
+  no longer bundles the GPL/LGPL tools. 7-Zip (LGPL) and KindleUnpack (GPL-3.0-only) move to an
+  optional `-formats` image (`:X.Y.Z-formats`), which is a combined work and is never tagged `latest`;
+  the default image is `Apache-2.0 AND OFL-1.1` on its own. Zip reading no longer shells out to 7-Zip:
+  `.zip`, `.cbz`, `.epub` and a mislabelled `.cbr`/`.cb7` whose bytes are really a zip are read
+  in-process, and `.pdf` is unaffected — all of them keep working on either image.
+- **What the default image gives up.** Reading `.rar`/`.cbr`(rar)/`.7z`/`.cb7`, and converting
+  `.mobi`/`.azw`/`.azw3` to EPUB, now need the `-formats` image. There is no permissive RAR or MOBI
+  reader, so those formats genuinely cannot be reimplemented; the `-formats` image carries them.
+- **A file the default image cannot handle is refused with the image that can.** The refusal names the
+  `-formats` tag for the running release (`ghcr.io/hsabort/kavita-companion:0.9.0-formats`), and is
+  surfaced on upload (the row ends `invalid` with that reason), on the page preview (415) and on Fix —
+  never a generic error or a silent failure. The health endpoint reports the capability set, and
+  Fix/Approve is disabled for an item whose format needs an absent capability.
+- **The images now ship their licences.** `LICENSE`, `NOTICE.md` and the fonts' OFL texts are copied
+  into the default image, whose `org.opencontainers.image.licenses` label reads `Apache-2.0 AND
+  OFL-1.1` because it contains nothing non-permissive. The `-formats` image additionally carries
+  7-Zip's and KindleUnpack's licence texts — plus the `loguru` MIT text KindleUnpack's wheel omits,
+  fetched at build time pinned by URL and SHA-256 — and its label reads `Apache-2.0 AND OFL-1.1 AND
+  GPL-3.0-only AND LGPL-2.1-or-later`. The Docker build context is now the repository root, so the
+  licence files have a single source of truth.
 - **Relicensed to Apache-2.0.** The repository was GPL-3.0-or-later; it is now the Apache License 2.0,
   Copyright 2026 James VanTassel (`LICENSE`, `NOTICE.md`, `README.md`, `package.json`). Copies
   distributed earlier keep their GPL-3.0-or-later rights — a licence change cannot withdraw them. New
   contributions need a `Signed-off-by` sign-off; see the new `CONTRIBUTING.md`.
-- **The image now ships its licences.** `LICENSE` and `NOTICE.md` are copied into the image, along with
-  KindleUnpack's GPL text — previously absent, which was a real GPL gap — and 7-Zip's. The image's
-  `org.opencontainers.image.licenses` label now names every licence it contains, because the image
-  bundles GPL-3.0-only KindleUnpack and LGPL 7-Zip and is therefore *not* Apache-2.0 on its own. The
-  Docker build context is now the repository root, so the licence files have a single source of truth.
 - **A dependency licence gate runs in CI.** `npm run licences` fails on any GPL, AGPL, LGPL or
   undeclared dependency.
 - **The portal's mark is our own.** The logo and favicon were Kavita assets (GPL-3.0); they are
@@ -21,6 +37,18 @@ Changed:
   `docs/research/R4-kavita-native.md`, and the hardcoded fallback palette in `src/themes.ts` that had
   been read out of Kavita's source. Theme variables a theme does not define now fall back to the
   portal's own stylesheet defaults. The rules are documented in `docs/clean-room.md`.
+
+Fixed:
+- **Archive handling is hardened on the in-process zip path.** The shared checks — no absolute paths,
+  no `..` components, no links, an entry cap, a total-size cap and a post-extraction tree check — are
+  now enforced and tested on the zip reader too, not only the 7-Zip path, with adversarial fixtures
+  (absolute path, `..`, symlink, entry flood, zip bomb, encrypted archive).
+
+Migrating:
+- **A deployment that needs `.rar`/`.cb7`/`.7z` or MOBI/AZW/AZW3 must switch before upgrading.** Move
+  it to the formats image with `COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:0.9.0-formats`, or,
+  building from source, `COMPANION_BUILD_TARGET=runtime-formats`; otherwise those formats are refused
+  after the upgrade (see `docs/operations.md`).
 
 ## 0.8.1 — 2026-10-18
 
