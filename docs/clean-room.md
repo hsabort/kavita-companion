@@ -48,11 +48,15 @@ Remediated on 2026-10-18 (clean-room audit, A1–A4):
 reads values out of Kavita's source: it maps Kavita's *CSS custom properties* to our tokens at
 runtime, which is exactly the interoperation the rules above allow. But five **colour values** survive
 as our own stylesheet's defaults in `public/style.css` (`#212529`, `#4ac694`, `#bd362f`, `#6c757d`,
-`#f89406`), and two of them colour the original mark (`logo.svg`, `favicon.svg`). This is
-**relocation, not elimination**, and it is deliberate: a colour value is not protectable expression,
-and our rules permit observing a running Kavita. The one thing worth a maintainer's eye is that
-`#4ac694` is Kavita's primary green, so the portal's accent is the same green — a similarity
-question, not a copying one.
+`#f89406`). This is **relocation, not elimination**, and it is deliberate: a colour value is not
+protectable expression, and our rules permit observing a running Kavita.
+
+Two of those values originally coloured the original mark (`logo.svg`, `favicon.svg`), including
+`#4ac694`, Kavita's primary green. On 2026-10-18 the mark was **recoloured to this portal's own green,
+`#2fa88c`**, so the mark no longer wears Kavita's colour; the portal's *stylesheet* keeps `#4ac694` as
+its accent, because that similarity is a design choice for a companion that sits alongside Kavita and
+is not a copying question. The mark's green and the accent green are therefore slightly different
+values by design.
 
 **Still outstanding** (tracked in the plan): the published image bundles GPL-3.0-only KindleUnpack
 and LGPL 7-Zip; those are isolated in Phase 3. Until then the *image* is a combined work even

@@ -26,8 +26,9 @@ names every licence it actually contains.
 ### Historical material, outside the grant
 
 Three third-party GPL files were added in `24f186c` (kavita-companion 0.2.0) and removed from the tree
-in `d5a5dff` (clean-room remediation). They are gone from every current tree, but they remain in the
-git history, so a clone still receives them:
+in `d5a5dff` (clean-room remediation). They were then **purged from the repository's history** on
+2026-10-18 with `git filter-repo` 2.47.0 (stripping the three blobs by object id across every branch
+and tag), so no clone receives them any more:
 
 | Blob | Path at the time | What it is | Licence |
 |---|---|---|---|
@@ -36,13 +37,14 @@ git history, so a clone still receives them:
 | `5e6c75d` | `kavita-companion/public/assets/img/favicon-32.png` | Kavita's favicon | GPL-3.0 |
 
 **These historical blobs are not part of the Apache-2.0 grant.** They are third-party GPL-3.0 material
-that was included by mistake and has since been removed; where they still exist in history they remain
-under Kavita's GPL-3.0, with copyright held by their authors, and the Apache-2.0 licence above does not
-apply to them. Nothing in the current tree depends on them or is derived from them.
-
-Purging them from history is possible (`git filter-repo`, or `git filter-branch`) but rewrites every
-commit id and so invalidates any commit reference others have recorded. That is a deliberate decision,
-not an automatic one.
+that was included by mistake and has since been removed. The purge rewrote every commit id, so commit
+references recorded before 2026-10-18 no longer resolve; the statement below is retained because the
+material is still reachable through two GitHub-managed pull-request refs (`refs/pull/1/head` and
+`refs/pull/2/head`, from dependabot branches that predate the clean-room remediation). Those refs
+cannot be rewritten from a clone — removing them needs GitHub Support to expire the refs and garbage
+collect — and until that happens the blobs remain under Kavita's GPL-3.0, with copyright held by their
+authors, and the Apache-2.0 licence above does not apply to them. Nothing in the current tree depends
+on them or is derived from them.
 
 ## Third-party material included in this repository
 

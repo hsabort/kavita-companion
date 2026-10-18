@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Kavita Uploads">
   <!-- Original mark for this portal (three books on a shelf, ascending). Not derived from any
-       third-party asset. Placeholder: replace with a commissioned mark before a public release. -->
+       third-party asset. Placeholder: replace with a commissioned mark before a public release.
+       The bars use this portal's own green (#2fa88c) rather than Kavita's (#4ac694); see the A3
+       note in docs/clean-room.md. -->
   <rect width="32" height="32" rx="7" fill="#212529"/>
-  <g fill="#4ac694">
+  <g fill="#2fa88c">
     <rect x="7" y="17" width="4.5" height="8" rx="1.2"/>
     <rect x="13.75" y="12.5" width="4.5" height="12.5" rx="1.2"/>
     <rect x="20.5" y="7.5" width="4.5" height="17.5" rx="1.2"/>
