@@ -22,8 +22,8 @@ Over the real stack it asserts:
 `--image-only` runs the same refusal logic against the built `runtime` image in a container, with no
 stack at all. That is what CI can run (see .github/workflows/ci.yml): GitHub-hosted runners have no
 Kavita, and the HTTP suite above needs the test host's stack. Both modes assert the same three things —
-the capability probe, the typed capability error, and the archive/Kindle refusals — so the default
-image's behaviour is gated in CI as well as on the host.
+the capability probe, the typed capability error, and the archive/Kindle (`.mobi` and `.azw3`)
+refusals — so the default image's behaviour is gated in CI as well as on the host.
 """
 import json
 import os
@@ -117,6 +117,10 @@ const conv = await attempt(() => mobi.convertKindleToEpub(W + "/sample.mobi", "m
 check("Kindle conversion refuses a .mobi with CapabilityError('kindle')",
       conv.error instanceof caps.CapabilityError && conv.error.capability === "kindle",
       conv.error ? `${conv.error.name}: ${conv.message}` : "it resolved");
+const kf8 = await attempt(() => mobi.convertKindleToEpub(W + "/sample.azw3", "azw3", W + "/out.azw3.epub"));
+check("Kindle conversion refuses a .azw3 with CapabilityError('kindle')",
+      kf8.error instanceof caps.CapabilityError && kf8.error.capability === "kindle",
+      kf8.error ? `${kf8.error.name}: ${kf8.message}` : "it resolved");
 
 console.log(JSON.stringify({ results, messages }));
 """
@@ -127,7 +131,8 @@ def image_only() -> int:
     from capability_message import capability_message
 
     image = os.environ.get("COMPANION_IMAGE", "kavita-companion:test")
-    needed = ("sample.rar", "sample.7z", "sample.cbz", "sample.epub", "sample-mislabelled.cbr", "sample.mobi")
+    needed = ("sample.rar", "sample.7z", "sample.cbz", "sample.epub", "sample-mislabelled.cbr",
+              "sample.mobi", "sample.azw3")
     work = Path(tempfile.mkdtemp(prefix="default-image-"))
     proc = None
     try:

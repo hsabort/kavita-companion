@@ -40,6 +40,10 @@ PLAYWRIGHT_VERSION="1.62.0"
 fast_tests=(test_settings_guard test_auth test_capabilities test_archive_zip test_activity test_library test_preview test_notifications test_sidebar_label test_sidebar_connect test_providers_framework test_providers_metron test_providers_gcd test_providers_mangadex test_providers_anilist test_providers_hardcover test_providers_openlibrary test_providers_match test_providers_safeguard test_book_identification test_naming)
 slow_tests=(test_uploads test_review test_metadata test_themes test_fix test_fix_book test_epub_repair test_requests test_metadata_match)
 browser_tests=(upload_page review_page fix_page library_page kavita_integration activity_page notifications_page requests_page suggestion_card)
+# Test files that need no running stack at all (no Docker, no HTTP). Selecting only these must not
+# build or recreate the companion: `--only test_settings_guard` used to trigger a full build, which
+# the guard at the bottom of this file now prevents.
+stack_free_tests=(test_settings_guard)
 run_fast=0 run_slow=0 run_browser=0 run_roles=0 only="" repeat=1
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -155,6 +159,9 @@ ensure_companion_image() {
     return
   fi
   echo "building companion image $image for the $COMPANION_TEST_TARGET target"
+  # A local build retags $image to this target (it no longer refers to the registry's image). Harmless
+  # for kavita-companion:test/local; a footgun if COMPANION_IMAGE names a published tag and the target
+  # differs — that published tag would then point at this build on this host.
   docker compose build kavita-companion || { echo "kavita-companion build failed" >&2; exit 1; }
   docker compose up -d --no-deps kavita-companion >/dev/null || { echo "kavita-companion recreate failed" >&2; exit 1; }
   wait_health
@@ -181,8 +188,13 @@ EOF
 
 # Select the image the run needs, building and recreating the companion first when the tag is not
 # already that target (a no-op when it is). Done once, before the loop, so --repeat and the per-run
-# restart-for-rate-limits are unaffected.
-ensure_companion_image
+# restart-for-rate-limits are unaffected. A run that touches no Docker at all — selecting only a
+# stack-free test, e.g. `--only test_settings_guard` — skips this entirely, so it never builds.
+needs_stack=1
+if [ -n "$only" ]; then
+  case " ${stack_free_tests[*]} " in *" $only "*) needs_stack=0 ;; esac
+fi
+if [ "$needs_stack" = 1 ]; then ensure_companion_image; fi
 
 if [ -n "$only" ]; then
   if [ -f "tests/browser/$only.py" ]; then

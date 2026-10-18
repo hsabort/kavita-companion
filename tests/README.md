@@ -42,10 +42,35 @@ tests/run.sh --roles         # plus test_roles_and_limits.py (see below)
 tests/run.sh --all           # everything
 tests/run.sh --repeat 3      # run the fast tier 3 times, reporting anything that failed once
 tests/run.sh --only test_review
+COMPANION_TEST_TARGET=runtime tests/run.sh --only test_default_image   # the permissive default image
 ```
 
 A full run restarts `kavita-companion` first, which clears its in-memory failed-sign-in counters so
 repeated runs don't lock the test accounts out.
+
+### Which image, and the default image's refusals
+
+The shared stack runs the **formats** image (the default), because the slow tier needs the GPL/LGPL
+extras: `test_uploads.py` converts a MOBI and `test_metadata.py` shells out to `7zzs`. The switch
+`COMPANION_TEST_TARGET=runtime` selects the permissive `runtime` image instead — it sets compose's
+build target and, when the running tag is not already that target, builds and recreates
+`kavita-companion` once before the tests start (the per-run restart-for-rate-limits and `--repeat` are
+untouched). `test_default_image.py` runs **only** on the permissive image and fails loudly on the
+formats stack.
+
+Two parts of that suite are deliberately not automated here, disclosed rather than papered over
+(design §7.7):
+
+- **CI gates the in-image refusals, not the HTTP wiring.** The `default-image` job in
+  `.github/workflows/ci.yml` builds the `runtime` target and runs `test_default_image.py --image-only`,
+  which asserts the capability probe, the typed `CapabilityError` and the archive/Kindle refusals
+  inside the image. GitHub-hosted runners have no Kavita/tus stack, so the completion-step refusal, its
+  `upload_invalid` audit, the pending-area check and the preview 415 are exercised **only on the host**,
+  via the `COMPANION_TEST_TARGET=runtime` command above. CI does not prove that wiring.
+- **The UI's disabled Fix/Approve is not covered by automation.** It is client-side (`web/main.js`
+  disables the button from `item.inspection.unavailable`), and the browser tier runs on the formats
+  image, where `Inspection.unavailable` is never set, so a browser assertion added there could never
+  fire. Covering it needs a browser run against a `runtime` stack, which no tier provides.
 
 Requirements on the host: `python3` (standard library only) and Docker. `test_metadata.py` builds
 `.cb7` archives with the 7-Zip inside the `kavita-companion:local` image.
@@ -74,6 +99,7 @@ missing-field detection is checked against real Kavita state without the slow up
 |---|---|
 | `test_auth.py` | Health, security headers, sign-in/out, session cookie flags, CSRF, permissions, rate limit |
 | `test_settings_guard.py` | The suite refuses a live-looking stack: `settings.py` aborts when `.env` lacks `TEST_STACK=1` or points `MEDIA_ROOT` at the live `/srv/media`, and accepts a marked test stack. Runs `settings.py` in a subprocess against crafted `.env` files; needs no running stack |
+| `test_default_image.py` | The permissive `runtime` image's refusals (design §7.5–§7.7): `.rar`/`.7z`/`.mobi`/`.azw3` uploads end `invalid` with the exact capability message, are audited `upload_invalid` and never reach the pending area; a `.cbr` that is really a zip is accepted; `.epub`/`.cbz`/`.pdf` still work; and a refused inspection records `Inspection.unavailable`, which the preview route refuses with 415. Runs only on the `runtime` image (fails on formats); `--image-only` runs its in-image probe — what CI runs. See "Which image" above for the two gaps CI does not gate |
 | `test_naming.py` | Name cleanup: release tags, bare years and orphan brackets are stripped from a comic/manga series and a book's Series/Title, a repeated series prefix and a trailing series blurb are dropped from a book title, and a colon title with no series is left alone |
 | `test_epub_repair.py` | An approved EPUB is sanitised for Kavita's stricter reader: an OPF `<guide>` whose `<reference>` items have no `href` and a bare `&` in the NCX are normalised before repacking, so Kavita lists the book |
 | `test_uploads.py` | Resumable uploads incl. a dropped connection, refusals, type and duplicate checks, limits, ownership, withdraw |

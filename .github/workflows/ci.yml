@@ -91,9 +91,15 @@ jobs:
     # the formats image). The full suite, tests/test_default_image.py, runs over the HTTP stack on the
     # test host, because it needs Kavita — which GitHub-hosted runners do not have. What they can run
     # is the same file's `--image-only` mode: it drives the refusal logic inside the built `runtime`
-    # image (the capability probe, the typed capability error, the archive dispatcher and Kindle
-    # conversion), so a change that re-admits 7-Zip or KindleUnpack to the default image, or that
-    # breaks the capability message, fails here.
+    # image (the capability probe, the typed capability error, the archive dispatcher and the
+    # MOBI/AZW3 Kindle conversion), so a change that re-admits 7-Zip or KindleUnpack to the default
+    # image, or that breaks the capability message, fails here.
+    #
+    # What this job does NOT gate (accepted limitation, design §7.7): the HTTP wiring. The
+    # completion-step refusal, its `upload_invalid` audit, the pending-area check and the preview 415
+    # need the test host's Kavita/tus stack and run there, not here, via
+    # `COMPANION_TEST_TARGET=runtime ./tests/run.sh --only test_default_image`. Do not read this job
+    # as proving that row/audit/pending-area wiring.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
