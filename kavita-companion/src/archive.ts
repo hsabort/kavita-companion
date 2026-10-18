@@ -1,16 +1,23 @@
-// Safe wrappers around the 7-Zip CLI (7zzs) for reading zip/rar/7z and writing zip.
-// Always called with an argument array (no shell). Archives are vetted from their listing
-// before anything is extracted: no absolute paths, no "..", no links, sane sizes.
-import { execFile } from "node:child_process";
+// Archive access for reading comic/book containers and writing a clean zip.
+//
+// The backend is chosen by magic bytes, not extension: a zip — which includes an EPUB, a .cbz, and
+// a mislabelled .cbr/.cb7 whose bytes are really a zip — is read in-process by ./zip.ts and needs no
+// external tool. rar/7z dispatch to the 7-Zip CLI in ./sevenzip.ts and need the `archive-extras`
+// capability (design §7.1, §7.2).
+//
+// The safety checks (absolute paths, "..", links, the entry cap, the expansion cap) and the
+// post-extraction tree check live here, in one place, and are used by both backends so they cannot
+// drift on security (design §7.2, §11). The backends import them from this module, which in turn
+// imports the backends to dispatch; every shared binding is used from inside a function, never at
+// import time, so the load-time cycle is harmless.
 import { createWriteStream } from "node:fs";
 import { lstat, mkdir, readdir, rm } from "node:fs/promises";
 import { join, relative, resolve, sep } from "node:path";
 import { pipeline } from "node:stream/promises";
-import { promisify } from "node:util";
 import yazl from "yazl";
+import { extractSevenZip, listSevenZipEntries, readSevenZipEntry } from "./sevenzip.js";
+import { extractZip, isZip, listZipEntries, readZipEntry } from "./zip.js";
 
-const run = promisify(execFile);
-const SEVEN_ZIP = process.env.SEVEN_ZIP ?? "7zzs";
 const MAX_ENTRIES = 20_000;
 
 export class ArchiveError extends Error {}
@@ -21,65 +28,45 @@ export interface ArchiveEntry {
   isDir: boolean;
 }
 
-async function sevenZip(args: string[], options: { cwd?: string; maxBuffer?: number; encoding?: "buffer" } = {}) {
-  try {
-    return await run(SEVEN_ZIP, args, { maxBuffer: options.maxBuffer ?? 64 * 1024 * 1024, cwd: options.cwd, encoding: options.encoding as never });
-  } catch (err) {
-    const e = err as { stderr?: Buffer | string; message: string };
-    throw new ArchiveError(`7-Zip failed: ${String(e.stderr ?? e.message).trim().split("\n").slice(-2).join(" ")}`);
-  }
-}
-
 /**
- * List entries (-slt: one "Key = value" block per entry). Throws if the archive contains links,
- * absolute paths or ".." components, or more than MAX_ENTRIES entries.
+ * Validate one listed entry and shape it for the rest of the app. Shared by both backends so the
+ * security checks cannot diverge: reject absolute paths (POSIX or drive-letter) and ".." components,
+ * reject links, and stop at MAX_ENTRIES. `listed` is how many entries have already been accepted, so
+ * the cap is enforced while listing rather than after the whole archive is in memory.
  */
-export async function listEntries(archive: string): Promise<ArchiveEntry[]> {
-  const { stdout } = await sevenZip(["l", "-slt", "-ba", "-sccUTF-8", "--", archive]);
-  const entries: ArchiveEntry[] = [];
-  for (const block of String(stdout).split(/\r?\n\r?\n/)) {
-    const fields = new Map<string, string>();
-    for (const line of block.split(/\r?\n/)) {
-      const at = line.indexOf(" = ");
-      if (at > 0) fields.set(line.slice(0, at), line.slice(at + 3));
-    }
-    const path = fields.get("Path");
-    if (!path) continue;
-    const attributes = fields.get("Attributes") ?? "";
-    const normalized = path.replace(/\\/g, "/");
-    if (normalized.startsWith("/") || /^[A-Za-z]:/.test(normalized) || normalized.split("/").includes("..")) {
-      throw new ArchiveError(`Unsafe path in archive: ${path}`);
-    }
-    // Unix mode string in Attributes (e.g. "A lrwxrwxrwx") or an explicit link field marks a link.
-    if (/\sl[rwx-]{9}/.test(attributes) || fields.get("Symbolic Link") || fields.get("Hard Link")) {
-      throw new ArchiveError(`Archive contains a link: ${path}`);
-    }
-    entries.push({ path: normalized, size: Number(fields.get("Size") ?? 0), isDir: fields.get("Folder") === "+" || attributes.startsWith("D") });
-    if (entries.length > MAX_ENTRIES) throw new ArchiveError(`Archive has more than ${MAX_ENTRIES} entries.`);
+export function checkedEntry(
+  raw: { path: string; size: number; isDir: boolean; isLink?: boolean },
+  listed: number,
+): ArchiveEntry {
+  const normalized = raw.path.replace(/\\/g, "/");
+  if (normalized.startsWith("/") || /^[A-Za-z]:/.test(normalized) || normalized.split("/").includes("..")) {
+    throw new ArchiveError(`Unsafe path in archive: ${raw.path}`);
   }
-  return entries;
+  if (raw.isLink) throw new ArchiveError(`Archive contains a link: ${raw.path}`);
+  if (listed + 1 > MAX_ENTRIES) throw new ArchiveError(`Archive has more than ${MAX_ENTRIES} entries.`);
+  return { path: normalized, size: raw.size, isDir: raw.isDir };
 }
 
-/** Read one entry into memory (small files only: ComicInfo.xml, OPF, a cover image). */
-export async function readEntry(archive: string, entryPath: string, maxBytes = 32 * 1024 * 1024): Promise<Buffer> {
-  // -spd: treat the name literally, not as a wildcard pattern.
-  const { stdout } = await sevenZip(["e", "-so", "-spd", "--", archive, entryPath], { encoding: "buffer", maxBuffer: maxBytes });
-  return stdout as unknown as Buffer;
-}
-
-/**
- * Extract everything into an empty directory, then verify every extracted item is a plain file or
- * folder inside it. `maxTotalBytes` guards against zip bombs (checked from the listing first).
- */
-export async function extractAll(archive: string, intoDir: string, maxTotalBytes: number): Promise<ArchiveEntry[]> {
-  const entries = await listEntries(archive);
+/** Refuse an archive whose declared contents expand past the caller's budget (zip bombs). */
+export function checkExpansion(entries: ArchiveEntry[], maxTotalBytes: number): void {
   const total = entries.reduce((sum, e) => sum + e.size, 0);
   if (total > maxTotalBytes) {
     throw new ArchiveError(`Archive expands to ${(total / 1024 ** 3).toFixed(1)} GB, more than allowed for its size.`);
   }
+}
+
+/**
+ * Extract everything into an empty directory, then verify every extracted item is a plain file or
+ * folder inside it. `maxTotalBytes` guards against zip bombs (checked from the listing first). Both
+ * backends call this, so the listing-before-extraction order and the tree check are shared too.
+ */
+export async function extractVerified(
+  entries: ArchiveEntry[], intoDir: string, maxTotalBytes: number, extract: (intoDir: string) => Promise<void>,
+): Promise<ArchiveEntry[]> {
+  checkExpansion(entries, maxTotalBytes);
   await rm(intoDir, { recursive: true, force: true });
   await mkdir(intoDir, { recursive: true });
-  await sevenZip(["x", "-y", "-sccUTF-8", `-o${intoDir}`, "--", archive]);
+  await extract(intoDir);
   await verifyTree(intoDir);
   return entries;
 }
@@ -97,6 +84,37 @@ async function verifyTree(root: string) {
     }
   };
   await walk(root);
+}
+
+/**
+ * Refuse an operation that needs 7-Zip when this image does not carry it (design §7.1). The
+ * capability module reads the runtime config, so it is imported lazily: the conformance runner
+ * imports this module for `naturalCompare` with no environment set, and must not trip config.
+ */
+async function requireArchiveExtras(): Promise<void> {
+  const { requireCapability } = await import("./capabilities.js");
+  requireCapability("archive-extras");
+}
+
+/** List entries without extracting: a zip in-process, anything else through 7-Zip. */
+export async function listEntries(archive: string): Promise<ArchiveEntry[]> {
+  if (await isZip(archive)) return listZipEntries(archive);
+  await requireArchiveExtras();
+  return listSevenZipEntries(archive);
+}
+
+/** Read one entry into memory (small files only: ComicInfo.xml, OPF, a cover image). */
+export async function readEntry(archive: string, entryPath: string, maxBytes = 32 * 1024 * 1024): Promise<Buffer> {
+  if (await isZip(archive)) return readZipEntry(archive, entryPath, maxBytes);
+  await requireArchiveExtras();
+  return readSevenZipEntry(archive, entryPath, maxBytes);
+}
+
+/** Extract everything into an empty directory and verify the tree (see extractVerified). */
+export async function extractAll(archive: string, intoDir: string, maxTotalBytes: number): Promise<ArchiveEntry[]> {
+  if (await isZip(archive)) return extractZip(archive, intoDir, maxTotalBytes);
+  await requireArchiveExtras();
+  return extractSevenZip(archive, intoDir, maxTotalBytes);
 }
 
 async function filesUnder(root: string, dir = root): Promise<string[]> {
