@@ -232,18 +232,6 @@ export async function providerFetchJson<T = unknown>(opts: ProviderFetchOptions)
 }
 
 // ---------- Text hygiene ----------
-
-const ENTITIES: Record<string, string> = {
-  "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&apos;": "'", "&nbsp;": " ",
-};
-
-/** Provider text is untrusted: strip tags, decode a few entities and collapse whitespace. */
-export function plainText(value: unknown): string {
-  if (typeof value !== "string") return "";
-  return value
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&#(\d+);/g, (_m, n: string) => String.fromCodePoint(Number(n)))
-    .replace(/&[a-zA-Z#0-9]+;/g, (m) => ENTITIES[m] ?? " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+// Defined in ../text.ts, which imports nothing, so the rule modules that need it can be loaded
+// without pulling in this module's config import. Re-exported here for the providers' convenience.
+export { plainText } from "../text.js";

@@ -8,7 +8,7 @@
 //   4. Domain validation before a value reaches the form: reuse metadata.ts's field set and age
 //      ratings, strip HTML (http.ts), drop anything that cannot be validated cleanly.
 import { AGE_RATINGS, COMICINFO_FIELDS, type Metadata, type MetadataField } from "../metadata.js";
-import { plainText } from "./http.js";
+import { plainText } from "../text.js";
 import type { Candidate, FetchedRecord } from "./types.js";
 
 const FIELD_LIMITS: Partial<Record<MetadataField, number>> = { Summary: 20_000, Web: 2_000 };

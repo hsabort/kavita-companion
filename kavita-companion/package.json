@@ -13,7 +13,7 @@
     "build": "tsc -p . && node build-web.mjs",
     "start": "node dist/server.js",
     "licences": "node scripts/check-licences.mjs",
-    "test": "npm run build && node --test ../tests/conformance/"
+    "test": "npm run build && node --test ../tests/conformance/*.test.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "11.1.3",

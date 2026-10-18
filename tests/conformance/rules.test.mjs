@@ -12,7 +12,7 @@
 // case fails and tells you to drop the field.
 //
 //   npm --prefix kavita-companion run build
-//   node --test tests/conformance/
+//   node --test tests/conformance/*.test.mjs
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
