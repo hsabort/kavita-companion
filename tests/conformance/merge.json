@@ -450,6 +450,15 @@
           ],
           "out": {
             "fields": {
+              "Summary": "<b>Hello</b> world"
+            },
+            "provenance": {
+              "Summary": "A"
+            },
+            "conflicts": []
+          },
+          "current": {
+            "fields": {
               "Summary": "Hello world"
             },
             "provenance": {
@@ -457,7 +466,8 @@
             },
             "conflicts": []
           },
-          "provenance": "new edge case (provider text normalised: HTML stripped)"
+          "provenance": "spec §4.5 + §6.3 (the merge applies only the validator; it does not strip markup)",
+          "note": "normalizeField() (providers/merge.ts) runs provider text through plainText(), which strips HTML tags. §4.5 removes only NUL characters and trims, and §6.3 says provider values pass through that validator and nothing else. Same divergence as M7-031."
         }
       ]
     }

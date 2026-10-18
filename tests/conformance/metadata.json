@@ -238,7 +238,7 @@
     },
     "M4": {
       "signature": "writeComicInfo(existingXml, updates, drop) -> xml",
-      "note": "`out` is the exact XML the writer returns: the XML declaration, then the document, 2-space indent (spec §4.3.2's emit format). The `updates`/`drop` semantics are checked by reading `out` back with the M3 reader.",
+      "note": "`out` is the exact XML the writer returns: the XML declaration, then the document, 2-space indent (spec §4.3, \"Emit format\"). The `updates`/`drop` semantics are checked by reading `out` back with the M3 reader.",
       "cases": [
         {
           "id": "M4-001",
@@ -449,7 +449,7 @@
     },
     "M6": {
       "signature": "writeEpubMetadata(opfXml, updates) -> xml",
-      "note": "`out` is the exact XML the writer returns: the XML declaration, then the document, 2-space indent. Read-modify-write preservation is checked by reading `out` back with the M5 reader.",
+      "note": "`out` is the exact XML the writer returns: the XML declaration, then the document, 2-space indent (spec §4.3, \"Emit format\"). Read-modify-write preservation is checked by reading `out` back with the M5 reader.",
       "cases": [
         {
           "id": "M6-001",

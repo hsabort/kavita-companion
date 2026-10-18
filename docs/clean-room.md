@@ -41,8 +41,18 @@ Remediated on 2026-10-18 (clean-room audit, A1–A4):
 | `public/assets/img/kavita-logo.png`, `favicon-32.png` | Kavita assets (GPL-3.0). Replaced with an original mark (`logo.svg`, `favicon.svg`). |
 | `docs/reference/kavita-openapi-v0.9.1.4.json` | A Kavita schema (GPL-3.0). Use Kavita's own published docs instead. |
 | Kavita-source citations in `public/style.css`, `docs/kavita-api.md`, `docs/research/R4-kavita-native.md` | Named Kavita source files/symbols. Rewritten as observed behaviour. |
-| The hardcoded `DARK` map in `src/themes.ts` | Values read out of Kavita source. Unresolvable `var()` references now fall back to our own stylesheet defaults. |
+| The hardcoded `DARK` map in `src/themes.ts` | Values read out of Kavita source. Unresolvable `var()` references now fall back to our own stylesheet defaults. **The map is gone, but five of its values remain** — see the note below. |
 | Kavita source files and a Kavita DLL left in `/tmp` on the dev machine | Process hygiene: the rule covers the *process*, not only the artefacts. |
+
+**On the five remaining colour values.** `src/themes.ts` no longer holds a token map and no longer
+reads values out of Kavita's source: it maps Kavita's *CSS custom properties* to our tokens at
+runtime, which is exactly the interoperation the rules above allow. But five **colour values** survive
+as our own stylesheet's defaults in `public/style.css` (`#212529`, `#4ac694`, `#bd362f`, `#6c757d`,
+`#f89406`), and two of them colour the original mark (`logo.svg`, `favicon.svg`). This is
+**relocation, not elimination**, and it is deliberate: a colour value is not protectable expression,
+and our rules permit observing a running Kavita. The one thing worth a maintainer's eye is that
+`#4ac694` is Kavita's primary green, so the portal's accent is the same green — a similarity
+question, not a copying one.
 
 **Still outstanding** (tracked in the plan): the published image bundles GPL-3.0-only KindleUnpack
 and LGPL 7-Zip; those are isolated in Phase 3. Until then the *image* is a combined work even

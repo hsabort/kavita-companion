@@ -1,10 +1,14 @@
 # Companion Rules — Language-Neutral Behavioural Specification
 
 **Document ID:** `companion-rules`
-**Version:** 1.0.0 (v1)
+**Version:** 1.1.0 (v1)
 **Status:** Stable draft for independent reimplementation.
 **Date:** 2026-10-18
 **Audience:** implementers of *Lectern* (a closed-source Python project) and maintainers of the reference tool that first encoded these rules.
+
+**Version history.** 1.1.0 adds the writers' **emit format** (§4.3) and states explicitly that the
+validator removes only NUL and that the provider merge applies the validator and nothing else (§4.5,
+§6.3) — all three documenting behaviour the corpus already pinned. 1.0.0 was the first stable release.
 
 ---
 
@@ -697,6 +701,18 @@ Kids to Adults, Teen, MA15+, Mature 17+, M, R18+, Adults Only 18+, X18+
 
 **Preservation rule (applies to both formats).** Reading exposes the field set. Writing is a **read-modify-write** that changes only the named fields and **preserves everything else**: unknown elements, attributes, namespaces, child ordering, page lists and any other content not being edited.
 
+**Emit format (applies to both formats).** What a writer returns is fully specified, because both writers are byte-for-byte contracts. The returned string is:
+
+1. The XML declaration `<?xml version="1.0" encoding="utf-8"?>`, followed by one newline.
+2. The document **pretty-printed**: every element on its own line, indented **2 spaces per depth level**, no blank lines, and no whitespace-only text between elements.
+3. An element with no children and no text is **self-closed**, with no space before the slash (`<Name/>`).
+4. Element text is **trimmed** — leading and trailing whitespace removed, internal whitespace preserved. This applies to **preserved** elements too: the document is re-serialised, not spliced.
+5. **Attributes, namespace declarations, attribute order and child order are preserved** exactly as parsed, **including namespace declarations that nothing uses**. An existing element never gains or loses an attribute; the only attributes a write ever creates are those §4.3.2 puts on a **newly created** root element.
+6. Text and attribute values are XML-escaped (`&`, `<`, `>`, and the quoting character inside an attribute).
+7. The string ends with a single newline after the root element's closing tag.
+
+Consequences worth stating explicitly, because they are observable: a document written on one line comes back pretty-printed; a preserved element's text comes back trimmed; and an **existing** root never gains the default namespace declarations — only a root the write itself creates does.
+
 #### 4.3.1 Read (`M3`)
 
 ```
@@ -742,7 +758,7 @@ function writeComicInfo(existingXml_or_absent, updates, drop = []):
                 if child.tag is a known field and its order < order(field): at = i + 1
             insert element(field, value) at position at
 
-    emit with XML declaration:  <?xml version="1.0" encoding="utf-8"?>\n<doc.trimmed>\n
+    emit with the XML declaration, per the emit format above
 ```
 
 - New fields are inserted **in schema order**, after the last known field that precedes them. Unknown elements are ignored when choosing the position.
@@ -775,7 +791,8 @@ Only non-empty results are kept.
 
 #### 4.4.2 Write (`M6`)
 
-Read-modify-write; only non-blank updates apply; everything else is preserved.
+Read-modify-write; only non-blank updates apply; everything else is preserved. The output uses the
+same **emit format** as §4.3.
 
 | Field | Target | Rule |
 |---|---|---|
@@ -817,6 +834,8 @@ function validateField(field, raw):
 
     return accept(text)
 ```
+
+**What the validator does *not* do.** It removes NUL characters and trims the ends, and that is all. It does **not** strip markup, decode entities, collapse internal whitespace, or otherwise rewrite the text: `"<b>bold</b>"` is accepted unchanged and `"a  b"` keeps both spaces. Markup handling is a **caller** decision and is not part of this rule. In particular the provider merge ([§6](#6-provider-record-merge)) applies this validator and nothing else.
 
 **Caller policy (deliberately not part of the shared rule):**
 
@@ -1012,7 +1031,7 @@ function mergeRecords(records, current = {}, order = absent, force = [], locked 
 - **Force.** A forced field overwrites a non-empty current value instead of being reported as a conflict.
 - **Conflict.** When a provider would replace a non-empty, non-forced current value, the value is **not** applied; it is reported in `conflicts` with the current value, the proposed value and the source, so a reviewer can accept it explicitly. The field is marked seen, so no lower-precedence record is consulted either.
 - **Provenance.** For every applied field, the source provider id is recorded.
-- **Validation.** Provider values pass through the single validator ([§4.5](#45-unified-field-validation-m7)); the `current` values are taken as already valid.
+- **Validation.** Provider values pass through the single validator ([§4.5](#45-unified-field-validation-m7)) and **nothing else** — the merge does not strip markup, collapse whitespace or otherwise pre-process the text; the `current` values are taken as already valid.
 
 > **Trap (stable sort).** When `order` is supplied, the sort must be **stable**: records whose provider is not in `order` keep their original relative order and sort after all listed providers. Use a stable sort keyed on the order index (unlisted → a value larger than any index).
 

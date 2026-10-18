@@ -35,7 +35,8 @@ COPY --from=sevenzip /7z/7zzs /usr/local/bin/7zzs
 COPY --from=sevenzip /7z/License.txt /usr/local/share/doc/7zip/License.txt
 # KindleUnpack (the `mobi` package, GPL-3.0) converts MOBI/AZW book uploads to EPUB; see NOTICE.md.
 # It goes into its own venv (Alpine's system pip is externally-managed, PEP 668) and onto PATH so the
-# server can spawn `mobiunpack`. mobi imports only the stdlib plus loguru, so after the install the
+# server can spawn `mobiunpack`. mobi imports only the stdlib plus loguru and standard-imghdr, so after
+# the install the
 # venv drops pip, setuptools and the packages pip seeds: none are used at runtime, and Trivy flags the
 # advisories in pip's and setuptools' own vendored copies (msgpack, urllib3, jaraco.context, wheel).
 # The system pip goes too, so the runtime image carries no pip at all.

@@ -106,5 +106,4 @@ tests/run.sh --repeat 3  # run the fast tier 3 times and report anything that fa
 
 `scripts/kavita-api.py METHOD PATH [JSON] [--as uploader|readonly|admin]` calls Kavita's API from the
 host, authenticated with the portal's key (or as a test user). Kavita's Swagger UI isn't served in
-production builds; the API description for the pinned version is in
-`docs/reference/kavita-openapi-v0.9.1.4.json`.
+production builds; use Kavita's own published API documentation for the pinned version.
