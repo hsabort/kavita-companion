@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.8.1 — 2026-10-18
+
+Fixed:
+- **An approved book is always readable by Kavita.** Kavita's EPUB reader (VersOne) is stricter than
+  the portal's, and calibre/mobiunpack output trips it two ways: an OPF `<guide>` whose `<reference>`
+  items have no `href` ("Incorrect EPUB guide: item href is missing") and a bare `&` in the NCX
+  ("TOC file is not a valid XML file"). Either one left the book on disk but invisible to Kavita. The
+  approve step now drops the guide and escapes bare ampersands in the OPF and NCX before repacking,
+  so the stored file always parses (`test_epub_repair.py`).
+
 ## 0.8.0 — 2026-10-17
 
 Added:
