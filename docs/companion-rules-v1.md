@@ -28,7 +28,10 @@ This specification was produced under a clean-room discipline. It is derived fro
 
 ### Licence
 
-The project owner intends this document to be released under a **permissive, non-copyleft licence** so that it can be consumed by a closed-source project. The recommended choice is **CC0-1.0** (public-domain dedication). Until the owner confirms, treat this document as *all rights reserved*. The accompanying conformance corpus ([§10](#10-conformance)) is intended to carry the same licence.
+This document is part of the repository and is licensed under the **Apache License 2.0** — Copyright
+2026 James VanTassel (`LICENSE`, `NOTICE.md`). That is permissive and carries an explicit patent grant,
+so a closed-source project may implement it freely; the only obligation is to keep the attribution
+notices. The accompanying conformance corpus ([§10](#10-conformance)) carries the same licence.
 
 ### How to use this document
 
