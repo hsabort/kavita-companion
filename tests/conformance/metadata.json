@@ -536,6 +536,8 @@
     },
     "M7": {
       "signature": "validateField(field: string, raw: unknown) -> { accept: string } | { reject: string }",
+      "runnable": false,
+      "reason": "The spec's validateField() accept/reject contract is not exported. providers/merge.ts exposes normalizeField() (accepted text or null, reason lost) and review.ts's cleanMetadata() throws rather than rejecting, so the cases are carried with `current` values for Lectern but not asserted here.",
       "note": "`out` is the §4.5 accept/reject contract; `current` (where present) is providers/merge.ts normalizeField(). review.ts's cleanMetadata() throws instead of rejecting and is not unit-reachable.",
       "cases": [
         {

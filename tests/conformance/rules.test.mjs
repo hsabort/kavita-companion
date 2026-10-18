@@ -24,6 +24,7 @@ const DIST = join(here, "..", "..", "kavita-companion", "dist");
 
 /** rule ID -> [module under dist/, exported name]. A non-function export is called with no args. */
 const RULES = {
+  N1: ["naming.js", "isNoiseGroup"],
   N2: ["naming.js", "isNoiseGroup"],
   N3: ["naming.js", "dropOrphanBrackets"],
   N4: ["naming.js", "cleanName"],
@@ -39,6 +40,7 @@ const RULES = {
   P1: ["rules.js", "safeSegment"],
   P2: ["rules.js", "splitName"],
   P3: ["rules.js", "targetExtension"],
+  P4: ["archive.js", "naturalCompare"],
   M1: ["metadata.js", "COMICINFO_FIELDS"],
   M2: ["metadata.js", "AGE_RATINGS"],
   M3: ["metadata.js", "readComicInfo"],
@@ -48,9 +50,6 @@ const RULES = {
   G1: ["providers/merge.js", "mergeRecords"],
   T1: ["media.js", "mediaClass"],
 };
-
-/** Searched only when a rule ID is not in RULES: the spec's `signature` names the function. */
-const SEARCH = ["naming.js", "identify.js", "rules.js", "media.js", "metadata.js", "providers/merge.js"];
 
 const loaded = new Map();
 async function moduleOf(file) {
