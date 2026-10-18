@@ -1,0 +1,20 @@
+# The build context is the repository root (kavita-companion/Dockerfile), so this keeps it small and
+# free of runtime data, secrets and history. Only kavita-companion/, LICENSE and NOTICE.md are used.
+.git
+.github
+.superpowers
+caddy
+data
+data-test
+backups
+docs
+host
+scripts
+tests
+.env
+.env.*
+*.secret
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc

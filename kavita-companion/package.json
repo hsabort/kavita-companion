@@ -3,14 +3,16 @@
   "version": "0.8.1",
   "private": true,
   "description": "Upload portal for the Kavita server: Kavita login, resumable uploads, admin review queue.",
-  "license": "GPL-3.0-or-later",
+  "license": "Apache-2.0",
+  "author": "James VanTassel",
   "type": "module",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
     "build": "tsc -p . && node build-web.mjs",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "licences": "node scripts/check-licences.mjs"
   },
   "dependencies": {
     "@fastify/cookie": "11.1.3",

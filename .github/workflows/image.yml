@@ -55,7 +55,8 @@ jobs:
       - name: Build the image (loaded locally, not yet published)
         uses: docker/build-push-action@v6
         with:
-          context: ./kavita-companion
+          context: .
+          file: ./kavita-companion/Dockerfile
           platforms: linux/amd64
           # Build into the local Docker store so the scan below runs before anything reaches GHCR: a
           # vulnerable image is never published. The push build further down publishes it once the scan
@@ -119,7 +120,8 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v6
         with:
-          context: ./kavita-companion
+          context: .
+          file: ./kavita-companion/Dockerfile
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

@@ -141,7 +141,11 @@ Documentation: Metron API `https://metron.cloud/api/`, policy at `https://metron
   self-hosted and does not publish its users' files, so a private instance writing into its own files
   does not trigger a public distribution obligation — but **any feature that exports, shares or ships
   fetched data must attach the attribution and the CC BY-SA 4.0 notice, and be licensed CC BY-SA 4.0**.
-  The GPL-3.0 code and CC BY-SA 4.0 data are licence-compatible; the code does not become CC BY-SA.
+  The Apache-2.0 code and the CC BY-SA 4.0 data coexist: the code does not become CC BY-SA, and the
+  ShareAlike obligation attaches only to adaptations of the data, not to the portal as a whole. (This
+  note previously cited GPL-3.0 ↔ CC BY-SA 4.0 compatibility; that declaration was specific to
+  GPL-3.0, so re-check the pairing before shipping a feature that embeds provider data in a file we
+  distribute.)
 - **Cover images (must not).** Metron's **cover images are excluded from the CC BY-SA licence**
   (fair use). Do **not rehost, proxy-cache to disk, or write them into files**. Fetch none; show the
   local file's own cover instead.
