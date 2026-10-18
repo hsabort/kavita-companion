@@ -142,9 +142,11 @@ check("Kavita lists the repaired book", bool(item) and item.get("kavitaStatus") 
 
 # --- Clean up ---
 shutil.rmtree(book_dir, ignore_errors=True)
-series = kavita_series_in_books(author)
-if series:
-    kavita("DELETE", f"/api/Series/{series['id']}")
+# A standalone book becomes a series named after its *title*, so check both names.
+for name in (title, author):
+    series = kavita_series_in_books(name)
+    if series:
+        kavita("DELETE", f"/api/Series/{series['id']}")
 check("test files cleaned up", not book_dir.exists())
 
 finish()
