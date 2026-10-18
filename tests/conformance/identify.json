@@ -168,17 +168,17 @@
         {
           "id": "I1-021",
           "in": [
-            "One Piece 1000 (2021) (Digital) (LuCaZ).cbz"
+            "Grand Voyage 1000 (2021) (Digital) (LuCaZ).cbz"
           ],
-          "out": "One Piece 1000 (2021) (Digital) (LuCaZ)",
+          "out": "Grand Voyage 1000 (2021) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-022",
           "in": [
-            "One Piece 1001 (2021) (Digital) (LuCaZ).cbz"
+            "Grand Voyage 1001 (2021) (Digital) (LuCaZ).cbz"
           ],
-          "out": "One Piece 1001 (2021) (Digital) (LuCaZ)",
+          "out": "Grand Voyage 1001 (2021) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -216,297 +216,297 @@
         {
           "id": "I1-027",
           "in": [
-            "Attack on Titan 139 (2021) (Digital) (Zone-Empire).cbz"
+            "Colossus Gate 139 (2021) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Attack on Titan 139 (2021) (Digital) (Zone-Empire)",
+          "out": "Colossus Gate 139 (2021) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-028",
           "in": [
-            "Naruto 700 (2014) (Digital) (Zone-Empire).cbz"
+            "Shinobi Rising 700 (2014) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Naruto 700 (2014) (Digital) (Zone-Empire)",
+          "out": "Shinobi Rising 700 (2014) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-029",
           "in": [
-            "Watchmen 01 (1986) (Digital) (Zone-Empire).cbr"
+            "Nightwatch 01 (1986) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "Watchmen 01 (1986) (Digital) (Zone-Empire)",
+          "out": "Nightwatch 01 (1986) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-030",
           "in": [
-            "Watchmen 12 (1987) (Digital) (Zone-Empire).cbr"
+            "Nightwatch 12 (1987) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "Watchmen 12 (1987) (Digital) (Zone-Empire)",
+          "out": "Nightwatch 12 (1987) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-031",
           "in": [
-            "The Sandman 001 (1989) (Digital) (Minutemen).cbz"
+            "The Dreamwright 001 (1989) (Digital) (Minutemen).cbz"
           ],
-          "out": "The Sandman 001 (1989) (Digital) (Minutemen)",
+          "out": "The Dreamwright 001 (1989) (Digital) (Minutemen)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-032",
           "in": [
-            "The Sandman 075 (1996) (Digital).cbz"
+            "The Dreamwright 075 (1996) (Digital).cbz"
           ],
-          "out": "The Sandman 075 (1996) (Digital)",
+          "out": "The Dreamwright 075 (1996) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-033",
           "in": [
-            "Hellboy 001 (1994) (Digital).cbr"
+            "Redhorn 001 (1994) (Digital).cbr"
           ],
-          "out": "Hellboy 001 (1994) (Digital)",
+          "out": "Redhorn 001 (1994) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-034",
           "in": [
-            "Hellboy Seed of Destruction 001 (1994).cbz"
+            "Redhorn Seed of Ruin 001 (1994).cbz"
           ],
-          "out": "Hellboy Seed of Destruction 001 (1994)",
+          "out": "Redhorn Seed of Ruin 001 (1994)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-035",
           "in": [
-            "Y The Last Man 001 (2002) (Digital) (Zone-Empire).cbr"
+            "Z The Final Man 001 (2002) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "Y The Last Man 001 (2002) (Digital) (Zone-Empire)",
+          "out": "Z The Final Man 001 (2002) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-036",
           "in": [
-            "Y The Last Man 060 (2008) (Digital).cbz"
+            "Z The Final Man 060 (2008) (Digital).cbz"
           ],
-          "out": "Y The Last Man 060 (2008) (Digital)",
+          "out": "Z The Final Man 060 (2008) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-037",
           "in": [
-            "Paper Girls 001 (2015) (Digital) (Zone-Empire).cbz"
+            "Newsprint Girls 001 (2015) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Paper Girls 001 (2015) (Digital) (Zone-Empire)",
+          "out": "Newsprint Girls 001 (2015) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-038",
           "in": [
-            "Monstress 001 (2015) (Digital) (Zone-Empire).cbz"
+            "Beastheart 001 (2015) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Monstress 001 (2015) (Digital) (Zone-Empire)",
+          "out": "Beastheart 001 (2015) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-039",
           "in": [
-            "East of West 001 (2013) (Digital) (Zone-Empire).cbz"
+            "North of Nowhere 001 (2013) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "East of West 001 (2013) (Digital) (Zone-Empire)",
+          "out": "North of Nowhere 001 (2013) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-040",
           "in": [
-            "Descender 001 (2015) (Digital) (Zone-Empire).cbz"
+            "Downcast 001 (2015) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Descender 001 (2015) (Digital) (Zone-Empire)",
+          "out": "Downcast 001 (2015) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-041",
           "in": [
-            "Invincible 001 (2003) (Digital) (Zone-Empire).cbr"
+            "Unbroken 001 (2003) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "Invincible 001 (2003) (Digital) (Zone-Empire)",
+          "out": "Unbroken 001 (2003) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-042",
           "in": [
-            "The Walking Dead 001 (2003) (Digital) (Zone-Empire).cbr"
+            "The Restless Dead 001 (2003) (Digital) (Zone-Empire).cbr"
           ],
-          "out": "The Walking Dead 001 (2003) (Digital) (Zone-Empire)",
+          "out": "The Restless Dead 001 (2003) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-043",
           "in": [
-            "The Walking Dead 193 (2019) (Digital).cbz"
+            "The Restless Dead 193 (2019) (Digital).cbz"
           ],
-          "out": "The Walking Dead 193 (2019) (Digital)",
+          "out": "The Restless Dead 193 (2019) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-044",
           "in": [
-            "Fables 001 (2002) (Digital) (Zone-Empire).cbz"
+            "Folklore 001 (2002) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Fables 001 (2002) (Digital) (Zone-Empire)",
+          "out": "Folklore 001 (2002) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-045",
           "in": [
-            "Chew 001 (2009) (Digital) (Zone-Empire).cbz"
+            "Gristle 001 (2009) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Chew 001 (2009) (Digital) (Zone-Empire)",
+          "out": "Gristle 001 (2009) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-046",
           "in": [
-            "Locke & Key 001 (2008) (Digital) (Zone-Empire).cbz"
+            "Hinge & Ward 001 (2008) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Locke & Key 001 (2008) (Digital) (Zone-Empire)",
+          "out": "Hinge & Ward 001 (2008) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-047",
           "in": [
-            "Bone 001 (1991) (Digital).cbz"
+            "Marrow 001 (1991) (Digital).cbz"
           ],
-          "out": "Bone 001 (1991) (Digital)",
+          "out": "Marrow 001 (1991) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-048",
           "in": [
-            "Bone v01 c001.cbz"
+            "Marrow v01 c001.cbz"
           ],
-          "out": "Bone v01 c001",
+          "out": "Marrow v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-049",
           "in": [
-            "Death Note 001 (2003) (Digital) (Zone-Empire).cbz"
+            "Death Ledger 001 (2003) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Death Note 001 (2003) (Digital) (Zone-Empire)",
+          "out": "Death Ledger 001 (2003) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-050",
           "in": [
-            "Fullmetal Alchemist 001 (2001) (Digital).cbz"
+            "Ironblood Alchemist 001 (2001) (Digital).cbz"
           ],
-          "out": "Fullmetal Alchemist 001 (2001) (Digital)",
+          "out": "Ironblood Alchemist 001 (2001) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-051",
           "in": [
-            "Fullmetal Alchemist v01 c001.cbz"
+            "Ironblood Alchemist v01 c001.cbz"
           ],
-          "out": "Fullmetal Alchemist v01 c001",
+          "out": "Ironblood Alchemist v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-052",
           "in": [
-            "My Hero Academia 001 (2014) (Digital) (LuCaZ).cbz"
+            "Hero School 001 (2014) (Digital) (LuCaZ).cbz"
           ],
-          "out": "My Hero Academia 001 (2014) (Digital) (LuCaZ)",
+          "out": "Hero School 001 (2014) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-053",
           "in": [
-            "My Hero Academia 300 (2021) (Digital).cbz"
+            "Hero School 300 (2021) (Digital).cbz"
           ],
-          "out": "My Hero Academia 300 (2021) (Digital)",
+          "out": "Hero School 300 (2021) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-054",
           "in": [
-            "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ).cbz"
+            "Tokyo Revenant 001 (2011) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ)",
+          "out": "Tokyo Revenant 001 (2011) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-055",
           "in": [
-            "Chainsaw Man 001 (2018) (Digital) (LuCaZ).cbz"
+            "Ripcord Man 001 (2018) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Chainsaw Man 001 (2018) (Digital) (LuCaZ)",
+          "out": "Ripcord Man 001 (2018) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-056",
           "in": [
-            "Vinland Halcyon 001 (2005) (Digital) (LuCaZ).cbz"
+            "Northwind Halcyon 001 (2005) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Vinland Halcyon 001 (2005) (Digital) (LuCaZ)",
+          "out": "Northwind Halcyon 001 (2005) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-057",
           "in": [
-            "Vinland Halcyon v01 c001.cbz"
+            "Northwind Halcyon v01 c001.cbz"
           ],
-          "out": "Vinland Halcyon v01 c001",
+          "out": "Northwind Halcyon v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-058",
           "in": [
-            "Blame! 001 (1997) (Digital).cbz"
+            "Void! 001 (1997) (Digital).cbz"
           ],
-          "out": "Blame! 001 (1997) (Digital)",
+          "out": "Void! 001 (1997) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-059",
           "in": [
-            "Hellsing 001 (1997) (Digital) (Zone-Empire).cbz"
+            "Bloodmoor 001 (1997) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Hellsing 001 (1997) (Digital) (Zone-Empire)",
+          "out": "Bloodmoor 001 (1997) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-060",
           "in": [
-            "Akira 001 (1982) (Digital) (Zone-Empire).cbz"
+            "Kagura 001 (1982) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Akira 001 (1982) (Digital) (Zone-Empire)",
+          "out": "Kagura 001 (1982) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-061",
           "in": [
-            "Akira v01 c001.cbz"
+            "Kagura v01 c001.cbz"
           ],
-          "out": "Akira v01 c001",
+          "out": "Kagura v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-062",
           "in": [
-            "Dorohedoro 001 (2000) (Digital) (LuCaZ).cbz"
+            "Mudmask 001 (2000) (Digital) (LuCaZ).cbz"
           ],
-          "out": "Dorohedoro 001 (2000) (Digital) (LuCaZ)",
+          "out": "Mudmask 001 (2000) (Digital) (LuCaZ)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-063",
           "in": [
-            "Planetes 001 (1999) (Digital).cbz"
+            "Orbital 001 (1999) (Digital).cbz"
           ],
-          "out": "Planetes 001 (1999) (Digital)",
+          "out": "Orbital 001 (1999) (Digital)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -520,17 +520,17 @@
         {
           "id": "I1-065",
           "in": [
-            "Uzumaki 001 (1998) (Digital) (Zone-Empire).cbz"
+            "Vortex 001 (1998) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Uzumaki 001 (1998) (Digital) (Zone-Empire)",
+          "out": "Vortex 001 (1998) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-066",
           "in": [
-            "Tomie 001 (1987) (Digital) (Zone-Empire).cbz"
+            "Kirie 001 (1987) (Digital) (Zone-Empire).cbz"
           ],
-          "out": "Tomie 001 (1987) (Digital) (Zone-Empire)",
+          "out": "Kirie 001 (1987) (Digital) (Zone-Empire)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -800,9 +800,9 @@
         {
           "id": "I1-100",
           "in": [
-            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Midnight Pact).cbz"
           ],
-          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
+          "out": "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Midnight Pact)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -840,17 +840,17 @@
         {
           "id": "I1-105",
           "in": [
-            "Ashfall 02 - The Well of Ascension.epub"
+            "Ashfall 02 - The Well of Sorrows.epub"
           ],
-          "out": "Ashfall 02 - The Well of Ascension",
+          "out": "Ashfall 02 - The Well of Sorrows",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "I1-106",
           "in": [
-            "Ashfall 03 - The Hero of Ages.epub"
+            "Ashfall 03 - The Hero of Eld.epub"
           ],
-          "out": "Ashfall 03 - The Hero of Ages",
+          "out": "Ashfall 03 - The Hero of Eld",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1826,10 +1826,10 @@
         {
           "id": "I4-036",
           "in": [
-            "One Piece 1000 (2021) (Digital) (LuCaZ).cbz"
+            "Grand Voyage 1000 (2021) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "One Piece 1000 (2021) (Digital) (LuCaZ)",
+            "title": "Grand Voyage 1000 (2021) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -1839,10 +1839,10 @@
         {
           "id": "I4-037",
           "in": [
-            "One Piece 1001 (2021) (Digital) (LuCaZ).cbz"
+            "Grand Voyage 1001 (2021) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "One Piece 1001 (2021) (Digital) (LuCaZ)",
+            "title": "Grand Voyage 1001 (2021) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -1904,10 +1904,10 @@
         {
           "id": "I4-042",
           "in": [
-            "Attack on Titan 139 (2021) (Digital) (Zone-Empire).cbz"
+            "Colossus Gate 139 (2021) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Attack on Titan 139 (2021) (Digital) (Zone-Empire)",
+            "title": "Colossus Gate 139 (2021) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1917,10 +1917,10 @@
         {
           "id": "I4-043",
           "in": [
-            "Naruto 700 (2014) (Digital) (Zone-Empire).cbz"
+            "Shinobi Rising 700 (2014) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Naruto 700 (2014) (Digital) (Zone-Empire)",
+            "title": "Shinobi Rising 700 (2014) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1930,10 +1930,10 @@
         {
           "id": "I4-044",
           "in": [
-            "Watchmen 01 (1986) (Digital) (Zone-Empire).cbr"
+            "Nightwatch 01 (1986) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "Watchmen 01 (1986) (Digital) (Zone-Empire)",
+            "title": "Nightwatch 01 (1986) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1943,10 +1943,10 @@
         {
           "id": "I4-045",
           "in": [
-            "Watchmen 12 (1987) (Digital) (Zone-Empire).cbr"
+            "Nightwatch 12 (1987) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "Watchmen 12 (1987) (Digital) (Zone-Empire)",
+            "title": "Nightwatch 12 (1987) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -1956,10 +1956,10 @@
         {
           "id": "I4-046",
           "in": [
-            "The Sandman 001 (1989) (Digital) (Minutemen).cbz"
+            "The Dreamwright 001 (1989) (Digital) (Minutemen).cbz"
           ],
           "out": {
-            "title": "The Sandman 001 (1989) (Digital) (Minutemen)",
+            "title": "The Dreamwright 001 (1989) (Digital) (Minutemen)",
             "series": null,
             "number": null,
             "author": null
@@ -1969,10 +1969,10 @@
         {
           "id": "I4-047",
           "in": [
-            "The Sandman 075 (1996) (Digital).cbz"
+            "The Dreamwright 075 (1996) (Digital).cbz"
           ],
           "out": {
-            "title": "The Sandman 075 (1996) (Digital)",
+            "title": "The Dreamwright 075 (1996) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -1982,10 +1982,10 @@
         {
           "id": "I4-048",
           "in": [
-            "Hellboy 001 (1994) (Digital).cbr"
+            "Redhorn 001 (1994) (Digital).cbr"
           ],
           "out": {
-            "title": "Hellboy 001 (1994) (Digital)",
+            "title": "Redhorn 001 (1994) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -1995,10 +1995,10 @@
         {
           "id": "I4-049",
           "in": [
-            "Hellboy Seed of Destruction 001 (1994).cbz"
+            "Redhorn Seed of Ruin 001 (1994).cbz"
           ],
           "out": {
-            "title": "Hellboy Seed of Destruction 001 (1994)",
+            "title": "Redhorn Seed of Ruin 001 (1994)",
             "series": null,
             "number": null,
             "author": null
@@ -2008,10 +2008,10 @@
         {
           "id": "I4-050",
           "in": [
-            "Y The Last Man 001 (2002) (Digital) (Zone-Empire).cbr"
+            "Z The Final Man 001 (2002) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "Y The Last Man 001 (2002) (Digital) (Zone-Empire)",
+            "title": "Z The Final Man 001 (2002) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2021,10 +2021,10 @@
         {
           "id": "I4-051",
           "in": [
-            "Y The Last Man 060 (2008) (Digital).cbz"
+            "Z The Final Man 060 (2008) (Digital).cbz"
           ],
           "out": {
-            "title": "Y The Last Man 060 (2008) (Digital)",
+            "title": "Z The Final Man 060 (2008) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2034,10 +2034,10 @@
         {
           "id": "I4-052",
           "in": [
-            "Paper Girls 001 (2015) (Digital) (Zone-Empire).cbz"
+            "Newsprint Girls 001 (2015) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Paper Girls 001 (2015) (Digital) (Zone-Empire)",
+            "title": "Newsprint Girls 001 (2015) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2047,10 +2047,10 @@
         {
           "id": "I4-053",
           "in": [
-            "Monstress 001 (2015) (Digital) (Zone-Empire).cbz"
+            "Beastheart 001 (2015) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Monstress 001 (2015) (Digital) (Zone-Empire)",
+            "title": "Beastheart 001 (2015) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2060,10 +2060,10 @@
         {
           "id": "I4-054",
           "in": [
-            "East of West 001 (2013) (Digital) (Zone-Empire).cbz"
+            "North of Nowhere 001 (2013) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "East of West 001 (2013) (Digital) (Zone-Empire)",
+            "title": "North of Nowhere 001 (2013) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2073,10 +2073,10 @@
         {
           "id": "I4-055",
           "in": [
-            "Descender 001 (2015) (Digital) (Zone-Empire).cbz"
+            "Downcast 001 (2015) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Descender 001 (2015) (Digital) (Zone-Empire)",
+            "title": "Downcast 001 (2015) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2086,10 +2086,10 @@
         {
           "id": "I4-056",
           "in": [
-            "Invincible 001 (2003) (Digital) (Zone-Empire).cbr"
+            "Unbroken 001 (2003) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "Invincible 001 (2003) (Digital) (Zone-Empire)",
+            "title": "Unbroken 001 (2003) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2099,10 +2099,10 @@
         {
           "id": "I4-057",
           "in": [
-            "The Walking Dead 001 (2003) (Digital) (Zone-Empire).cbr"
+            "The Restless Dead 001 (2003) (Digital) (Zone-Empire).cbr"
           ],
           "out": {
-            "title": "The Walking Dead 001 (2003) (Digital) (Zone-Empire)",
+            "title": "The Restless Dead 001 (2003) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2112,10 +2112,10 @@
         {
           "id": "I4-058",
           "in": [
-            "The Walking Dead 193 (2019) (Digital).cbz"
+            "The Restless Dead 193 (2019) (Digital).cbz"
           ],
           "out": {
-            "title": "The Walking Dead 193 (2019) (Digital)",
+            "title": "The Restless Dead 193 (2019) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2125,10 +2125,10 @@
         {
           "id": "I4-059",
           "in": [
-            "Fables 001 (2002) (Digital) (Zone-Empire).cbz"
+            "Folklore 001 (2002) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Fables 001 (2002) (Digital) (Zone-Empire)",
+            "title": "Folklore 001 (2002) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2138,10 +2138,10 @@
         {
           "id": "I4-060",
           "in": [
-            "Chew 001 (2009) (Digital) (Zone-Empire).cbz"
+            "Gristle 001 (2009) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Chew 001 (2009) (Digital) (Zone-Empire)",
+            "title": "Gristle 001 (2009) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2151,10 +2151,10 @@
         {
           "id": "I4-061",
           "in": [
-            "Locke & Key 001 (2008) (Digital) (Zone-Empire).cbz"
+            "Hinge & Ward 001 (2008) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Locke & Key 001 (2008) (Digital) (Zone-Empire)",
+            "title": "Hinge & Ward 001 (2008) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2164,10 +2164,10 @@
         {
           "id": "I4-062",
           "in": [
-            "Bone 001 (1991) (Digital).cbz"
+            "Marrow 001 (1991) (Digital).cbz"
           ],
           "out": {
-            "title": "Bone 001 (1991) (Digital)",
+            "title": "Marrow 001 (1991) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2177,10 +2177,10 @@
         {
           "id": "I4-063",
           "in": [
-            "Bone v01 c001.cbz"
+            "Marrow v01 c001.cbz"
           ],
           "out": {
-            "title": "Bone v01 c001",
+            "title": "Marrow v01 c001",
             "series": null,
             "number": null,
             "author": null
@@ -2190,10 +2190,10 @@
         {
           "id": "I4-064",
           "in": [
-            "Death Note 001 (2003) (Digital) (Zone-Empire).cbz"
+            "Death Ledger 001 (2003) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Death Note 001 (2003) (Digital) (Zone-Empire)",
+            "title": "Death Ledger 001 (2003) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2203,10 +2203,10 @@
         {
           "id": "I4-065",
           "in": [
-            "Fullmetal Alchemist 001 (2001) (Digital).cbz"
+            "Ironblood Alchemist 001 (2001) (Digital).cbz"
           ],
           "out": {
-            "title": "Fullmetal Alchemist 001 (2001) (Digital)",
+            "title": "Ironblood Alchemist 001 (2001) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2216,10 +2216,10 @@
         {
           "id": "I4-066",
           "in": [
-            "Fullmetal Alchemist v01 c001.cbz"
+            "Ironblood Alchemist v01 c001.cbz"
           ],
           "out": {
-            "title": "Fullmetal Alchemist v01 c001",
+            "title": "Ironblood Alchemist v01 c001",
             "series": null,
             "number": null,
             "author": null
@@ -2229,10 +2229,10 @@
         {
           "id": "I4-067",
           "in": [
-            "My Hero Academia 001 (2014) (Digital) (LuCaZ).cbz"
+            "Hero School 001 (2014) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "My Hero Academia 001 (2014) (Digital) (LuCaZ)",
+            "title": "Hero School 001 (2014) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2242,10 +2242,10 @@
         {
           "id": "I4-068",
           "in": [
-            "My Hero Academia 300 (2021) (Digital).cbz"
+            "Hero School 300 (2021) (Digital).cbz"
           ],
           "out": {
-            "title": "My Hero Academia 300 (2021) (Digital)",
+            "title": "Hero School 300 (2021) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2255,10 +2255,10 @@
         {
           "id": "I4-069",
           "in": [
-            "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ).cbz"
+            "Tokyo Revenant 001 (2011) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ)",
+            "title": "Tokyo Revenant 001 (2011) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2268,10 +2268,10 @@
         {
           "id": "I4-070",
           "in": [
-            "Chainsaw Man 001 (2018) (Digital) (LuCaZ).cbz"
+            "Ripcord Man 001 (2018) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Chainsaw Man 001 (2018) (Digital) (LuCaZ)",
+            "title": "Ripcord Man 001 (2018) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2281,10 +2281,10 @@
         {
           "id": "I4-071",
           "in": [
-            "Vinland Halcyon 001 (2005) (Digital) (LuCaZ).cbz"
+            "Northwind Halcyon 001 (2005) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Vinland Halcyon 001 (2005) (Digital) (LuCaZ)",
+            "title": "Northwind Halcyon 001 (2005) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2294,10 +2294,10 @@
         {
           "id": "I4-072",
           "in": [
-            "Vinland Halcyon v01 c001.cbz"
+            "Northwind Halcyon v01 c001.cbz"
           ],
           "out": {
-            "title": "Vinland Halcyon v01 c001",
+            "title": "Northwind Halcyon v01 c001",
             "series": null,
             "number": null,
             "author": null
@@ -2307,10 +2307,10 @@
         {
           "id": "I4-073",
           "in": [
-            "Blame! 001 (1997) (Digital).cbz"
+            "Void! 001 (1997) (Digital).cbz"
           ],
           "out": {
-            "title": "Blame! 001 (1997) (Digital)",
+            "title": "Void! 001 (1997) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2320,10 +2320,10 @@
         {
           "id": "I4-074",
           "in": [
-            "Hellsing 001 (1997) (Digital) (Zone-Empire).cbz"
+            "Bloodmoor 001 (1997) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Hellsing 001 (1997) (Digital) (Zone-Empire)",
+            "title": "Bloodmoor 001 (1997) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2333,10 +2333,10 @@
         {
           "id": "I4-075",
           "in": [
-            "Akira 001 (1982) (Digital) (Zone-Empire).cbz"
+            "Kagura 001 (1982) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Akira 001 (1982) (Digital) (Zone-Empire)",
+            "title": "Kagura 001 (1982) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2346,10 +2346,10 @@
         {
           "id": "I4-076",
           "in": [
-            "Akira v01 c001.cbz"
+            "Kagura v01 c001.cbz"
           ],
           "out": {
-            "title": "Akira v01 c001",
+            "title": "Kagura v01 c001",
             "series": null,
             "number": null,
             "author": null
@@ -2359,10 +2359,10 @@
         {
           "id": "I4-077",
           "in": [
-            "Dorohedoro 001 (2000) (Digital) (LuCaZ).cbz"
+            "Mudmask 001 (2000) (Digital) (LuCaZ).cbz"
           ],
           "out": {
-            "title": "Dorohedoro 001 (2000) (Digital) (LuCaZ)",
+            "title": "Mudmask 001 (2000) (Digital) (LuCaZ)",
             "series": null,
             "number": null,
             "author": null
@@ -2372,10 +2372,10 @@
         {
           "id": "I4-078",
           "in": [
-            "Planetes 001 (1999) (Digital).cbz"
+            "Orbital 001 (1999) (Digital).cbz"
           ],
           "out": {
-            "title": "Planetes 001 (1999) (Digital)",
+            "title": "Orbital 001 (1999) (Digital)",
             "series": null,
             "number": null,
             "author": null
@@ -2398,10 +2398,10 @@
         {
           "id": "I4-080",
           "in": [
-            "Uzumaki 001 (1998) (Digital) (Zone-Empire).cbz"
+            "Vortex 001 (1998) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Uzumaki 001 (1998) (Digital) (Zone-Empire)",
+            "title": "Vortex 001 (1998) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2411,10 +2411,10 @@
         {
           "id": "I4-081",
           "in": [
-            "Tomie 001 (1987) (Digital) (Zone-Empire).cbz"
+            "Kirie 001 (1987) (Digital) (Zone-Empire).cbz"
           ],
           "out": {
-            "title": "Tomie 001 (1987) (Digital) (Zone-Empire)",
+            "title": "Kirie 001 (1987) (Digital) (Zone-Empire)",
             "series": null,
             "number": null,
             "author": null
@@ -2853,10 +2853,10 @@
         {
           "id": "I4-115",
           "in": [
-            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Midnight Pact).cbz"
           ],
           "out": {
-            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
+            "title": "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Midnight Pact)",
             "series": null,
             "number": null,
             "author": null
@@ -2918,10 +2918,10 @@
         {
           "id": "I4-120",
           "in": [
-            "Ashfall 02 - The Well of Ascension.epub"
+            "Ashfall 02 - The Well of Sorrows.epub"
           ],
           "out": {
-            "title": "The Well of Ascension",
+            "title": "The Well of Sorrows",
             "series": "Ashfall",
             "number": "2",
             "author": null
@@ -2931,10 +2931,10 @@
         {
           "id": "I4-121",
           "in": [
-            "Ashfall 03 - The Hero of Ages.epub"
+            "Ashfall 03 - The Hero of Eld.epub"
           ],
           "out": {
-            "title": "The Hero of Ages",
+            "title": "The Hero of Eld",
             "series": "Ashfall",
             "number": "3",
             "author": null

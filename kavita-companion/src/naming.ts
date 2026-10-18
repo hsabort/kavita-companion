@@ -26,7 +26,7 @@ export function isNoiseGroup(inner: string): boolean {
   const words = text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
   if (words.length && words.every((word) => RELEASE_WORDS.has(word))) return true; // (Digital) / (Digital-Empire)
   // An unknown scanner group: short, no sentence punctuation, and "shouty" — a digit, a separator,
-  // an acronym run or an internal capital. A bracketed subtitle ("The Faust Act") never matches.
+  // an acronym run or an internal capital. A bracketed subtitle ("The Midnight Pact") never matches.
   return text.length <= 24 && !/[,.!?'’]/.test(text)
     && (/[0-9]/.test(text) || /[0-9_+\-–]/.test(text) || /[A-Z]{2,}/.test(text) || /\p{Lu}\p{Ll}*\p{Lu}/u.test(text));
 }

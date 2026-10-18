@@ -289,7 +289,7 @@
         {
           "id": "N1-036",
           "in": [
-            "The Faust Act"
+            "The Midnight Pact"
           ],
           "out": false,
           "provenance": "new edge case (vocabulary negative)"
@@ -430,7 +430,7 @@
         {
           "id": "N2-016",
           "in": [
-            "The Faust Act"
+            "The Midnight Pact"
           ],
           "out": false,
           "provenance": "spec §1.2 worked example (bracketed subtitle kept)"
@@ -800,9 +800,9 @@
         {
           "id": "N4-025",
           "in": [
-            "One Piece 1000 (2021) (Digital) (LuCaZ)"
+            "Grand Voyage 1000 (2021) (Digital) (LuCaZ)"
           ],
-          "out": "One Piece 1000",
+          "out": "Grand Voyage 1000",
           "provenance": "new edge case (realistic scene name)"
         },
         {
@@ -824,9 +824,9 @@
         {
           "id": "N4-028",
           "in": [
-            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Midnight Pact)"
           ],
-          "out": "Halcyon 055 (The Faust Act)",
+          "out": "Halcyon 055 (The Midnight Pact)",
           "provenance": "new edge case (bracketed subtitle kept)"
         },
         {
@@ -904,17 +904,17 @@
         {
           "id": "N4-038",
           "in": [
-            "One Piece 1000 (2021) (Digital) (LuCaZ)"
+            "Grand Voyage 1000 (2021) (Digital) (LuCaZ)"
           ],
-          "out": "One Piece 1000",
+          "out": "Grand Voyage 1000",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-039",
           "in": [
-            "One Piece 1001 (2021) (Digital) (LuCaZ)"
+            "Grand Voyage 1001 (2021) (Digital) (LuCaZ)"
           ],
-          "out": "One Piece 1001",
+          "out": "Grand Voyage 1001",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -952,297 +952,297 @@
         {
           "id": "N4-044",
           "in": [
-            "Attack on Titan 139 (2021) (Digital) (Zone-Empire)"
+            "Colossus Gate 139 (2021) (Digital) (Zone-Empire)"
           ],
-          "out": "Attack on Titan 139",
+          "out": "Colossus Gate 139",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-045",
           "in": [
-            "Naruto 700 (2014) (Digital) (Zone-Empire)"
+            "Shinobi Rising 700 (2014) (Digital) (Zone-Empire)"
           ],
-          "out": "Naruto 700",
+          "out": "Shinobi Rising 700",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-046",
           "in": [
-            "Watchmen 01 (1986) (Digital) (Zone-Empire)"
+            "Nightwatch 01 (1986) (Digital) (Zone-Empire)"
           ],
-          "out": "Watchmen 01",
+          "out": "Nightwatch 01",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-047",
           "in": [
-            "Watchmen 12 (1987) (Digital) (Zone-Empire)"
+            "Nightwatch 12 (1987) (Digital) (Zone-Empire)"
           ],
-          "out": "Watchmen 12",
+          "out": "Nightwatch 12",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-048",
           "in": [
-            "The Sandman 001 (1989) (Digital) (Minutemen)"
+            "The Dreamwright 001 (1989) (Digital) (Minutemen)"
           ],
-          "out": "The Sandman 001",
+          "out": "The Dreamwright 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-049",
           "in": [
-            "The Sandman 075 (1996) (Digital)"
+            "The Dreamwright 075 (1996) (Digital)"
           ],
-          "out": "The Sandman 075",
+          "out": "The Dreamwright 075",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-050",
           "in": [
-            "Hellboy 001 (1994) (Digital)"
+            "Redhorn 001 (1994) (Digital)"
           ],
-          "out": "Hellboy 001",
+          "out": "Redhorn 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-051",
           "in": [
-            "Hellboy Seed of Destruction 001 (1994)"
+            "Redhorn Seed of Ruin 001 (1994)"
           ],
-          "out": "Hellboy Seed of Destruction 001",
+          "out": "Redhorn Seed of Ruin 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-052",
           "in": [
-            "Y The Last Man 001 (2002) (Digital) (Zone-Empire)"
+            "Z The Final Man 001 (2002) (Digital) (Zone-Empire)"
           ],
-          "out": "Y The Last Man 001",
+          "out": "Z The Final Man 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-053",
           "in": [
-            "Y The Last Man 060 (2008) (Digital)"
+            "Z The Final Man 060 (2008) (Digital)"
           ],
-          "out": "Y The Last Man 060",
+          "out": "Z The Final Man 060",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-054",
           "in": [
-            "Paper Girls 001 (2015) (Digital) (Zone-Empire)"
+            "Newsprint Girls 001 (2015) (Digital) (Zone-Empire)"
           ],
-          "out": "Paper Girls 001",
+          "out": "Newsprint Girls 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-055",
           "in": [
-            "Monstress 001 (2015) (Digital) (Zone-Empire)"
+            "Beastheart 001 (2015) (Digital) (Zone-Empire)"
           ],
-          "out": "Monstress 001",
+          "out": "Beastheart 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-056",
           "in": [
-            "East of West 001 (2013) (Digital) (Zone-Empire)"
+            "North of Nowhere 001 (2013) (Digital) (Zone-Empire)"
           ],
-          "out": "East of West 001",
+          "out": "North of Nowhere 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-057",
           "in": [
-            "Descender 001 (2015) (Digital) (Zone-Empire)"
+            "Downcast 001 (2015) (Digital) (Zone-Empire)"
           ],
-          "out": "Descender 001",
+          "out": "Downcast 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-058",
           "in": [
-            "Invincible 001 (2003) (Digital) (Zone-Empire)"
+            "Unbroken 001 (2003) (Digital) (Zone-Empire)"
           ],
-          "out": "Invincible 001",
+          "out": "Unbroken 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-059",
           "in": [
-            "The Walking Dead 001 (2003) (Digital) (Zone-Empire)"
+            "The Restless Dead 001 (2003) (Digital) (Zone-Empire)"
           ],
-          "out": "The Walking Dead 001",
+          "out": "The Restless Dead 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-060",
           "in": [
-            "The Walking Dead 193 (2019) (Digital)"
+            "The Restless Dead 193 (2019) (Digital)"
           ],
-          "out": "The Walking Dead 193",
+          "out": "The Restless Dead 193",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-061",
           "in": [
-            "Fables 001 (2002) (Digital) (Zone-Empire)"
+            "Folklore 001 (2002) (Digital) (Zone-Empire)"
           ],
-          "out": "Fables 001",
+          "out": "Folklore 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-062",
           "in": [
-            "Chew 001 (2009) (Digital) (Zone-Empire)"
+            "Gristle 001 (2009) (Digital) (Zone-Empire)"
           ],
-          "out": "Chew 001",
+          "out": "Gristle 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-063",
           "in": [
-            "Locke & Key 001 (2008) (Digital) (Zone-Empire)"
+            "Hinge & Ward 001 (2008) (Digital) (Zone-Empire)"
           ],
-          "out": "Locke & Key 001",
+          "out": "Hinge & Ward 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-064",
           "in": [
-            "Bone 001 (1991) (Digital)"
+            "Marrow 001 (1991) (Digital)"
           ],
-          "out": "Bone 001",
+          "out": "Marrow 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-065",
           "in": [
-            "Bone v01 c001"
+            "Marrow v01 c001"
           ],
-          "out": "Bone v01 c001",
+          "out": "Marrow v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-066",
           "in": [
-            "Death Note 001 (2003) (Digital) (Zone-Empire)"
+            "Death Ledger 001 (2003) (Digital) (Zone-Empire)"
           ],
-          "out": "Death Note 001",
+          "out": "Death Ledger 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-067",
           "in": [
-            "Fullmetal Alchemist 001 (2001) (Digital)"
+            "Ironblood Alchemist 001 (2001) (Digital)"
           ],
-          "out": "Fullmetal Alchemist 001",
+          "out": "Ironblood Alchemist 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-068",
           "in": [
-            "Fullmetal Alchemist v01 c001"
+            "Ironblood Alchemist v01 c001"
           ],
-          "out": "Fullmetal Alchemist v01 c001",
+          "out": "Ironblood Alchemist v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-069",
           "in": [
-            "My Hero Academia 001 (2014) (Digital) (LuCaZ)"
+            "Hero School 001 (2014) (Digital) (LuCaZ)"
           ],
-          "out": "My Hero Academia 001",
+          "out": "Hero School 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-070",
           "in": [
-            "My Hero Academia 300 (2021) (Digital)"
+            "Hero School 300 (2021) (Digital)"
           ],
-          "out": "My Hero Academia 300",
+          "out": "Hero School 300",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-071",
           "in": [
-            "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ)"
+            "Tokyo Revenant 001 (2011) (Digital) (LuCaZ)"
           ],
-          "out": "Tokyo Ghoul 001",
+          "out": "Tokyo Revenant 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-072",
           "in": [
-            "Chainsaw Man 001 (2018) (Digital) (LuCaZ)"
+            "Ripcord Man 001 (2018) (Digital) (LuCaZ)"
           ],
-          "out": "Chainsaw Man 001",
+          "out": "Ripcord Man 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-073",
           "in": [
-            "Vinland Halcyon 001 (2005) (Digital) (LuCaZ)"
+            "Northwind Halcyon 001 (2005) (Digital) (LuCaZ)"
           ],
-          "out": "Vinland Halcyon 001",
+          "out": "Northwind Halcyon 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-074",
           "in": [
-            "Vinland Halcyon v01 c001"
+            "Northwind Halcyon v01 c001"
           ],
-          "out": "Vinland Halcyon v01 c001",
+          "out": "Northwind Halcyon v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-075",
           "in": [
-            "Blame! 001 (1997) (Digital)"
+            "Void! 001 (1997) (Digital)"
           ],
-          "out": "Blame! 001",
+          "out": "Void! 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-076",
           "in": [
-            "Hellsing 001 (1997) (Digital) (Zone-Empire)"
+            "Bloodmoor 001 (1997) (Digital) (Zone-Empire)"
           ],
-          "out": "Hellsing 001",
+          "out": "Bloodmoor 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-077",
           "in": [
-            "Akira 001 (1982) (Digital) (Zone-Empire)"
+            "Kagura 001 (1982) (Digital) (Zone-Empire)"
           ],
-          "out": "Akira 001",
+          "out": "Kagura 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-078",
           "in": [
-            "Akira v01 c001"
+            "Kagura v01 c001"
           ],
-          "out": "Akira v01 c001",
+          "out": "Kagura v01 c001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-079",
           "in": [
-            "Dorohedoro 001 (2000) (Digital) (LuCaZ)"
+            "Mudmask 001 (2000) (Digital) (LuCaZ)"
           ],
-          "out": "Dorohedoro 001",
+          "out": "Mudmask 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-080",
           "in": [
-            "Planetes 001 (1999) (Digital)"
+            "Orbital 001 (1999) (Digital)"
           ],
-          "out": "Planetes 001",
+          "out": "Orbital 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1256,17 +1256,17 @@
         {
           "id": "N4-082",
           "in": [
-            "Uzumaki 001 (1998) (Digital) (Zone-Empire)"
+            "Vortex 001 (1998) (Digital) (Zone-Empire)"
           ],
-          "out": "Uzumaki 001",
+          "out": "Vortex 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-083",
           "in": [
-            "Tomie 001 (1987) (Digital) (Zone-Empire)"
+            "Kirie 001 (1987) (Digital) (Zone-Empire)"
           ],
-          "out": "Tomie 001",
+          "out": "Kirie 001",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1536,9 +1536,9 @@
         {
           "id": "N4-117",
           "in": [
-            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Faust Act)"
+            "Halcyon 055 (2018) (Digital) (Zone-Empire) (The Midnight Pact)"
           ],
-          "out": "Halcyon 055 (The Faust Act)",
+          "out": "Halcyon 055 (The Midnight Pact)",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -1576,17 +1576,17 @@
         {
           "id": "N4-122",
           "in": [
-            "Ashfall 02 - The Well of Ascension"
+            "Ashfall 02 - The Well of Sorrows"
           ],
-          "out": "Ashfall 02 - The Well of Ascension",
+          "out": "Ashfall 02 - The Well of Sorrows",
           "provenance": "new edge case (realistic filename)"
         },
         {
           "id": "N4-123",
           "in": [
-            "Ashfall 03 - The Hero of Ages"
+            "Ashfall 03 - The Hero of Eld"
           ],
-          "out": "Ashfall 03 - The Hero of Ages",
+          "out": "Ashfall 03 - The Hero of Eld",
           "provenance": "new edge case (realistic filename)"
         },
         {
@@ -2104,10 +2104,10 @@
         {
           "id": "N7-006",
           "in": [
-            "Ashfall: The Well of Ascension",
+            "Ashfall: The Well of Sorrows",
             "Ashfall"
           ],
-          "out": "The Well of Ascension",
+          "out": "The Well of Sorrows",
           "provenance": "new edge case (realistic book title)"
         },
         {
@@ -2122,10 +2122,10 @@
         {
           "id": "N7-008",
           "in": [
-            "The Hero of Ages: Ashfall Book 3",
+            "The Hero of Eld: Ashfall Book 3",
             "Ashfall"
           ],
-          "out": "The Hero of Ages",
+          "out": "The Hero of Eld",
           "provenance": "new edge case (trailing 'Book 3' blurb dropped)"
         },
         {

@@ -153,7 +153,7 @@ function isNoiseGroup(inner):
 | `-KS-` | noise | ≤24 chars, no punctuation, acronym run `KS` |
 | `1968-1996` | noise | year range |
 | `2020` | noise | bare year |
-| `The Faust Act` | keep | has spaces but no digit/separator/acronym/internal-capital |
+| `The Midnight Pact` | keep | has spaces but no digit/separator/acronym/internal-capital |
 | `A LitRPG/Gamelit Adventure` | keep | has `/` but no digit; contains lowercase runs; no `[A-Z]{2,}`, no internal capital, and `A LitRPG/Gamelit Adventure` is >24 chars anyway |
 | `` (empty) | noise | empty |
 
