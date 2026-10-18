@@ -19,10 +19,11 @@ import urllib.error
 import urllib.request
 import zipfile
 
-from settings import KAVITA_LOCAL as KAVITA, KAVITA_PUBLIC, MEDIA, ORIGIN, env, library_ids
+from settings import KAVITA_LOCAL as KAVITA, KAVITA_PUBLIC, MEDIA, ORIGIN, ROOT, env, library_ids
 from harness import app, kavita, login, request
 
 COMICS = library_ids()["Comics"]
+FIXTURES = ROOT / "tests" / "fixtures"
 tag = "".join(secrets.choice("abcdefghjkmnpqrstuvwxyz") for _ in range(6))
 results = []
 uploaded = []
@@ -162,6 +163,23 @@ status, _ = app("POST", f"/api/review/{first}/fix", admin,
                 {"libraryId": COMICS, "seriesName": after, "filename": f"{after} #001", "metadata": {"Title": "Fixed Again"}})
 wait_state(admin, first, lambda i: i["status"] == "approved")
 check("an existing comic <Volume> is cleared by a fix", "Volume" not in comicinfo(new_path), str(comicinfo(new_path)))
+
+# --- A file whose bytes need the optional 7-Zip tool (design §7.6, Review Focus 5) ---
+# A rar in the library is reachable through Fix on the permissive default image. The file is put
+# there by swapping the approved comic's bytes for the genuine (synthetic) rar fixture: where 7-Zip
+# is present Fix reads it; where it is not, Fix must refuse with the actionable message, never a
+# generic "Fix failed".
+_, _health = app("GET", "/api/health")
+caps = (_health or {}).get("capabilities") or {}
+original = new_path.read_bytes()
+new_path.write_bytes((FIXTURES / "sample.cbr").read_bytes())
+status, res = app("GET", f"/api/review/{first}/fix", admin)
+if caps.get("archiveExtras"):
+    check("Fix reads a rar file where 7-Zip is present", status == 200 and res.get("item"), f"{status} {str(res)[:200]}")
+else:
+    check("Fix is refused with the actionable capability message (415), not 'Fix failed'",
+          status == 415 and "-formats" in (res.get("error") or ""), f"{status} {res}")
+new_path.write_bytes(original)
 
 # --- Name clash is refused and changes nothing ---
 second = upload_and_approve(uploader, admin, f"Kc6 Fix {tag} 02.cbz", after, f"{after} #002")

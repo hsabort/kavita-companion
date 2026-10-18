@@ -3,6 +3,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { listEntries, pageImages, readEntry } from "./archive.js";
+import { isCapabilityError, type Capability } from "./capabilities.js";
 import { config } from "./config.js";
 import { db } from "./db.js";
 import { KINDLE_EXTENSIONS } from "./mobi.js";
@@ -21,6 +22,11 @@ export interface Inspection {
   hasEmbeddedMetadata: boolean;
   pageNames?: string[];          // ordered page image paths inside the archive (comics), for preview
   problem?: string;              // the file couldn't be read properly
+  // The format needs an optional tool this image does not carry (design §7.6). `null` when the file
+  // is readable here; a `Capability` when reading it was refused for a missing tool. The review UI
+  // uses it to disable an action that could only fail, and the preview route returns 415 with the
+  // actionable message rather than a generic 404.
+  unavailable: Capability | null;
 }
 
 export function kindOf(ext: string): FileKind {
@@ -63,7 +69,7 @@ async function saveCover(id: string, archive: string, entryPath: string): Promis
 export async function inspectFile(id: string, path: string, ext: string): Promise<{ inspection: Inspection; coverPath: string | null }> {
   const kind = kindOf(ext);
   if (kind === "pdf") {
-    return { inspection: { kind, pages: null, hasCover: false, embedded: {}, hasEmbeddedMetadata: false }, coverPath: null };
+    return { inspection: { kind, pages: null, hasCover: false, embedded: {}, hasEmbeddedMetadata: false, unavailable: null }, coverPath: null };
   }
   const entries = await listEntries(path);
   if (kind === "comic") {
@@ -86,7 +92,7 @@ export async function inspectFile(id: string, path: string, ext: string): Promis
     return {
       inspection: {
         kind, pages: pages.length, hasCover: !!coverPath, embedded, hasEmbeddedMetadata: !!infoEntry,
-        pageNames: pages.map((page) => page.path), problem,
+        pageNames: pages.map((page) => page.path), problem, unavailable: null,
       },
       coverPath,
     };
@@ -105,7 +111,7 @@ export async function inspectFile(id: string, path: string, ext: string): Promis
   const coverEntry = images.find((e) => /cover/i.test(e.path)) ?? images[0];
   const coverPath = coverEntry ? await saveCover(id, path, coverEntry.path) : null;
   return {
-    inspection: { kind, pages: null, hasCover: !!coverPath, embedded, hasEmbeddedMetadata: Object.keys(embedded).length > 0, problem },
+    inspection: { kind, pages: null, hasCover: !!coverPath, embedded, hasEmbeddedMetadata: Object.keys(embedded).length > 0, problem, unavailable: null },
     coverPath,
   };
 }
@@ -117,13 +123,20 @@ export function inspectInBackground(id: string) {
   if (!row?.stored_path || row.inspection) return;
   running.add(id);
   void inspectFile(id, row.stored_path, row.ext)
-    .catch((err: Error): { inspection: Inspection; coverPath: null } => ({
-      inspection: {
-        kind: kindOf(row.ext), pages: null, hasCover: false, embedded: {}, hasEmbeddedMetadata: false,
-        problem: `The file couldn't be opened: ${err.message}`,
-      },
-      coverPath: null,
-    }))
+    .catch((err: Error): { inspection: Inspection; coverPath: null } => {
+      // A format that needs a tool this image lacks is not "couldn't be opened": record the
+      // capability and its actionable message, so the review UI and the preview route can surface
+      // them verbatim (design §7.6) rather than a generic failure.
+      const capability = isCapabilityError(err);
+      return {
+        inspection: {
+          kind: kindOf(row.ext), pages: null, hasCover: false, embedded: {}, hasEmbeddedMetadata: false,
+          unavailable: capability ? err.capability : null,
+          problem: capability ? err.message : `The file couldn't be opened: ${err.message}`,
+        },
+        coverPath: null,
+      };
+    })
     .then(({ inspection, coverPath }) => q.save.run(JSON.stringify(inspection), coverPath, id))
     .finally(() => running.delete(id));
 }

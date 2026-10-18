@@ -13,6 +13,7 @@ import { pipeline } from "node:stream/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { createZip, extractAll, naturalCompare, pageImages, readEntry, type ArchiveEntry } from "./archive.js";
 import { currentUser, type SessionUser } from "./auth.js";
+import { capabilityMessage, isCapabilityError } from "./capabilities.js";
 import { notifyUploader } from "./notify.js";
 import { fulfilRequests } from "./requests.js";
 import { config, providerCacheTtlMsFor } from "./config.js";
@@ -420,7 +421,7 @@ async function reviewItem(row: UploadRow, libraryTypes: Map<number, number>) {
     : null;
   return {
     ...base,
-    inspection: { pages: inspection.pages, hasCover: inspection.hasCover, hasEmbeddedMetadata: inspection.hasEmbeddedMetadata },
+    inspection: { pages: inspection.pages, hasCover: inspection.hasCover, hasEmbeddedMetadata: inspection.hasEmbeddedMetadata, unavailable: inspection.unavailable ?? null },
     embedded: inspection.embedded,
     stagedName,
     defaults,
@@ -712,12 +713,17 @@ async function runJob(id: string) {
     await kavita.scanFolder(toKavitaPath(plan.seriesDir)).catch(() => undefined); // nightly scan + folder watching are backups
   } catch (err) {
     const message = err instanceof ReviewError || err instanceof Error ? err.message : "Unknown error";
+    // A missing capability is not a failure of this file: surface its actionable message with no
+    // generic "Fix failed"/"Approval failed" prefix (design §7.6). It is a backstop — the request
+    // routes refuse with 415 before a job is queued — but a file that changes mid-flight must not
+    // turn the message back into the generic one.
+    const prefix = isCapabilityError(err) ? "" : mode === "approve" ? "Approval failed: " : "Fix failed: ";
     console.error(`${mode === "fix" ? "Fix" : "Approval"} of ${id} failed`, err);
     if (mode === "approve") {
-      q.approvalFailed.run(`Approval failed: ${message} The upload is still waiting for review.`, Date.now(), id);
+      q.approvalFailed.run(`${prefix}${message} The upload is still waiting for review.`, Date.now(), id);
       audit("upload_approval_failed", row.reviewed_by, null, { id, error: message });
     } else {
-      q.fixFailed.run(`Fix failed: ${message} The file in the library was not changed.`, Date.now(), id);
+      q.fixFailed.run(`${prefix}${message} The file in the library was not changed.`, Date.now(), id);
       audit("upload_fix_failed", plan.actor ?? null, null, { id, error: message });
     }
     await rm(temporary, { force: true });
@@ -805,11 +811,22 @@ const fixCovers = new Map<string, string>(); // upload id -> cover extracted fro
 async function fixItem(row: UploadRow) {
   const source = sourceOf(row, "fix");
   if (!source.path || !(await exists(source.path))) throw new ReviewError(410, "The file is no longer in the library folder.");
-  const { inspection, coverPath } = await inspectFile(`fix-${row.id}`, source.path, source.ext).catch((err: Error) => ({
-    inspection: { kind: kindOf(source.ext), pages: null, hasCover: false, embedded: {}, hasEmbeddedMetadata: false,
-      problem: `The file couldn't be opened: ${err.message}` } as Inspection,
-    coverPath: null as string | null,
-  }));
+  // A missing capability propagates unchanged and the route returns 415 with its message; wrapping
+  // it in "The file couldn't be opened" is exactly the generic failure the design forbids (§7.6).
+  // Any other read failure (a corrupt archive) keeps that pre-existing "couldn't be opened" problem
+  // rather than turning into a 500.
+  let inspection: Inspection;
+  let coverPath: string | null;
+  try {
+    ({ inspection, coverPath } = await inspectFile(`fix-${row.id}`, source.path, source.ext));
+  } catch (err) {
+    if (isCapabilityError(err)) throw err;
+    inspection = {
+      kind: kindOf(source.ext), pages: null, hasCover: false, embedded: {}, hasEmbeddedMetadata: false,
+      unavailable: null, problem: `The file couldn't be opened: ${err instanceof Error ? err.message : String(err)}`,
+    };
+    coverPath = null;
+  }
   if (coverPath) fixCovers.set(row.id, coverPath);
   const libraries = await kavita.librariesCached();
   const libraryType = libraries.find((l) => l.id === row.library_id)?.type ?? 0;
@@ -1007,19 +1024,27 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     if (!requireReviewer(request, reply)) return;
     const row = getUpload(request.params.id);
     if (!row?.stored_path) return reply.code(404).send({ error: "File not found" });
-    let names: string[] = [];
+    let inspection: Inspection | null = null;
     try {
-      names = (row.inspection ? (JSON.parse(row.inspection) as Inspection).pageNames : undefined) ?? [];
+      inspection = row.inspection ? (JSON.parse(row.inspection) as Inspection) : null;
     } catch {
-      names = [];
+      inspection = null;
     }
+    // The item's format needs a tool this image lacks (design §7.6): refuse with the actionable
+    // message, so preview matches Fix and upload rather than reporting a generic "no such page".
+    const unavailable = inspection?.unavailable ?? null;
+    if (unavailable) return reply.code(415).send({ error: capabilityMessage(unavailable) });
+    const names = inspection?.pageNames ?? [];
     const index = Number(request.params.n) - 1;
     if (!Number.isInteger(index) || index < 0 || index >= names.length) return reply.code(404).send({ error: "No such page" });
     const entry = names[index]!;
     let image: Buffer;
     try {
       image = await readEntry(row.stored_path, entry, 25 * 1024 * 1024);
-    } catch {
+    } catch (err) {
+      // The file's bytes need 7-Zip even though its inspection said otherwise (the file may have
+      // been replaced): surface the capability message, never a generic "could not read".
+      if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       return reply.code(404).send({ error: "Could not read that page" });
     }
     reply.header("Content-Type", imageMime(entry));
@@ -1062,6 +1087,7 @@ export async function registerReviewRoutes(app: FastifyInstance) {
       plan = await planApproval(row, request.body);
     } catch (err) {
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
+      if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       throw err;
     }
     if (q.claim.run("approving", Date.now(), row.id, "pending").changes !== 1) {
@@ -1089,6 +1115,8 @@ export async function registerReviewRoutes(app: FastifyInstance) {
       return { item: await fixItem(row), libraries: (await kavita.librariesCached()).map((l) => ({ id: l.id, name: l.name, type: l.type })) };
     } catch (err) {
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
+      // Fix needs a tool this image lacks (design §7.6): the actionable message, not "Fix failed".
+      if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       throw err;
     }
   });
@@ -1116,6 +1144,7 @@ export async function registerReviewRoutes(app: FastifyInstance) {
       plan = await planApproval(row, request.body, "fix");
     } catch (err) {
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
+      if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       throw err;
     }
     if (q.claim.run("fixing", Date.now(), row.id, "approved").changes !== 1) {

@@ -952,6 +952,9 @@ function itemRow(item, shared) {
     ? el("button", { type: "button", className: "secondary", textContent: "Preview" })
     : null;
   if (previewBtn && item.inspection?.pages) previewBtn.addEventListener("click", () => openPreview(item.id, item.inspection.pages, 1));
+  // The item's format needs an optional tool this image lacks (design §7.6): disable the action so
+  // the reviewer is not offered one that can only fail. The reason is in the card's warnings.
+  if (item.inspection?.unavailable) approve.disabled = true;
 
   async function doApprove() {
     status.textContent = "";
@@ -1066,7 +1069,13 @@ async function openFix(id) {
   area.scrollIntoView({ behavior: "smooth", block: "start" });
   const { status, body } = await api(`/api/review/${encodeURIComponent(id)}/fix`);
   if (status !== 200) {
-    area.replaceChildren(el("p", { className: "error", textContent: body.error ?? "This file can't be fixed right now." }));
+    // 415 means the file needs the optional formats image (design §7.6): show the actionable reason
+    // the server sent, and disable the row's Fix action with the same reason, so the reviewer is not
+    // invited to retry something this image can never do — and never sees a generic "Fix failed".
+    const reason = body.error ?? "This file can't be fixed right now.";
+    area.replaceChildren(el("p", { className: "error", textContent: reason }));
+    const button = document.querySelector(`#review-recent li[data-id="${id}"] button`);
+    if (button) { button.disabled = true; button.title = reason; }
     return;
   }
   review = { ...review, libraries: body.libraries };
@@ -1075,7 +1084,7 @@ async function openFix(id) {
 
 function recentItem(item) {
   const label = { approving: "Approving…", approved: "Approved", fixing: "Saving changes…", rejected: "Rejected" }[item.status] ?? item.status;
-  const li = el("li", { className: `upload status-${item.status}` },
+  const li = el("li", { className: `upload status-${item.status}`, dataset: { id: item.id } },
     el("div", { className: "upload-name", textContent: item.filename }),
     el("div", {
       className: "upload-meta",
