@@ -15,15 +15,16 @@ Changed:
 - **A file the default image cannot handle is refused with the image that can.** The refusal names the
   `-formats` tag for the running release (`ghcr.io/hsabort/kavita-companion:0.9.0-formats`), and is
   surfaced on upload (the row ends `invalid` with that reason), on the page preview (415) and on Fix —
-  never a generic error or a silent failure. The health endpoint reports the capability set, and
-  Fix/Approve is disabled for an item whose format needs an absent capability.
+  never a generic error or a silent failure. The health endpoint reports the capability set; Approve is
+  disabled for an item whose format needs an absent capability, and Fix is refused with that reason and
+  then disabled, so the reviewer is never offered an action that can only fail.
 - **The images now ship their licences.** `LICENSE`, `NOTICE.md` and the fonts' OFL texts are copied
   into the default image, whose `org.opencontainers.image.licenses` label reads `Apache-2.0 AND
   OFL-1.1` because it contains nothing non-permissive. The `-formats` image additionally carries
-  7-Zip's and KindleUnpack's licence texts — plus the `loguru` MIT text KindleUnpack's wheel omits,
-  fetched at build time pinned by URL and SHA-256 — and its label reads `Apache-2.0 AND OFL-1.1 AND
-  GPL-3.0-only AND LGPL-2.1-or-later`. The Docker build context is now the repository root, so the
-  licence files have a single source of truth.
+  7-Zip's and KindleUnpack's licence texts, the `standard-imghdr` PSF-2.0 text, and the `loguru` MIT
+  text KindleUnpack's wheel omits (fetched at build time pinned by URL and SHA-256) — and its label
+  reads `Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later`. The Docker build context is
+  now the repository root, so the licence files have a single source of truth.
 - **Relicensed to Apache-2.0.** The repository was GPL-3.0-or-later; it is now the Apache License 2.0,
   Copyright 2026 James VanTassel (`LICENSE`, `NOTICE.md`, `README.md`, `package.json`). Copies
   distributed earlier keep their GPL-3.0-or-later rights — a licence change cannot withdraw them. New
