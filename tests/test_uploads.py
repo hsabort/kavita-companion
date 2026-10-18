@@ -11,15 +11,18 @@ import io
 import json
 import os
 import secrets
+import shutil
 import ssl
+import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
 import zipfile
 
 from harness import app, check, finish, login
-from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, ROOT, library_ids
+from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, ROOT, env, library_ids
 
 _libs = library_ids()
 COMICS, BOOKS = _libs["Comics"], _libs["Books"]
@@ -138,10 +141,97 @@ def make_epub_noncanonical():
     return buf.getvalue()
 
 
+# Runs inside the built image, with `mobiunpack` hidden from PATH so the spawn fails with ENOENT even
+# though the formats image carries the tool. That pins the error type independently of which image is
+# running: a missing tool is a CapabilityError, never a MobiError.
+MOBI_PROBE = r"""
+import { pathToFileURL } from "node:url";
+process.env.KAVITA_AUTH_KEY = "probe";
+process.env.PUBLIC_ORIGIN = "https://probe";
+const results = [];
+const check = (name, ok, detail = "") => results.push({ name, ok: !!ok, detail: String(detail) });
+let mobi, caps;
+try {
+  mobi = await import(pathToFileURL("/app/dist/mobi.js").href);
+  caps = await import(pathToFileURL("/app/dist/capabilities.js").href);
+} catch (err) {
+  check("dist/mobi.js loads", false, err && err.message);
+  console.log(JSON.stringify({ results }));
+  process.exit(0);
+}
+check("dist/mobi.js loads", true);
+try {
+  await mobi.convertKindleToEpub("/w/sample.mobi", "mobi", "/w/out.epub");
+  check("convertKindleToEpub raises CapabilityError('kindle') when mobiunpack is absent", false, "it resolved");
+} catch (err) {
+  check("convertKindleToEpub raises CapabilityError('kindle') when mobiunpack is absent",
+        err instanceof caps.CapabilityError && err.capability === "kindle",
+        `${err && err.name}: ${err && err.message}`);
+}
+console.log(JSON.stringify({ results }));
+"""
+
+
 uploader = login("UPLOADER")
 readonly = login("READONLY")
 admin = login("ADMIN")
 tag = secrets.token_hex(3)
+
+# Which optional tools this image carries (design §7.1). The shared test stack runs the formats
+# image, so both are present and the uploads below succeed; on the permissive default image the same
+# uploads are refused with the actionable message. The assertions are gated on this report so this
+# file is correct on either image (Task 8's tests/test_default_image.py owns the full default-image
+# suite). See the report for how the refusal assertions run without the shared stack.
+_, _health = app("GET", "/api/health")
+caps = (_health or {}).get("capabilities") or {}
+
+
+def capability_outcome(label, filename, data, library_id, capability, stored_ext):
+    """Upload a format this image may not support and assert the outcome for this image.
+
+    With the capability present the upload reaches the pending area; without it the file must be
+    refused with the actionable message (design §7.5), never queued, and audited as `upload_invalid`.
+    """
+    st, uid, body = tus_upload(uploader, filename, data, library_id=library_id)
+    check(f"{label} upload starts", st == 204, f"{st} {body}")
+    u = wait_final(uploader, uid)
+    if caps.get(capability):
+        check(f"a {label} file is accepted on an image with the {capability} capability",
+              u and u["status"] == "pending", str(u))
+        return
+    check(f"a {label} file is refused with the actionable capability message",
+          u and u["status"] == "invalid" and "-formats" in (u.get("error") or ""), str(u))
+    check(f"the refused {label} file never reaches the pending area",
+          not (INCOMING / "pending" / f"{uid}.{stored_ext}").exists(), str(uid))
+    _, activity = app("GET", "/api/admin/activity?action=upload_invalid&limit=200", admin)
+    audited = {e["detail"]["id"] for e in activity.get("entries", [])
+               if isinstance(e.get("detail"), dict) and "id" in e["detail"]}
+    check(f"the {label} refusal is audited as upload_invalid", uid in audited, str(uid))
+
+
+def mobi_module_check():
+    """`convertKindleToEpub` must raise CapabilityError, not MobiError, when the tool is absent."""
+    work = tempfile.mkdtemp(prefix="mobi-probe-")
+    try:
+        shutil.copy(ROOT / "tests" / "fixtures" / "sample.mobi", os.path.join(work, "sample.mobi"))
+        with open(os.path.join(work, "probe.mjs"), "w") as fh:
+            fh.write(MOBI_PROBE)
+        proc = subprocess.run(
+            ["docker", "run", "--rm", "--user", "1001:1001",
+             "-e", "PATH=/usr/local/bin:/usr/bin:/bin",  # hides /opt/kindleunpack/bin, keeps node
+             "-v", f"{work}:/w", env.get("COMPANION_IMAGE", "kavita-companion:test"),
+             "node", "/w/probe.mjs"],
+            capture_output=True, text=True)
+        try:
+            payload = json.loads(proc.stdout.strip().splitlines()[-1])
+            for r in payload["results"]:
+                check(r["name"], r["ok"], r.get("detail", ""))
+        except (ValueError, IndexError, KeyError):
+            check("convertKindleToEpub raises CapabilityError('kindle') when mobiunpack is absent",
+                  False, (proc.stdout + proc.stderr).strip()[-600:])
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
 
 # --- Refusals before any data is sent ---
 st, _, body = tus_create(None, "x.cbz", 100)
@@ -219,18 +309,35 @@ u = wait_final(uploader, alt_epub_id)
 check("a valid EPUB in a non-canonical layout is accepted, not misread as a zip",
       u and u["status"] == "pending", str(u))
 
+# --- RAR/7z need 7-Zip (the `archive-extras` capability): accepted where it is present, refused with
+# the actionable message where it is not (design §7.5). A .cbr/.cb7 whose bytes are really a zip is
+# still a zip and is accepted on either image (see test_archive_zip.py). ---
+capability_outcome("RAR", f"Rar Comic {tag}.rar",
+                   (ROOT / "tests" / "fixtures" / "sample.rar").read_bytes(), COMICS, "archiveExtras", "rar")
+capability_outcome("7z", f"Seven Comic {tag}.7z",
+                   (ROOT / "tests" / "fixtures" / "sample.7z").read_bytes(), COMICS, "archiveExtras", "7z")
+
 # --- Kindle (MOBI/AZW) books are accepted in Books and converted to EPUB for review ---
-for label, fixture, filename in (("MOBI", "sample.mobi", f"Kindle Book {tag}.mobi"),
-                                 ("AZW3 (KF8)", "sample.azw3", f"Kindle KF8 {tag}.azw3")):
-    st, kid, _ = tus_upload(uploader, filename, (ROOT / "tests" / "fixtures" / fixture).read_bytes(), library_id=BOOKS)
-    u = wait_final(uploader, kid)
-    check(f"a {label} book is accepted and converted", u and u["status"] == "pending", str(u))
-    _, rev = app("GET", "/api/review", admin)
-    item = next((i for i in rev.get("pending", []) if i["id"] == kid), None)
-    check(f"the converted {label} book is presented as an EPUB for review",
-          item and item.get("kind") == "epub", str(item)[:160])
+if caps.get("kindle"):
+    for label, fixture, filename in (("MOBI", "sample.mobi", f"Kindle Book {tag}.mobi"),
+                                     ("AZW3 (KF8)", "sample.azw3", f"Kindle KF8 {tag}.azw3")):
+        st, kid, _ = tus_upload(uploader, filename, (ROOT / "tests" / "fixtures" / fixture).read_bytes(), library_id=BOOKS)
+        u = wait_final(uploader, kid)
+        check(f"a {label} book is accepted and converted", u and u["status"] == "pending", str(u))
+        _, rev = app("GET", "/api/review", admin)
+        item = next((i for i in rev.get("pending", []) if i["id"] == kid), None)
+        check(f"the converted {label} book is presented as an EPUB for review",
+              item and item.get("kind") == "epub", str(item)[:160])
+else:
+    # On the permissive default image the same upload is refused with the actionable message, never a
+    # generic conversion failure (Review Focus 4).
+    capability_outcome("MOBI", f"Kindle Book {tag}.mobi",
+                       (ROOT / "tests" / "fixtures" / "sample.mobi").read_bytes(), BOOKS, "kindle", "mobi")
 st, _, body = tus_create(uploader, f"Kindle Comic {tag}.mobi", 4096, library_id=COMICS)
 check(".mobi in a Comics library is refused (415)", st == 415, f"{st} {body}")
+
+# --- convertKindleToEpub raises CapabilityError, not MobiError, when mobiunpack is absent ---
+mobi_module_check()
 
 # --- Concurrency limit: 3 in progress, 4th refused; then cancel them ---
 locs = []

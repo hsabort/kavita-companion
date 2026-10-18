@@ -14,6 +14,7 @@ import { EVENTS, Server } from "@tus/server";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { listEntries } from "./archive.js";
 import { currentUser } from "./auth.js";
+import { isCapabilityError, requireCapability } from "./capabilities.js";
 import { config } from "./config.js";
 import { audit, db } from "./db.js";
 import { inspectInBackground, removeCover } from "./inspect.js";
@@ -266,14 +267,34 @@ async function checkCompletedUpload(id: string) {
   const partial = join(PARTIAL_DIR, id);
   try {
     const detected = await detectType(partial);
-    if (!detected || !ACCEPTED[row.ext]?.includes(detected)) {
+    // A completion-time refusal: discard the partial, record why, audit it and tell the uploader.
+    // The wrong-type, missing-capability and failed-conversion refusals below are one behaviour.
+    const refuseInvalid = async (message: string) => {
       await discardPartial(id);
-      const what = detected ? `a ${detected} file` : "not a recognised comic, book or archive file";
-      const message = `This file is ${what}, which doesn't match .${row.ext}. It was discarded.`;
       q.setStatus.run("invalid", message, Date.now(), id);
       audit("upload_invalid", row.owner_name, null, { id, filename: row.filename, detected });
       notifyUploader(row.owner_id, "invalid", `Couldn't accept: ${row.filename}`, message);
+    };
+
+    if (!detected || !ACCEPTED[row.ext]?.includes(detected)) {
+      const what = detected ? `a ${detected} file` : "not a recognised comic, book or archive file";
+      await refuseInvalid(`This file is ${what}, which doesn't match .${row.ext}. It was discarded.`);
       return;
+    }
+
+    // A format this image can't read is refused with the image that carries the tool, before anything
+    // is queued (design §7.5). The check is content-based — a `.cbr` whose bytes are really a zip is a
+    // zip above and passes — and it is the single refusal point: the archive backend's own
+    // CapabilityError is swallowed by hasEpubContainer, and the conversion's is a mid-run backstop.
+    const needed = detected === "mobi" ? "kindle" : detected === "rar" || detected === "7z" ? "archive-extras" : null;
+    if (needed) {
+      try {
+        requireCapability(needed);
+      } catch (err) {
+        if (!isCapabilityError(err)) throw err;
+        await refuseInvalid(err.message);
+        return;
+      }
     }
 
     const sha256 = await sha256Of(partial);
@@ -309,11 +330,9 @@ async function checkCompletedUpload(id: string) {
       try {
         await convertKindleToEpub(partial, row.ext, storedPath);
       } catch (err) {
-        await discardPartial(id);
-        const message = err instanceof MobiError ? err.message : "This file couldn't be converted to EPUB.";
-        q.setStatus.run("invalid", message, Date.now(), id);
-        audit("upload_invalid", row.owner_name, null, { id, filename: row.filename, detected });
-        notifyUploader(row.owner_id, "invalid", `Couldn't accept: ${row.filename}`, message);
+        // A MobiError is a broken book; a CapabilityError means the tool vanished mid-run, so its
+        // actionable message must still reach the uploader rather than a generic conversion failure.
+        await refuseInvalid(err instanceof MobiError || isCapabilityError(err) ? err.message : "This file couldn't be converted to EPUB.");
         return;
       }
       ext = "epub";

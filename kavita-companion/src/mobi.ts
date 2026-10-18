@@ -10,6 +10,7 @@ import { copyFile, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promis
 import { tmpdir } from "node:os";
 import { join, relative, sep } from "node:path";
 import { createZip } from "./archive.js";
+import { CapabilityError, isCapabilityError } from "./capabilities.js";
 
 /** The Kindle container formats: Kavita can't read them, KindleUnpack can. */
 export const KINDLE_EXTENSIONS = new Set(["mobi", "azw", "azw3"]);
@@ -31,7 +32,14 @@ function run(command: string, args: string[], timeoutMs = 5 * 60_000): Promise<{
     const timer = setTimeout(() => child.kill("SIGKILL"), timeoutMs);
     child.stdout.on("data", (chunk) => (output += chunk));
     child.stderr.on("data", (chunk) => (output += chunk));
-    child.on("error", (err) => { clearTimeout(timer); reject(err); });
+    child.on("error", (err) => {
+      clearTimeout(timer);
+      // A spawn that fails with ENOENT is a missing tool, not a broken book: KindleUnpack is the
+      // optional `kindle` capability, so this raises the message naming the image that carries it
+      // (design §7.1, §7.5). Any other spawn failure — and a non-zero exit, below — stays a
+      // conversion failure and is reported as a MobiError by the caller.
+      reject((err as NodeJS.ErrnoException).code === "ENOENT" ? new CapabilityError("kindle") : err);
+    });
     child.on("close", (code) => { clearTimeout(timer); resolve({ code: code ?? 1, output }); });
   });
 }
@@ -75,7 +83,8 @@ async function findEpub(dir: string): Promise<string | null> {
 
 /**
  * Convert a Kindle ebook at `source` (stored without a file name) into an EPUB at `outFile`. Throws
- * `MobiError` with an uploader-facing message when the book is DRM-protected or can't be unpacked.
+ * `MobiError` with an uploader-facing message when the book is DRM-protected or can't be unpacked,
+ * and `CapabilityError("kindle")` when KindleUnpack is not installed (a missing tool, not a bad book).
  */
 export async function convertKindleToEpub(source: string, ext: string, outFile: string): Promise<void> {
   const work = await mkdtemp(join(tmpdir(), "kc-kindle-"));
@@ -112,6 +121,7 @@ export async function convertKindleToEpub(source: string, ext: string, outFile: 
     await createZip(root, outFile, { first: ["mimetype"], compressRest: true });
   } catch (err) {
     if (err instanceof MobiError) throw err;
+    if (isCapabilityError(err)) throw err;
     throw new MobiError("This file couldn't be converted to EPUB.");
   } finally {
     await rm(work, { recursive: true, force: true });
