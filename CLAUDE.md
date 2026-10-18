@@ -8,33 +8,32 @@ Start with `README.md`; details are in `docs/` — keep them current when behavi
 ## Status
 
 0.2.0 (theme sync, In Kavita ✓ confirmation, Fix for approved files, licence) — see CHANGELOG.
-Real users (jim, and others) use the portal: never touch their uploads or library files.
+Real users use the portal: never touch their uploads or library files.
 
 ## Working here
 
-- Repository: `/srv/kavita` (code) with runtime data in `/srv/kavita/data` and media in `/srv/media`
-  (moved from `~/projects/kavita` and `~/media` on 2026-10-15). Never commit `.env`, `data/`, `backups/`.
-  The test environment is a git worktree at `/srv/kavita-test` (branch `develop`).
+- This checkout holds the code; runtime data and the media root live where `.env` points them
+  (`README.md`). Never commit `.env`, `data/`, `backups/`.
+- Keep a **second checkout** as the test environment — a git worktree on a scratch branch — so
+  experiments never touch the live library. `tests/settings.py` aborts unless the checkout is marked
+  as a test stack and its media root is not the live one (see `docs/development.md`).
 - Rebuild the portal: `docker compose up -d --build kavita-companion`. Caddy config change:
   `docker compose restart caddy`.
 - Kavita API from the host: `python3 scripts/kavita-api.py METHOD PATH [JSON] [--as uploader|readonly|admin]`.
-- Tests: run them in the test worktree `/srv/kavita-test` against the test stack, not here (they create
-  series and change roles; see docs/development.md). `tests/run.sh [--browser] [--roles]` needs the
-  TEST_* accounts (`tests/README.md`); `tests/create_test_accounts.py` creates them. On the live stack,
-  never run `--roles` while real people use the portal: it changes test-uploader's roles. More than two
-  full runs within 15 minutes trips the per-address failed sign-in limit (restart kavita-companion).
-- Never commit or push until the user has created the repository and provided credentials for it.
+- Tests: run them in the test checkout against the test stack, not here (they create series and change
+  roles; see `docs/development.md`). `tests/run.sh [--browser] [--roles]` needs the `TEST_*` accounts
+  (`tests/README.md`); `tests/create_test_accounts.py` creates them. On the live stack, never run
+  `--roles` while real people use the portal: it changes test-uploader's roles. More than two full
+  runs within 15 minutes trips the per-address failed sign-in limit (restart kavita-companion).
 - No Node on the host: build/type-check inside Docker (`docs/development.md`).
 
-## Environment gotchas (the original host)
+## Environment gotchas
 
-- Unprivileged Incus/LXC container: Docker storage driver btrfs, nesting enabled (`host/README.md`).
-- The Incus host forwards public ports 20001–20099 to this container's **127.0.0.1** with the PROXY
-  protocol; anything bound to 127.0.0.1/0.0.0.0 in that range is public and must accept PROXY headers
-  (or sit behind Caddy). SSH (20000) has its own forward without it. When asking the owner to change
-  host forwards, give all steps as one paste.
-- Only ports 20001–20099 may be published on this host.
-- Let's Encrypt HTTP-01 reaches Caddy via Apache on the Incus host forwarding
-  `/.well-known/acme-challenge/` to port 20003.
-- Real users (jim, and others) use the portal: check `audit_log` for recent activity before anything
-  disruptive, and never touch non-test uploads or library files.
+- The app runs in an **unprivileged container**. Docker uses the btrfs storage driver with nesting
+  enabled; the host side is described in `host/README.md`.
+- **Anything the host publishes is public.** Bind a port only behind Caddy, or make the service accept
+  PROXY headers itself. When asking the host owner to change a forward, give every step as one paste.
+- Only the host's reserved port range may be published. See `host/README.md` for the range and for how
+  certificate challenges are relayed to Caddy.
+- Real users use the portal: check `audit_log` for recent activity before anything disruptive, and
+  never touch non-test uploads or library files.

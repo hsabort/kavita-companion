@@ -364,7 +364,7 @@ async function refreshUploads() {
 
 // ---------- Review (admins) ----------
 // Pending uploads are shown in groups (same uploader, library and series), so a batch like
-// "Iron Man #1-6" is reviewed once: shared fields at the top, per-file rows below.
+// "Ironclad #1-6" is reviewed once: shared fields at the top, per-file rows below.
 
 const el = (tag, props = {}, ...children) => {
   const { dataset, ...rest } = props;
@@ -500,7 +500,7 @@ function templateName(libraryType, f) {
   const num = f.Number?.trim();
   const vol = f.Volume?.trim();
   const title = cleanBookTitle(f.Title ?? "", series);
-  // A series that already names the volume ("Iron Man v1") must not repeat it in the file name.
+  // A series that already names the volume ("Ironclad v1") must not repeat it in the file name.
   const showVol = vol && volumeInSeries(series) !== Number(vol) ? vol : "";
   if (libraryType === 2 || libraryType === 4) { // Book / Light novel
     if (series) return `${series}${num ? ` #${num}` : ""}${title ? ` - ${title}` : ""}`;

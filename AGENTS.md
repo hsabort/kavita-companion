@@ -1,7 +1,7 @@
 # Agent notes — kavita-companion
 
-Cross-tool agent instructions for this repository. See also `CLAUDE.md` for host/environment
-specifics (container, ports, test worktree, live-user safety).
+Cross-tool agent instructions for this repository. See also `CLAUDE.md` for how to work here
+(container, tests, live-user safety).
 
 ## Coordination with a partner project
 

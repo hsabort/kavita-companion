@@ -69,7 +69,7 @@ const obj = (value: unknown): Record<string, unknown> =>
   value && typeof value === "object" ? (value as Record<string, unknown>) : {};
 const text = (value: unknown): string => plainText(str(value));
 
-/** Strip GCD's "(<year> series)" disambiguator from a series name: "Batman (2016 series)" -> "Batman". */
+/** Strip GCD's "(<year> series)" disambiguator from a series name: "Ironclad (2016 series)" -> "Ironclad". */
 function stripSeriesYear(value: string): string {
   return value.replace(/\s*\(\d{4} series\)\s*$/i, "").trim();
 }

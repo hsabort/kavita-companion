@@ -102,7 +102,7 @@ function requireReviewer(request: FastifyRequest, reply: FastifyReply): SessionU
 // here because callers and the rule spec already know them by this path.
 export { safeSegment } from "./rules.js";
 
-/** Kavita path (/data/comics/Saga) -> companion path (/media/comics/Saga). Null if outside /data. */
+/** Kavita path (/data/comics/Halcyon) -> companion path (/media/comics/Halcyon). Null if outside /data. */
 function toLocalPath(kavitaPath: string): string | null {
   const prefix = config.kavitaDataPrefix.replace(/\/$/, "") + "/";
   if (!kavitaPath.startsWith(prefix)) return null;
@@ -135,7 +135,7 @@ async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: 
 
   if (mediaClass(libraryType) === "book") {
     // Books are identified by their Title. Kavita's file-name parser is manga-shaped (it reads
-    // "Catch-22" as series "Catch" and keeps an author prefix), so book defaults come from the
+    // "Cross-Fire" as series "Cross" and keeps an author prefix), so book defaults come from the
     // file-name guess plus embedded metadata instead.
     defaults = bookMediaDefaults(embedded, row.filename);
   } else {

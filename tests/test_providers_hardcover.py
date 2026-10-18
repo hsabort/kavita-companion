@@ -164,17 +164,17 @@ try:
     # --- the series hint breaks a tie between equally-scored title matches (the title is the key) ---
     fake.reset()
     tied = {"data": {"search": {"results": [
-        {"id": 9101, "title": "The Final Empire", "featured_series": {"name": "Elantris"}, "release_year": None},
-        {"id": 9102, "title": "The Final Empire", "featured_series": {"name": "Mistborn"}, "release_year": None},
+        {"id": 9101, "title": "The Cinder Throne", "featured_series": {"name": "Emberlight"}, "release_year": None},
+        {"id": 9102, "title": "The Cinder Throne", "featured_series": {"name": "Ashfall"}, "release_year": None},
     ]}}}
     fake.script(PATH, [{"json": tied}, {"fixture": "record", "provider": "hardcover"},
                        {"json": tied}, {"fixture": "record", "provider": "hardcover"}])
     status, body = app("POST", "/api/admin/providers/hardcover/preview", admin,
-                       {"query": {"title": "The Final Empire", "series": "Mistborn"}})
+                       {"query": {"title": "The Cinder Throne", "series": "Ashfall"}})
     check("the series hint promotes the matching series on a title tie",
           [c["externalId"] for c in body.get("candidates", [])] == ["9102", "9101"], str(body.get("candidates")))
     status, body = app("POST", "/api/admin/providers/hardcover/preview", admin,
-                       {"query": {"title": "The Final Empire"}})
+                       {"query": {"title": "The Cinder Throne"}})
     check("without a series hint the provider order is kept (it never overrides the title)",
           [c["externalId"] for c in body.get("candidates", [])] == ["9101", "9102"], str(body.get("candidates")))
 

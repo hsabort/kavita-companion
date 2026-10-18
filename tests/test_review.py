@@ -172,16 +172,16 @@ if status == 202:
 
 # --- A standalone book needs no invented series: it lands in the author's folder ---
 author = f"Test Author {tag}"
-standalone_id = upload(uploader, "Dune.epub", epub(), BOOKS)
+standalone_id = upload(uploader, "Vermilion.epub", epub(), BOOKS)
 wait_ready(admin, [standalone_id])
 status, res = app("POST", f"/api/review/{standalone_id}/approve", admin,
-                  {"libraryId": BOOKS, "seriesName": "", "filename": "Dune",
-                   "metadata": {"Title": "Dune", "Writer": author}})
+                  {"libraryId": BOOKS, "seriesName": "", "filename": "Vermilion",
+                   "metadata": {"Title": "Vermilion", "Writer": author}})
 standalone_dir = MEDIA / "books" / author
-standalone_final = standalone_dir / "Dune.epub"
+standalone_final = standalone_dir / "Vermilion.epub"
 cleanup_paths.append(standalone_dir)
 check("a standalone book is approved with no typed series, into the author's folder",
-      status == 202 and res.get("destination", "").endswith(f"{author}/Dune.epub"), f"{status} {res}")
+      status == 202 and res.get("destination", "").endswith(f"{author}/Vermilion.epub"), f"{status} {res}")
 if status == 202:
     wait_approved(admin, standalone_id)
     check("the standalone book file is in the library", standalone_final.exists(), str(res))

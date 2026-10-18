@@ -1,7 +1,7 @@
 // Tidy a name before it becomes a folder or file in the library.
 //
-// The library is full of scene/release names: "Sex Criminals 026 (2020) (Digital) (Zone-Empire).cbr",
-// "Solo Leveling 159 (2021) (Digital) (LuCaZ).cbz", "(Dungeon Crawler Carl 01 - ...". Kavita can find
+// The library is full of scene/release names: "Night Thieves 026 (2020) (Digital) (Zone-Empire).cbr",
+// "Ascendant 159 (2021) (Digital) (LuCaZ).cbz", "(Dungeon Delver 01 - ...". Kavita can find
 // most of them, but the names are ugly and a round-trip re-upload is the moment to fix them. This
 // module is the one place that decides what a clean name is, so the review card's suggestion and the
 // approval plan cannot disagree. Filesystem safety stays `safeSegment()`'s job (it runs last).
@@ -55,7 +55,7 @@ export function dropOrphanBrackets(input: string): string {
  */
 export function cleanName(input: string): string {
   let s = (input ?? "").normalize("NFC");
-  // Innermost groups first, so "(Saga (1968-1996)" loses "(1968-1996)" and then the orphan "(".
+  // Innermost groups first, so "(Halcyon (1968-1996)" loses "(1968-1996)" and then the orphan "(".
   s = s.replace(/[(\[]([^()\[\]]*)[)\]]/g, (whole, inner: string) => (isNoiseGroup(inner) ? " " : whole));
   s = dropOrphanBrackets(s);
   s = s.replace(/\s+/g, " ").trim();
@@ -65,9 +65,9 @@ export function cleanName(input: string): string {
 
 /**
  * A book title, with a repeated series prefix and a trailing series blurb removed:
- * "Dungeon Crawler Carl: A LitRPG/Gamelit Adventure" -> "A LitRPG/Gamelit Adventure";
- * "The Gate of the Feral Gods: Dungeon Crawler Carl Book 4" -> "The Gate of the Feral Gods".
- * A title with no series (or no match) is only `cleanName`-ed, so "Dune: Messiah" is left alone.
+ * "Dungeon Delver: A LitRPG/Gamelit Adventure" -> "A LitRPG/Gamelit Adventure";
+ * "The Gate of the Silver Gods: Dungeon Delver Book 4" -> "The Gate of the Silver Gods".
+ * A title with no series (or no match) is only `cleanName`-ed, so "Vermilion: Requiem" is left alone.
  */
 export function cleanBookTitle(title: string, series = ""): string {
   const cleaned = cleanName(title);
@@ -82,7 +82,7 @@ export function cleanBookTitle(title: string, series = ""): string {
   return out || cleaned;
 }
 
-/** Does this series already name a volume, e.g. "Iron Man v1" / "Saga Vol. 2"? Returns it, or null. */
+/** Does this series already name a volume, e.g. "Ironclad v1" / "Halcyon Vol. 2"? Returns it, or null. */
 export function volumeInSeries(series: string): number | null {
   const match = /(?:^|\s)(?:v|vol\.?|volume)\s*0*(\d+)\s*$/i.exec(cleanName(series));
   return match ? Number(match[1]) : null;
@@ -90,7 +90,7 @@ export function volumeInSeries(series: string): number | null {
 
 /**
  * Drop a volume token from a file name when the series already carries it: a reviewer who files
- * "Iron Man v1 01.cbr" under the series "Iron Man v1" would otherwise get "Iron Man v1 v01 #001.cbz".
+ * "Ironclad v1 01.cbr" under the series "Ironclad v1" would otherwise get "Ironclad v1 v01 #001.cbz".
  * Only the token right after the series prefix is removed, so a "v1" inside the series name survives.
  */
 export function dedupeSeriesVolume(name: string, series: string, volume?: string): string {

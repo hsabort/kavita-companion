@@ -100,7 +100,7 @@ try:
     check("Genre takes the genre-like subjects (heuristic)",
           f.get("Genre") == "Science fiction, Fantasy fiction, Fiction", str(f.get("Genre")))
     check("Tags keeps the remaining subjects (no duplication)",
-          f.get("Tags") == "Dune (Imaginary place), 823/.912", str(f.get("Tags")))
+          f.get("Tags") == "Vermilion (Imaginary place), 823/.912", str(f.get("Tags")))
     check("the record is tagged as a book", body.get("record", {}).get("media") == "book", str(body.get("record")))
     check("the work, its first edition and both authors were fetched",
           count_exact("/works/OL9001W.json") == 1 and count_exact("/works/OL9001W/editions.json") == 1

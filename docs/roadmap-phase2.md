@@ -800,7 +800,7 @@ to redact `token`/`key`/`apiKey` query parameters and request headers, matching 
   output as the lowest-precedence candidate, so the UI is one list, not two features. No new tab; §7's
   Review tab already hosts the card.
 - **Requests (§2, `requests.ts`).** `fulfilRequests` matches on `normalize(normalised series) +
-  number`; provider links improve that by letting a request (e.g. "Saga (2012)") match the canonical
+  number`; provider links improve that by letting a request (e.g. "Halcyon (2012)") match the canonical
   linked series name. Optionally store `provider`/`external_id` on a request so the admin's fulfil flow
   can pull the same cover/metadata. Scope: start with link-assisted matching only; no schema change to
   `requests` is required (the link lookup is by normalised name + library).

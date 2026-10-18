@@ -208,7 +208,7 @@ export async function seriesContents(seriesId: number): Promise<{ numbers: strin
   return { numbers: [...numbers], volumes: [...volumes] };
 }
 
-/** Paths (Kavita's, e.g. /data/comics/Saga/Saga #001.cbz) of every file in a series. */
+/** Paths (Kavita's, e.g. /data/comics/Halcyon/Halcyon #001.cbz) of every file in a series. */
 export async function seriesFiles(seriesId: number): Promise<string[]> {
   const res = await kavitaFetch(`/api/Series/volumes?seriesId=${seriesId}`);
   if (!res.ok) throw new Error(`Kavita volumes: HTTP ${res.status}`);
@@ -242,7 +242,7 @@ export async function parseName(filename: string, libraryType: number): Promise<
   return (await res.json()) as ParsedName;
 }
 
-/** Ask Kavita to scan one folder (a Kavita path, e.g. /data/comics/Saga). Queued; takes ~1 minute. */
+/** Ask Kavita to scan one folder (a Kavita path, e.g. /data/comics/Halcyon). Queued; takes ~1 minute. */
 export async function scanFolder(kavitaFolderPath: string): Promise<void> {
   const res = await kavitaFetch("/api/Library/scan-folder", {
     method: "POST",

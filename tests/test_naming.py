@@ -77,27 +77,27 @@ def defaults_of(items, upload_id):
 try:
     # --- comic / manga: the series Kavita or the file reports is cleaned ---
     id_comic = upload(uploader, f"Whatever {tag} 001.cbz",
-                      cbz(comicinfo(Series="(Saga (1968-1996)",
-                                     Title="Saga 001 (2020) (Digital) (Zone-Empire)")), COMICS)
+                      cbz(comicinfo(Series="(Halcyon (1968-1996)",
+                                     Title="Halcyon 001 (2020) (Digital) (Zone-Empire)")), COMICS)
     id_manga = upload(uploader, f"Whatever {tag} 001.cbz",
-                      cbz(comicinfo(Series="Solo Leveling (2021) (Digital) (LuCaZ)")), MANGA)
+                      cbz(comicinfo(Series="Ascendant (2021) (Digital) (LuCaZ)")), MANGA)
     id_trade = upload(uploader, f"Kc Trade {tag} Vol. 05 - Part 01 (2017) (Digital) (Zone-Empire).cbr",
                       cbz(), COMICS)
 
     # --- books: the Title loses a repeated series prefix and a trailing series blurb ---
     id_blurb = upload(uploader, f"Blurb {tag}.epub",
-                      epub(dc_title="The Gate of the Feral Gods: Dungeon Crawler Carl Book 4",
-                           calibre_series="Dungeon Crawler Carl", calibre_index="4"), BOOKS)
+                      epub(dc_title="The Gate of the Silver Gods: Dungeon Delver Book 4",
+                           calibre_series="Dungeon Delver", calibre_index="4"), BOOKS)
     id_prefix = upload(uploader, f"Prefix {tag}.epub",
-                       epub(dc_title="Dungeon Crawler Carl: A LitRPG/Gamelit Adventure",
-                            calibre_series="Dungeon Crawler Carl", calibre_index="1"), BOOKS)
+                       epub(dc_title="Dungeon Delver: A LitRPG/Gamelit Adventure",
+                            calibre_series="Dungeon Delver", calibre_index="1"), BOOKS)
     id_dirty = upload(uploader, f"Dirty {tag}.epub",
-                      epub(dc_title="The Ultimate Hitchhiker's Guide to the Galaxy (2005)",
-                           calibre_series="(Dungeon Crawler Carl", calibre_index="2"), BOOKS)
-    id_colon = upload(uploader, f"Colon {tag}.epub", epub(dc_title="Dune: Messiah"), BOOKS)
+                      epub(dc_title="The Utterly Complete Guide to Everything (2005)",
+                           calibre_series="(Dungeon Delver", calibre_index="2"), BOOKS)
+    id_colon = upload(uploader, f"Colon {tag}.epub", epub(dc_title="Vermilion: Requiem"), BOOKS)
     id_author_series = upload(uploader, f"AuthorSeries {tag}.epub",
-                              epub(dc_title="The Ultimate Hitchhiker's Guide to the Galaxy",
-                                   dc_creator="Douglas Adams", calibre_series="Douglas Adams"), BOOKS)
+                              epub(dc_title="The Utterly Complete Guide to Everything",
+                                   dc_creator="Dana Aldridge", calibre_series="Dana Aldridge"), BOOKS)
 
     uploaded += [id_comic, id_manga, id_blurb, id_prefix, id_dirty, id_colon, id_author_series, id_trade]
 
@@ -110,11 +110,11 @@ try:
 
     c = defaults_of(items, id_comic)
     check("a comic's bracketed year range and orphan bracket are stripped from the series",
-          c.get("Series") == "Saga", str(c))
+          c.get("Series") == "Halcyon", str(c))
 
     m = defaults_of(items, id_manga)
     check("a manga's year and scanner tag are stripped from the series",
-          m.get("Series") == "Solo Leveling", str(m))
+          m.get("Series") == "Ascendant", str(m))
 
     t = defaults_of(items, id_trade)
     check("a Vol. trade suggests no issue number (a subtitle 'Part 01' is not one)",
@@ -122,10 +122,10 @@ try:
 
     b = defaults_of(items, id_blurb)
     check("a trailing series blurb is dropped from a book title",
-          b.get("Title") == "The Gate of the Feral Gods" and b.get("Series") == "Dungeon Crawler Carl", str(b))
+          b.get("Title") == "The Gate of the Silver Gods" and b.get("Series") == "Dungeon Delver", str(b))
     check("the staged name is the cleaned canonical name",
           (items.get(id_blurb) or {}).get("stagedName")
-          == "Dungeon Crawler Carl #4 - The Gate of the Feral Gods.epub",
+          == "Dungeon Delver #4 - The Gate of the Silver Gods.epub",
           str((items.get(id_blurb) or {}).get("stagedName")))
 
     p = defaults_of(items, id_prefix)
@@ -134,16 +134,16 @@ try:
 
     d = defaults_of(items, id_dirty)
     check("a book's orphan bracket and bare year are stripped",
-          d.get("Series") == "Dungeon Crawler Carl"
-          and d.get("Title") == "The Ultimate Hitchhiker's Guide to the Galaxy", str(d))
+          d.get("Series") == "Dungeon Delver"
+          and d.get("Title") == "The Utterly Complete Guide to Everything", str(d))
 
     y = defaults_of(items, id_colon)
     check("a standalone title with a colon is left alone",
-          y.get("Title") == "Dune: Messiah", str(y))
+          y.get("Title") == "Vermilion: Requiem", str(y))
 
     s = defaults_of(items, id_author_series)
     check("an author written as the series is not treated as a series",
-          not s.get("Series") and s.get("Title") == "The Ultimate Hitchhiker's Guide to the Galaxy", str(s))
+          not s.get("Series") and s.get("Title") == "The Utterly Complete Guide to Everything", str(s))
 finally:
     for upload_id in uploaded:
         app("DELETE", f"/api/uploads/{upload_id}", uploader)

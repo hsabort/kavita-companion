@@ -1,0 +1,245 @@
+{
+  "spec": "companion-rules-v1",
+  "family": "T",
+  "rules": {
+    "T1": {
+      "signature": "mediaClass(libraryType: number) -> \"manga\" | \"comic\" | \"book\"",
+      "cases": [
+        {
+          "id": "T1-001",
+          "in": [
+            0
+          ],
+          "out": "manga",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-002",
+          "in": [
+            2
+          ],
+          "out": "book",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-003",
+          "in": [
+            4
+          ],
+          "out": "book",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-004",
+          "in": [
+            1
+          ],
+          "out": "comic",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-005",
+          "in": [
+            5
+          ],
+          "out": "comic",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-006",
+          "in": [
+            3
+          ],
+          "out": "comic",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-007",
+          "in": [
+            99
+          ],
+          "out": "comic",
+          "provenance": "spec §8.1"
+        },
+        {
+          "id": "T1-008",
+          "in": [
+            -1
+          ],
+          "out": "comic",
+          "provenance": "spec §8.1"
+        }
+      ]
+    },
+    "T2": {
+      "signature": "fileKind(ext) -> \"comic\" | \"epub\" | \"pdf\" ; ACCEPTED[ext] -> allowed detected content",
+      "runnable": false,
+      "reason": "src/uploads.ts opens the database and registers tus/HTTP routes at import, so ACCEPTED and ACCEPTED_EXTENSIONS cannot be imported without side effects; the file-kind mapping lives in src/inspect.ts kindOf(), which also imports config and db. The cases transcribe both mappings.",
+      "cases": [
+        {
+          "id": "T2-001",
+          "in": [
+            "cbz"
+          ],
+          "out": {
+            "kind": "comic",
+            "allowedContent": [
+              "zip",
+              "rar",
+              "7z"
+            ]
+          },
+          "provenance": "spec §8.2"
+        },
+        {
+          "id": "T2-002",
+          "in": [
+            "cbr"
+          ],
+          "out": {
+            "kind": "comic",
+            "allowedContent": [
+              "zip",
+              "rar",
+              "7z"
+            ]
+          },
+          "provenance": "spec §8.2 (a .cbr may really be a zip)"
+        },
+        {
+          "id": "T2-003",
+          "in": [
+            "cb7"
+          ],
+          "out": {
+            "kind": "comic",
+            "allowedContent": [
+              "zip",
+              "rar",
+              "7z"
+            ]
+          },
+          "provenance": "spec §8.2 worked example"
+        },
+        {
+          "id": "T2-004",
+          "in": [
+            "zip"
+          ],
+          "out": {
+            "kind": "comic",
+            "allowedContent": [
+              "zip",
+              "rar",
+              "7z"
+            ]
+          },
+          "provenance": "spec §8.2"
+        },
+        {
+          "id": "T2-005",
+          "in": [
+            "rar"
+          ],
+          "out": {
+            "kind": "comic",
+            "allowedContent": [
+              "zip",
+              "rar",
+              "7z"
+            ]
+          },
+          "provenance": "spec §8.2"
+        },
+        {
+          "id": "T2-006",
+          "in": [
+            "7z"
+          ],
+          "out": {
+            "kind": "comic",
+            "allowedContent": [
+              "zip",
+              "rar",
+              "7z"
+            ]
+          },
+          "provenance": "spec §8.2"
+        },
+        {
+          "id": "T2-007",
+          "in": [
+            "epub"
+          ],
+          "out": {
+            "kind": "epub",
+            "allowedContent": [
+              "epub"
+            ]
+          },
+          "provenance": "spec §8.2"
+        },
+        {
+          "id": "T2-008",
+          "in": [
+            "pdf"
+          ],
+          "out": {
+            "kind": "pdf",
+            "allowedContent": [
+              "pdf"
+            ]
+          },
+          "provenance": "spec §8.2"
+        },
+        {
+          "id": "T2-009",
+          "in": [
+            "mobi"
+          ],
+          "out": {
+            "kind": "epub",
+            "allowedContent": [
+              "mobi"
+            ]
+          },
+          "provenance": "spec §8.2 worked example (converted to EPUB)"
+        },
+        {
+          "id": "T2-010",
+          "in": [
+            "azw"
+          ],
+          "out": {
+            "kind": "epub",
+            "allowedContent": [
+              "mobi"
+            ]
+          },
+          "provenance": "spec §8.2 (Kindle extension)"
+        },
+        {
+          "id": "T2-011",
+          "in": [
+            "azw3"
+          ],
+          "out": {
+            "kind": "epub",
+            "allowedContent": [
+              "mobi"
+            ]
+          },
+          "provenance": "spec §8.2 (Kindle extension)"
+        },
+        {
+          "id": "T2-012",
+          "in": [
+            "txt"
+          ],
+          "out": null,
+          "provenance": "new edge case (not in ACCEPTED_EXTENSIONS; rejected at upload)"
+        }
+      ]
+    }
+  }
+}

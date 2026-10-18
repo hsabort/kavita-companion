@@ -81,7 +81,7 @@ Short records of choices that shape this project, newest last. Each says what wa
   (see `docs/metadata-providers.md`).
 - **Review UX — the "Find metadata" click flow.** The candidate list, "Apply selected fields" and the
   per-field source chips all live inside the wide review card; consider a focused dialog for the
-  choose-and-apply step (raised after fixing Star Wars #076/#077).
+  choose-and-apply step (raised after fixing Starfall #076/#077).
 - **MOBI/AZW3 support (built, 0.6.9).** Kavita reads EPUB/PDF only, so Kindle books used to be refused
   at upload. Now `.mobi`/`.azw`/`.azw3` are accepted **in a Books library** and converted to EPUB on
   upload-complete with **KindleUnpack** (the `mobi` PyPI package, pure Python, GPL-3.0) — Python lives in

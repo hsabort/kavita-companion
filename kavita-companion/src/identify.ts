@@ -2,7 +2,7 @@
 //
 // Books are searched by their Title, not their series, so a clean Title matters more than a Series.
 // Kavita's own file-name parser is shaped for manga/comics ("Series 001") and mangles book names
-// (it reads "Catch-22" as series "Catch", keeps an author prefix, and drops a "#1"), so book
+// (it reads "Cross-Fire" as series "Cross", keeps an author prefix, and drops a "#1"), so book
 // defaults are built here from the file name plus the file's embedded metadata instead.
 import type { Metadata } from "./metadata.js";
 import { cleanBookTitle, cleanName } from "./naming.js";
@@ -36,8 +36,8 @@ export function stripSeriesMarker(name: string): { name: string; number?: string
 /**
  * Guess the title / series / number / author from a book file name.
  *
- * The separator is a spaced dash " - ", so a hyphen inside a word ("Catch-22") never splits and a
- * numeric title ("1984") stays a title. Recognises `Series 01 - Title`, `Series #1`, `01 - Title`
+ * The separator is a spaced dash " - ", so a hyphen inside a word ("Cross-Fire") never splits and a
+ * numeric title ("2087") stays a title. Recognises `Series 01 - Title`, `Series #1`, `01 - Title`
  * and `Author - Title`. Best-effort only: the reviewer can edit everything it returns.
  */
 export function guessFromFilename(filename: string): NameGuess {

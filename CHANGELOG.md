@@ -37,20 +37,20 @@ Fixed:
 Added:
 - **Names are cleaned before they reach the library.** A new `cleanName()` drops release/scene tags
   (`(2020) (Digital) (Zone-Empire)`, `(LuCaZ)`, `(-KS-)`), bare years and year ranges, and orphan
-  brackets (`(Dungeon Crawler Carl` becomes `Dungeon Crawler Carl`), then collapses whitespace. It is
+  brackets (`(Dungeon Delver` becomes `Dungeon Delver`), then collapses whitespace. It is
   applied to a comic/manga's series folder and file name at approval, and to the series the review
   card suggests.
 - **A book's title is tidied too.** `cleanBookTitle()` drops a repeated series prefix
-  (`Dungeon Crawler Carl: A LitRPG/Gamelit Adventure` -> `A LitRPG/Gamelit Adventure`) and a trailing
-  series blurb (`The Gate of the Feral Gods: Dungeon Crawler Carl Book 4` ->
-  `The Gate of the Feral Gods`). A title with no series (`Dune: Messiah`) is left alone. The portal's
-  destination preview uses the same rules, so it matches what the server writes.
+  (`Dungeon Delver: A LitRPG/Gamelit Adventure` -> `A LitRPG/Gamelit Adventure`) and a trailing
+  series blurb (`The Gate of the Silver Gods: Dungeon Delver Book 4` ->
+  `The Gate of the Silver Gods`). A title with no series (`Vermilion: Requiem`) is left alone. The
+  portal's destination preview uses the same rules, so it matches what the server writes.
 - **Two round-trip traps are closed.** A standalone book no longer gets its author written as
   `calibre:series` (so re-uploading its own file cannot turn it into a series book), and an embedded
   series that merely repeats the author is ignored. A series that already names the volume
-  (`Iron Man v1`) no longer produces a doubled volume (`Iron Man v1 v01 #001.cbz` -> `Iron Man v1 #001.cbz`).
+  (`Ironclad v1`) no longer produces a doubled volume (`Ironclad v1 v01 #001.cbz` -> `Ironclad v1 #001.cbz`).
 - **A `Vol.` trade no longer suggests an issue number.** Kavita sometimes reads one out of the
-  subtitle (`… Imperial Phase Part 01`), which would become a spurious `#001`; a file with an explicit
+  subtitle (`… Midnight Part 01`), which would become a spurious `#001`; a file with an explicit
   `Vol.` marker and a volume now suggests the volume alone (the reviewer can still type a number).
 
 Changed:
@@ -76,8 +76,8 @@ Fixed:
 
 Added:
 - **Books identify from their file name and embedded metadata, title-first.** A bare or oddly-named
-  EPUB now yields a real Title instead of a mangled series: `Catch-22.epub` is the title `Catch-22`
-  (not series `Catch`), `Mistborn 01 - The Final Empire.epub` splits into Series/Number/Title, and
+  EPUB now yields a real Title instead of a mangled series: `Cross-Fire.epub` is the title `Cross-Fire`
+  (not series `Cross`), `Ashfall 01 - The Cinder Throne.epub` splits into Series/Number/Title, and
   `Author - Title` keeps the title clean and supplies the author. Embedded metadata still wins over
   the guess, and everything stays editable.
 - **Canonical book names.** An approved book is written as **`<Series> #<n> - <Title>.epub`**; a
@@ -141,7 +141,7 @@ Fixed:
   ComicInfo carries a `<Volume>` that the folder doesn't encode as a *different series*; a folder scan
   can't create that series, so it silently drops the file and removes its chapters. The comic write path
   now never emits `<Volume>` and clears any that an older write left behind, and a comic no longer offers
-  one in the apply panel (Kavita derives volume from the folder/filename). Found when fixing Star Wars
+  one in the apply panel (Kavita derives volume from the folder/filename). Found when fixing Starfall
   #076/#077 on the live server; regression tests added to `tests/test_fix.py`.
 
 ## 0.6.5 — 2026-10-16

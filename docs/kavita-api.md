@@ -103,7 +103,7 @@ not vendor Kavita's OpenAPI description — it is a Kavita schema; see `docs/cle
 ## Files and links
 
 - `GET /api/Series/volumes?seriesId=<id>` → each chapter's `files[].filePath` (Kavita's path, e.g.
-  `/data/comics/Saga/Saga #001.cbz`); used to confirm an approved file is listed.
+  `/data/comics/Halcyon/Halcyon #001.cbz`); used to confirm an approved file is listed.
 - Kavita's web UI route for a series: `/library/<libraryId>/series/<seriesId>` (verified by opening it).
 - `POST /api/Library/scan?libraryId=<id>&force=false` queues a whole-library scan; needed after a folder is
   removed, because `scan-folder` ignores folders that no longer exist.

@@ -1,0 +1,181 @@
+{
+  "spec": "companion-rules-v1",
+  "family": "D",
+  "rules": {
+    "D1": {
+      "signature": "isDuplicate(candidates, fileExists) -> index | null",
+      "runnable": false,
+      "reason": "The duplicate guard is a SQL query plus a live filesystem stat in src/uploads.ts (checkCompletedUpload); it is not exposed as a pure function.",
+      "note": "`in[0]` is the candidate rows already filtered to matching hash and allowed status, ordered by created_at ascending; `in[1]` is a parallel list saying whether each candidate's placed file exists on disk. `out` is the 0-based index of the chosen candidate, or null.",
+      "cases": [
+        {
+          "id": "D1-001",
+          "in": [
+            [],
+            []
+          ],
+          "out": null,
+          "provenance": "spec §7.1 (no candidates)"
+        },
+        {
+          "id": "D1-002",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "pending",
+                "sha256": "aaa",
+                "final_sha256": null
+              }
+            ],
+            [
+              false
+            ]
+          ],
+          "out": 0,
+          "provenance": "spec §7.1 (a pending row always counts)"
+        },
+        {
+          "id": "D1-003",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "approving",
+                "sha256": "aaa",
+                "final_sha256": null
+              }
+            ],
+            [
+              false
+            ]
+          ],
+          "out": 0,
+          "provenance": "spec §7.1 (an approving row always counts)"
+        },
+        {
+          "id": "D1-004",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "approved",
+                "sha256": "aaa",
+                "final_sha256": "bbb"
+              }
+            ],
+            [
+              true
+            ]
+          ],
+          "out": 0,
+          "provenance": "spec §7.1 (approved and present counts)"
+        },
+        {
+          "id": "D1-005",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "approved",
+                "sha256": "aaa",
+                "final_sha256": "bbb"
+              },
+              {
+                "id": "B",
+                "status": "pending",
+                "sha256": "bbb",
+                "final_sha256": null
+              }
+            ],
+            [
+              false,
+              false
+            ]
+          ],
+          "out": 1,
+          "provenance": "spec §7.1 (approved but gone is skipped; keep looking)"
+        },
+        {
+          "id": "D1-006",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "approved",
+                "sha256": "aaa",
+                "final_sha256": "bbb"
+              }
+            ],
+            [
+              false
+            ]
+          ],
+          "out": null,
+          "provenance": "spec §7.1 (the only match is approved and gone -> not a duplicate)"
+        },
+        {
+          "id": "D1-007",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "approved",
+                "sha256": "aaa",
+                "final_sha256": "bbb"
+              }
+            ],
+            [
+              true
+            ]
+          ],
+          "out": 0,
+          "provenance": "spec §7.2 (match on the post-repack final_sha256)"
+        },
+        {
+          "id": "D1-008",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "approved",
+                "sha256": "aaa",
+                "final_sha256": null
+              }
+            ],
+            [
+              false
+            ]
+          ],
+          "out": null,
+          "provenance": "spec §7.2 (an approved row with no placed file is skipped)"
+        },
+        {
+          "id": "D1-009",
+          "in": [
+            [
+              {
+                "id": "A",
+                "status": "pending",
+                "sha256": "aaa",
+                "final_sha256": null
+              },
+              {
+                "id": "B",
+                "status": "pending",
+                "sha256": "aaa",
+                "final_sha256": null
+              }
+            ],
+            [
+              false,
+              false
+            ]
+          ],
+          "out": 0,
+          "provenance": "spec §7.1 (candidates ordered by created_at ascending; the earliest match wins)"
+        }
+      ]
+    }
+  }
+}

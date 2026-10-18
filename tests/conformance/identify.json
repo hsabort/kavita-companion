@@ -1,0 +1,3989 @@
+{
+  "spec": "companion-rules-v1",
+  "family": "I",
+  "rules": {
+    "I1": {
+      "signature": "baseOf(filename: string) -> string",
+      "cases": [
+        {
+          "id": "I1-001",
+          "in": [
+            "Dune.epub"
+          ],
+          "out": "Dune",
+          "provenance": "spec §2.1 worked example"
+        },
+        {
+          "id": "I1-002",
+          "in": [
+            "archive.tar.gz"
+          ],
+          "out": "archive.tar",
+          "provenance": "spec §2.1 worked example"
+        },
+        {
+          "id": "I1-003",
+          "in": [
+            ".hidden"
+          ],
+          "out": ".hidden",
+          "provenance": "spec §2.1 worked example (leading dot not an extension)"
+        },
+        {
+          "id": "I1-004",
+          "in": [
+            "noext"
+          ],
+          "out": "noext",
+          "provenance": "new edge case (no dot)"
+        },
+        {
+          "id": "I1-005",
+          "in": [
+            "trailing.   "
+          ],
+          "out": "trailing",
+          "provenance": "new edge case (trailing spaces trimmed)"
+        },
+        {
+          "id": "I1-006",
+          "in": [
+            "a.b.c.d"
+          ],
+          "out": "a.b.c",
+          "provenance": "new edge case (multiple dots)"
+        },
+        {
+          "id": "I1-007",
+          "in": [
+            ""
+          ],
+          "out": "",
+          "provenance": "new edge case (empty)"
+        },
+        {
+          "id": "I1-008",
+          "in": [
+            "file."
+          ],
+          "out": "file",
+          "provenance": "new edge case (dot with no extension)"
+        },
+        {
+          "id": "I1-009",
+          "in": [
+            "...."
+          ],
+          "out": "...",
+          "provenance": "new edge case (all dots)"
+        },
+        {
+          "id": "I1-010",
+          "in": [
+            "."
+          ],
+          "out": ".",
+          "provenance": "new edge case (single dot)"
+        },
+        {
+          "id": "I1-011",
+          "in": [
+            ".x.y"
+          ],
+          "out": ".x",
+          "provenance": "new edge case (leading dot plus extension)"
+        },
+        {
+          "id": "I1-012",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-013",
+          "in": [
+            "Saga 001 (2012) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "Saga 001 (2012) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-014",
+          "in": [
+            "Saga 054 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 054 (2018) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-015",
+          "in": [
+            "Batman #001 (2016).cbr"
+          ],
+          "out": "Batman #001 (2016)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-016",
+          "in": [
+            "Batman 001 (2016) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Batman 001 (2016) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-017",
+          "in": [
+            "Batman #050 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Batman #050 (2018) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-018",
+          "in": [
+            "Iron Man v1 001 (1968) (Digital) (Minutemen).cbr"
+          ],
+          "out": "Iron Man v1 001 (1968) (Digital) (Minutemen)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-019",
+          "in": [
+            "Iron Man v1 012 (1969) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Iron Man v1 012 (1969) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-020",
+          "in": [
+            "Iron Man 001 (2020) (Digital).cbz"
+          ],
+          "out": "Iron Man 001 (2020) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-021",
+          "in": [
+            "One Piece 1000 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "One Piece 1000 (2021) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-022",
+          "in": [
+            "One Piece 1001 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "One Piece 1001 (2021) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-023",
+          "in": [
+            "Berserk volume 03 (2004) (Digital) (Dark).cbz"
+          ],
+          "out": "Berserk volume 03 (2004) (Digital) (Dark)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-024",
+          "in": [
+            "Berserk v03 c007.cbz"
+          ],
+          "out": "Berserk v03 c007",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-025",
+          "in": [
+            "Solo Leveling 159 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Solo Leveling 159 (2021) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-026",
+          "in": [
+            "Solo Leveling 160 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Solo Leveling 160 (2021) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-027",
+          "in": [
+            "Attack on Titan 139 (2021) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Attack on Titan 139 (2021) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-028",
+          "in": [
+            "Naruto 700 (2014) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Naruto 700 (2014) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-029",
+          "in": [
+            "Watchmen 01 (1986) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "Watchmen 01 (1986) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-030",
+          "in": [
+            "Watchmen 12 (1987) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "Watchmen 12 (1987) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-031",
+          "in": [
+            "The Sandman 001 (1989) (Digital) (Minutemen).cbz"
+          ],
+          "out": "The Sandman 001 (1989) (Digital) (Minutemen)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-032",
+          "in": [
+            "The Sandman 075 (1996) (Digital).cbz"
+          ],
+          "out": "The Sandman 075 (1996) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-033",
+          "in": [
+            "Hellboy 001 (1994) (Digital).cbr"
+          ],
+          "out": "Hellboy 001 (1994) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-034",
+          "in": [
+            "Hellboy Seed of Destruction 001 (1994).cbz"
+          ],
+          "out": "Hellboy Seed of Destruction 001 (1994)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-035",
+          "in": [
+            "Y The Last Man 001 (2002) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "Y The Last Man 001 (2002) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-036",
+          "in": [
+            "Y The Last Man 060 (2008) (Digital).cbz"
+          ],
+          "out": "Y The Last Man 060 (2008) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-037",
+          "in": [
+            "Paper Girls 001 (2015) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Paper Girls 001 (2015) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-038",
+          "in": [
+            "Monstress 001 (2015) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Monstress 001 (2015) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-039",
+          "in": [
+            "East of West 001 (2013) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "East of West 001 (2013) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-040",
+          "in": [
+            "Descender 001 (2015) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Descender 001 (2015) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-041",
+          "in": [
+            "Invincible 001 (2003) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "Invincible 001 (2003) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-042",
+          "in": [
+            "The Walking Dead 001 (2003) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "The Walking Dead 001 (2003) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-043",
+          "in": [
+            "The Walking Dead 193 (2019) (Digital).cbz"
+          ],
+          "out": "The Walking Dead 193 (2019) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-044",
+          "in": [
+            "Fables 001 (2002) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Fables 001 (2002) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-045",
+          "in": [
+            "Chew 001 (2009) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Chew 001 (2009) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-046",
+          "in": [
+            "Locke & Key 001 (2008) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Locke & Key 001 (2008) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-047",
+          "in": [
+            "Bone 001 (1991) (Digital).cbz"
+          ],
+          "out": "Bone 001 (1991) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-048",
+          "in": [
+            "Bone v01 c001.cbz"
+          ],
+          "out": "Bone v01 c001",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-049",
+          "in": [
+            "Death Note 001 (2003) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Death Note 001 (2003) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-050",
+          "in": [
+            "Fullmetal Alchemist 001 (2001) (Digital).cbz"
+          ],
+          "out": "Fullmetal Alchemist 001 (2001) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-051",
+          "in": [
+            "Fullmetal Alchemist v01 c001.cbz"
+          ],
+          "out": "Fullmetal Alchemist v01 c001",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-052",
+          "in": [
+            "My Hero Academia 001 (2014) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "My Hero Academia 001 (2014) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-053",
+          "in": [
+            "My Hero Academia 300 (2021) (Digital).cbz"
+          ],
+          "out": "My Hero Academia 300 (2021) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-054",
+          "in": [
+            "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-055",
+          "in": [
+            "Chainsaw Man 001 (2018) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Chainsaw Man 001 (2018) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-056",
+          "in": [
+            "Vinland Saga 001 (2005) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Vinland Saga 001 (2005) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-057",
+          "in": [
+            "Vinland Saga v01 c001.cbz"
+          ],
+          "out": "Vinland Saga v01 c001",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-058",
+          "in": [
+            "Blame! 001 (1997) (Digital).cbz"
+          ],
+          "out": "Blame! 001 (1997) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-059",
+          "in": [
+            "Hellsing 001 (1997) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Hellsing 001 (1997) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-060",
+          "in": [
+            "Akira 001 (1982) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Akira 001 (1982) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-061",
+          "in": [
+            "Akira v01 c001.cbz"
+          ],
+          "out": "Akira v01 c001",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-062",
+          "in": [
+            "Dorohedoro 001 (2000) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Dorohedoro 001 (2000) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-063",
+          "in": [
+            "Planetes 001 (1999) (Digital).cbz"
+          ],
+          "out": "Planetes 001 (1999) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-064",
+          "in": [
+            "20th Century Boys 001 (1999) (Digital).cbz"
+          ],
+          "out": "20th Century Boys 001 (1999) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-065",
+          "in": [
+            "Uzumaki 001 (1998) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Uzumaki 001 (1998) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-066",
+          "in": [
+            "Tomie 001 (1987) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Tomie 001 (1987) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-067",
+          "in": [
+            "Saga Vol. 01 (2012) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Saga Vol. 01 (2012) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-068",
+          "in": [
+            "Saga Vol. 02 (2013) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "Saga Vol. 02 (2013) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-069",
+          "in": [
+            "Saga Vol. 1 - Part 01 (2012).cbz"
+          ],
+          "out": "Saga Vol. 1 - Part 01 (2012)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-070",
+          "in": [
+            "Batman Vol. 05 - Part 02 (2016) (Digital).cbz"
+          ],
+          "out": "Batman Vol. 05 - Part 02 (2016) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-071",
+          "in": [
+            "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen).cbz"
+          ],
+          "out": "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-072",
+          "in": [
+            "Berserk Volume 03 (2004) (Digital) (Dark).cbz"
+          ],
+          "out": "Berserk Volume 03 (2004) (Digital) (Dark)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-073",
+          "in": [
+            "Berserk v03 (2004) (Digital).cbz"
+          ],
+          "out": "Berserk v03 (2004) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-074",
+          "in": [
+            "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-075",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) (c2c).cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire) (c2c)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-076",
+          "in": [
+            "Saga 055 (2018) (Webrip) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Webrip) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-077",
+          "in": [
+            "Saga 055 (2018) (digital) (zone-empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (digital) (zone-empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-078",
+          "in": [
+            "Saga 055 (2018) (Scan) (Minutemen).cbz"
+          ],
+          "out": "Saga 055 (2018) (Scan) (Minutemen)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-079",
+          "in": [
+            "Saga 055 (2018) (scanned) (Minutemen).cbz"
+          ],
+          "out": "Saga 055 (2018) (scanned) (Minutemen)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-080",
+          "in": [
+            "Saga 055 (2018) (Repack) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Repack) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-081",
+          "in": [
+            "Saga 055 (2018) (Fixed) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Fixed) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-082",
+          "in": [
+            "Saga 055 (2018) (Complete) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Complete) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-083",
+          "in": [
+            "Saga 055 (2018) (NoAds) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (NoAds) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-084",
+          "in": [
+            "Saga 055 (2018) (Retail) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Retail) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-085",
+          "in": [
+            "Saga 055 (2018) (Web) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Web) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-086",
+          "in": [
+            "Saga 055 (2018) (HD) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (HD) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-087",
+          "in": [
+            "Saga 055 (2018) (SD) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (SD) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-088",
+          "in": [
+            "Saga 055 (2018) (Ongoing) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Ongoing) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-089",
+          "in": [
+            "Saga 055 (2018) (OCR) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (OCR) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-090",
+          "in": [
+            "Saga 055 (2018) (Uncensored) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Uncensored) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-091",
+          "in": [
+            "Saga 055 (2018) (Decensored) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Decensored) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-092",
+          "in": [
+            "Saga 055 (2018) (Remastered) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Remastered) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-093",
+          "in": [
+            "Saga 055 (2018) (Compressed) (Zone-Empire).cbz"
+          ],
+          "out": "Saga 055 (2018) (Compressed) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-094",
+          "in": [
+            "Saga 055 (2018) (Digital) (LuCaZ).cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (LuCaZ)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-095",
+          "in": [
+            "Saga 055 (2018) (Digital) (-KS-).cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (-KS-)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-096",
+          "in": [
+            "Saga 055 (1968-1996) (Digital).cbz"
+          ],
+          "out": "Saga 055 (1968-1996) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-097",
+          "in": [
+            "Saga 055 (2020-2021) (Digital).cbz"
+          ],
+          "out": "Saga 055 (2020-2021) (Digital)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-098",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) extra.cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire) extra",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-099",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) [hq].cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire) [hq]",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-100",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-101",
+          "in": [
+            "(Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": "(Saga 055 (2018) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-102",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-103",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire).cb7"
+          ],
+          "out": "Saga 055 (2018) (Digital) (Zone-Empire)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-104",
+          "in": [
+            "Mistborn 01 - The Final Empire.epub"
+          ],
+          "out": "Mistborn 01 - The Final Empire",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-105",
+          "in": [
+            "Mistborn 02 - The Well of Ascension.epub"
+          ],
+          "out": "Mistborn 02 - The Well of Ascension",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-106",
+          "in": [
+            "Mistborn 03 - The Hero of Ages.epub"
+          ],
+          "out": "Mistborn 03 - The Hero of Ages",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-107",
+          "in": [
+            "Dune.epub"
+          ],
+          "out": "Dune",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-108",
+          "in": [
+            "Dune Messiah.epub"
+          ],
+          "out": "Dune Messiah",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-109",
+          "in": [
+            "Frank Herbert - Dune.epub"
+          ],
+          "out": "Frank Herbert - Dune",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-110",
+          "in": [
+            "Frank Herbert - Dune Messiah.epub"
+          ],
+          "out": "Frank Herbert - Dune Messiah",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-111",
+          "in": [
+            "Brandon Sanderson - The Final Empire.epub"
+          ],
+          "out": "Brandon Sanderson - The Final Empire",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-112",
+          "in": [
+            "Brandon Sanderson - Mistborn 01 - The Final Empire.epub"
+          ],
+          "out": "Brandon Sanderson - Mistborn 01 - The Final Empire",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-113",
+          "in": [
+            "Author - Series 01 - Title.epub"
+          ],
+          "out": "Author - Series 01 - Title",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-114",
+          "in": [
+            "Author - Series 02 - Title.epub"
+          ],
+          "out": "Author - Series 02 - Title",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-115",
+          "in": [
+            "Some Author - Some Title.epub"
+          ],
+          "out": "Some Author - Some Title",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-116",
+          "in": [
+            "The Hobbit.epub"
+          ],
+          "out": "The Hobbit",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-117",
+          "in": [
+            "J R R Tolkien - The Hobbit.epub"
+          ],
+          "out": "J R R Tolkien - The Hobbit",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-118",
+          "in": [
+            "1984.epub"
+          ],
+          "out": "1984",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-119",
+          "in": [
+            "George Orwell - 1984.epub"
+          ],
+          "out": "George Orwell - 1984",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-120",
+          "in": [
+            "Catch-22.epub"
+          ],
+          "out": "Catch-22",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-121",
+          "in": [
+            "Joseph Heller - Catch-22.epub"
+          ],
+          "out": "Joseph Heller - Catch-22",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-122",
+          "in": [
+            "The 39 Steps.epub"
+          ],
+          "out": "The 39 Steps",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-123",
+          "in": [
+            "John Buchan - The 39 Steps.epub"
+          ],
+          "out": "John Buchan - The 39 Steps",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-124",
+          "in": [
+            "Dune (Dune #1).epub"
+          ],
+          "out": "Dune (Dune #1)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-125",
+          "in": [
+            "Mistborn 01 - The Final Empire (Mistborn #1).epub"
+          ],
+          "out": "Mistborn 01 - The Final Empire (Mistborn #1)",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-126",
+          "in": [
+            "A Book Without Series.epub"
+          ],
+          "out": "A Book Without Series",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-127",
+          "in": [
+            "A Book: With A Subtitle.epub"
+          ],
+          "out": "A Book: With A Subtitle",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-128",
+          "in": [
+            "Series Book 4.epub"
+          ],
+          "out": "Series Book 4",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-129",
+          "in": [
+            "Title - With Dash.epub"
+          ],
+          "out": "Title - With Dash",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-130",
+          "in": [
+            "Author Name - Title With - Dash.epub"
+          ],
+          "out": "Author Name - Title With - Dash",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-131",
+          "in": [
+            "12 - 13.epub"
+          ],
+          "out": "12 - 13",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-132",
+          "in": [
+            "Ünïcödé Äuthor - Tïtlé.epub"
+          ],
+          "out": "Ünïcödé Äuthor - Tïtlé",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-133",
+          "in": [
+            "日本語のタイトル.epub"
+          ],
+          "out": "日本語のタイトル",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-134",
+          "in": [
+            "No Extension"
+          ],
+          "out": "No Extension",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-135",
+          "in": [
+            ".hidden.epub"
+          ],
+          "out": ".hidden",
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I1-136",
+          "in": [
+            "Trailing Dots...epub"
+          ],
+          "out": "Trailing Dots..",
+          "provenance": "new edge case (realistic filename)"
+        }
+      ]
+    },
+    "I2": {
+      "signature": "normaliseNumber(value: string) -> string",
+      "cases": [
+        {
+          "id": "I2-001",
+          "in": [
+            "01"
+          ],
+          "out": "1",
+          "provenance": "spec §2.2 worked example"
+        },
+        {
+          "id": "I2-002",
+          "in": [
+            "1.5"
+          ],
+          "out": "1.5",
+          "provenance": "spec §2.2 worked example"
+        },
+        {
+          "id": "I2-003",
+          "in": [
+            "007"
+          ],
+          "out": "7",
+          "provenance": "spec §2.2 worked example"
+        },
+        {
+          "id": "I2-004",
+          "in": [
+            "1.50"
+          ],
+          "out": "1.5",
+          "provenance": "spec §2.2 trap (trailing fractional zeros stripped)"
+        },
+        {
+          "id": "I2-005",
+          "in": [
+            "1.0"
+          ],
+          "out": "1",
+          "provenance": "spec §2.2 trap (whole number rendered without a fraction)"
+        },
+        {
+          "id": "I2-006",
+          "in": [
+            "abc"
+          ],
+          "out": "abc",
+          "provenance": "spec §2.2 (non-numeric passthrough)"
+        },
+        {
+          "id": "I2-007",
+          "in": [
+            "10"
+          ],
+          "out": "10",
+          "provenance": "new edge case (plain integer)"
+        },
+        {
+          "id": "I2-008",
+          "in": [
+            "00"
+          ],
+          "out": "0",
+          "provenance": "new edge case (all zeros)"
+        },
+        {
+          "id": "I2-009",
+          "in": [
+            "001.500"
+          ],
+          "out": "1.5",
+          "provenance": "new edge case (leading and trailing zeros)"
+        },
+        {
+          "id": "I2-010",
+          "in": [
+            "1.05"
+          ],
+          "out": "1.05",
+          "provenance": "new edge case (internal zero kept)"
+        },
+        {
+          "id": "I2-011",
+          "in": [
+            "1,5"
+          ],
+          "out": "1,5",
+          "provenance": "new edge case (comma is not a decimal separator)"
+        },
+        {
+          "id": "I2-012",
+          "in": [
+            "-3"
+          ],
+          "out": "-3",
+          "provenance": "new edge case (negative integer)"
+        },
+        {
+          "id": "I2-013",
+          "in": [
+            "3."
+          ],
+          "out": "3",
+          "provenance": "new edge case (empty fraction)"
+        },
+        {
+          "id": "I2-014",
+          "in": [
+            "Infinity"
+          ],
+          "out": "Infinity",
+          "provenance": "new edge case (non-finite passthrough)"
+        },
+        {
+          "id": "I2-015",
+          "in": [
+            "NaN"
+          ],
+          "out": "NaN",
+          "provenance": "new edge case (non-finite passthrough)"
+        },
+        {
+          "id": "I2-016",
+          "in": [
+            ""
+          ],
+          "out": "",
+          "provenance": "spec §2.2 (empty is not a valid decimal number)",
+          "current": "0",
+          "note": "Number(\"\") is 0 in JS, so the reference returns \"0\"; the spec's intended decimal parse returns the input unchanged."
+        },
+        {
+          "id": "I2-017",
+          "in": [
+            "1e3"
+          ],
+          "out": "1e3",
+          "provenance": "spec §2.2 trap (exponent form is not a decimal number)",
+          "current": "1000",
+          "note": "Number(\"1e3\") is 1000 in JS; the spec's intended decimal parse rejects the exponent form and returns the input unchanged."
+        },
+        {
+          "id": "I2-018",
+          "in": [
+            "0x10"
+          ],
+          "out": "0x10",
+          "provenance": "spec §2.2 trap (hexadecimal is not a decimal number)",
+          "current": "16",
+          "note": "Number(\"0x10\") is 16 in JS; the spec's intended decimal parse rejects hex and returns the input unchanged."
+        }
+      ]
+    },
+    "I3": {
+      "signature": "stripSeriesMarker(name: string) -> { name: string, number: string | null }",
+      "cases": [
+        {
+          "id": "I3-001",
+          "in": [
+            "Mistborn 01 - The Final Empire (Mistborn #1)"
+          ],
+          "out": {
+            "name": "Mistborn 01 - The Final Empire",
+            "number": "1"
+          },
+          "provenance": "spec §2.3 worked example"
+        },
+        {
+          "id": "I3-002",
+          "in": [
+            "Mistborn 01 - The Final Empire [x #1.5]"
+          ],
+          "out": {
+            "name": "Mistborn 01 - The Final Empire",
+            "number": "1.5"
+          },
+          "provenance": "new edge case (square brackets, decimal)"
+        },
+        {
+          "id": "I3-003",
+          "in": [
+            "Dune"
+          ],
+          "out": {
+            "name": "Dune",
+            "number": null
+          },
+          "provenance": "new edge case (no marker)"
+        },
+        {
+          "id": "I3-004",
+          "in": [
+            "Dune (Mistborn #1) extra"
+          ],
+          "out": {
+            "name": "Dune (Mistborn #1) extra",
+            "number": null
+          },
+          "provenance": "new edge case (marker not at the end)"
+        },
+        {
+          "id": "I3-005",
+          "in": [
+            ""
+          ],
+          "out": {
+            "name": "",
+            "number": null
+          },
+          "provenance": "new edge case (empty name)"
+        },
+        {
+          "id": "I3-006",
+          "in": [
+            "Dune (x#1)"
+          ],
+          "out": {
+            "name": "Dune",
+            "number": "1"
+          },
+          "provenance": "new edge case (no space before #)"
+        },
+        {
+          "id": "I3-007",
+          "in": [
+            "Dune (x # 007)"
+          ],
+          "out": {
+            "name": "Dune",
+            "number": "7"
+          },
+          "provenance": "new edge case (spaces around #, leading zero)"
+        },
+        {
+          "id": "I3-008",
+          "in": [
+            "Dune (series #3)   "
+          ],
+          "out": {
+            "name": "Dune",
+            "number": "3"
+          },
+          "provenance": "new edge case (trailing whitespace)"
+        },
+        {
+          "id": "I3-009",
+          "in": [
+            "(Mistborn #1)"
+          ],
+          "out": {
+            "name": "",
+            "number": "1"
+          },
+          "provenance": "new edge case (name is only the marker)"
+        },
+        {
+          "id": "I3-010",
+          "in": [
+            "Dune (x #12345)"
+          ],
+          "out": {
+            "name": "Dune (x #12345)",
+            "number": null
+          },
+          "provenance": "new edge case (more than 4 digits -> no match)"
+        }
+      ]
+    },
+    "I4": {
+      "signature": "guessFromFilename(filename: string) -> { title, series, number, author }",
+      "cases": [
+        {
+          "id": "I4-001",
+          "in": [
+            "Dune.epub"
+          ],
+          "out": {
+            "title": "Dune",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "spec §2.4 worked example"
+        },
+        {
+          "id": "I4-002",
+          "in": [
+            "Mistborn 01 - The Final Empire.epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": "Mistborn",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "spec §2.4 worked example"
+        },
+        {
+          "id": "I4-003",
+          "in": [
+            "Brandon Sanderson - The Final Empire.epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": null,
+            "number": null,
+            "author": "Brandon Sanderson"
+          },
+          "provenance": "spec §2.4 worked example"
+        },
+        {
+          "id": "I4-004",
+          "in": [
+            "Catch-22.epub"
+          ],
+          "out": {
+            "title": "Catch-22",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "spec §2.4 worked example (hyphen inside a word)"
+        },
+        {
+          "id": "I4-005",
+          "in": [
+            "1984.epub"
+          ],
+          "out": {
+            "title": "1984",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "spec §2.4 worked example (numeric title)"
+        },
+        {
+          "id": "I4-006",
+          "in": [
+            "Author - Series 01 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": "Author - Series",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (nested author/series)"
+        },
+        {
+          "id": "I4-007",
+          "in": [
+            "Series #1.epub"
+          ],
+          "out": {
+            "title": null,
+            "series": "Series",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "spec §2.4 shape 2"
+        },
+        {
+          "id": "I4-008",
+          "in": [
+            "01 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": null,
+            "number": "1",
+            "author": null
+          },
+          "provenance": "spec §2.4 shape 3"
+        },
+        {
+          "id": "I4-009",
+          "in": [
+            "Mistborn 01 - The Final Empire (Mistborn #1).epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": "Mistborn",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (marker plus series)"
+        },
+        {
+          "id": "I4-010",
+          "in": [
+            "Dune (Dune #1).epub"
+          ],
+          "out": {
+            "title": "Dune",
+            "series": null,
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (marker only)"
+        },
+        {
+          "id": "I4-011",
+          "in": [
+            "Ünïcödé Äuthor - Tïtlé.epub"
+          ],
+          "out": {
+            "title": "Tïtlé",
+            "series": null,
+            "number": null,
+            "author": "Ünïcödé Äuthor"
+          },
+          "provenance": "new edge case (Unicode author/title)"
+        },
+        {
+          "id": "I4-012",
+          "in": [
+            "日本語のタイトル.epub"
+          ],
+          "out": {
+            "title": "日本語のタイトル",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (Unicode title)"
+        },
+        {
+          "id": "I4-013",
+          "in": [
+            "Some Series 1.5 - A Title.epub"
+          ],
+          "out": {
+            "title": "A Title",
+            "series": "Some Series",
+            "number": "1.5",
+            "author": null
+          },
+          "provenance": "new edge case (decimal series number)"
+        },
+        {
+          "id": "I4-014",
+          "in": [
+            "1234 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": null,
+            "number": "1234",
+            "author": null
+          },
+          "provenance": "new edge case (4-digit number)"
+        },
+        {
+          "id": "I4-015",
+          "in": [
+            "Author 123 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": "Author",
+            "number": "123",
+            "author": null
+          },
+          "provenance": "new edge case (digit makes it a series shape)"
+        },
+        {
+          "id": "I4-016",
+          "in": [
+            "Author - 01 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": "Author -",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (series shape wins over author shape)"
+        },
+        {
+          "id": "I4-017",
+          "in": [
+            "Author - Series #2.epub"
+          ],
+          "out": {
+            "title": null,
+            "series": "Author - Series",
+            "number": "2",
+            "author": null
+          },
+          "provenance": "new edge case (author prefix plus marker)"
+        },
+        {
+          "id": "I4-018",
+          "in": [
+            "Series #1.5.epub"
+          ],
+          "out": {
+            "title": null,
+            "series": "Series",
+            "number": "1.5",
+            "author": null
+          },
+          "provenance": "new edge case (decimal marker)"
+        },
+        {
+          "id": "I4-019",
+          "in": [
+            "Title - With Dash.epub"
+          ],
+          "out": {
+            "title": "With Dash",
+            "series": null,
+            "number": null,
+            "author": "Title"
+          },
+          "provenance": "new edge case (author shape)"
+        },
+        {
+          "id": "I4-020",
+          "in": [
+            "A - B.epub"
+          ],
+          "out": {
+            "title": "B",
+            "series": null,
+            "number": null,
+            "author": "A"
+          },
+          "provenance": "new edge case (single-letter author)"
+        },
+        {
+          "id": "I4-021",
+          "in": [
+            "Author Name - Title With - Dash.epub"
+          ],
+          "out": {
+            "title": "Dash",
+            "series": null,
+            "number": null,
+            "author": "Author Name"
+          },
+          "provenance": "new edge case (recursion keeps only the innermost title)"
+        },
+        {
+          "id": "I4-022",
+          "in": [
+            "12 - 13.epub"
+          ],
+          "out": {
+            "title": "13",
+            "series": null,
+            "number": "12",
+            "author": null
+          },
+          "provenance": "new edge case (two numbers)"
+        },
+        {
+          "id": "I4-023",
+          "in": [
+            "The 39 Steps.epub"
+          ],
+          "out": {
+            "title": "The 39 Steps",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (digit inside a title)"
+        },
+        {
+          "id": "I4-024",
+          "in": [
+            "NoExtension"
+          ],
+          "out": {
+            "title": "NoExtension",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (no extension)"
+        },
+        {
+          "id": "I4-025",
+          "in": [
+            ".hidden.epub"
+          ],
+          "out": {
+            "title": ".hidden",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (dotfile)"
+        },
+        {
+          "id": "I4-026",
+          "in": [
+            "Catch-22 (Catch-22 #1).epub"
+          ],
+          "out": {
+            "title": "Catch-22",
+            "series": null,
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (hyphen title plus marker)"
+        },
+        {
+          "id": "I4-027",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-028",
+          "in": [
+            "Saga 001 (2012) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "Saga 001 (2012) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-029",
+          "in": [
+            "Saga 054 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 054 (2018) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-030",
+          "in": [
+            "Batman #001 (2016).cbr"
+          ],
+          "out": {
+            "title": "Batman #001 (2016)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-031",
+          "in": [
+            "Batman 001 (2016) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Batman 001 (2016) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-032",
+          "in": [
+            "Batman #050 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Batman #050 (2018) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-033",
+          "in": [
+            "Iron Man v1 001 (1968) (Digital) (Minutemen).cbr"
+          ],
+          "out": {
+            "title": "Iron Man v1 001 (1968) (Digital) (Minutemen)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-034",
+          "in": [
+            "Iron Man v1 012 (1969) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Iron Man v1 012 (1969) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-035",
+          "in": [
+            "Iron Man 001 (2020) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Iron Man 001 (2020) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-036",
+          "in": [
+            "One Piece 1000 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "One Piece 1000 (2021) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-037",
+          "in": [
+            "One Piece 1001 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "One Piece 1001 (2021) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-038",
+          "in": [
+            "Berserk volume 03 (2004) (Digital) (Dark).cbz"
+          ],
+          "out": {
+            "title": "Berserk volume 03 (2004) (Digital) (Dark)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-039",
+          "in": [
+            "Berserk v03 c007.cbz"
+          ],
+          "out": {
+            "title": "Berserk v03 c007",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-040",
+          "in": [
+            "Solo Leveling 159 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Solo Leveling 159 (2021) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-041",
+          "in": [
+            "Solo Leveling 160 (2021) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Solo Leveling 160 (2021) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-042",
+          "in": [
+            "Attack on Titan 139 (2021) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Attack on Titan 139 (2021) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-043",
+          "in": [
+            "Naruto 700 (2014) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Naruto 700 (2014) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-044",
+          "in": [
+            "Watchmen 01 (1986) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "Watchmen 01 (1986) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-045",
+          "in": [
+            "Watchmen 12 (1987) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "Watchmen 12 (1987) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-046",
+          "in": [
+            "The Sandman 001 (1989) (Digital) (Minutemen).cbz"
+          ],
+          "out": {
+            "title": "The Sandman 001 (1989) (Digital) (Minutemen)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-047",
+          "in": [
+            "The Sandman 075 (1996) (Digital).cbz"
+          ],
+          "out": {
+            "title": "The Sandman 075 (1996) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-048",
+          "in": [
+            "Hellboy 001 (1994) (Digital).cbr"
+          ],
+          "out": {
+            "title": "Hellboy 001 (1994) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-049",
+          "in": [
+            "Hellboy Seed of Destruction 001 (1994).cbz"
+          ],
+          "out": {
+            "title": "Hellboy Seed of Destruction 001 (1994)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-050",
+          "in": [
+            "Y The Last Man 001 (2002) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "Y The Last Man 001 (2002) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-051",
+          "in": [
+            "Y The Last Man 060 (2008) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Y The Last Man 060 (2008) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-052",
+          "in": [
+            "Paper Girls 001 (2015) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Paper Girls 001 (2015) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-053",
+          "in": [
+            "Monstress 001 (2015) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Monstress 001 (2015) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-054",
+          "in": [
+            "East of West 001 (2013) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "East of West 001 (2013) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-055",
+          "in": [
+            "Descender 001 (2015) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Descender 001 (2015) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-056",
+          "in": [
+            "Invincible 001 (2003) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "Invincible 001 (2003) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-057",
+          "in": [
+            "The Walking Dead 001 (2003) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "The Walking Dead 001 (2003) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-058",
+          "in": [
+            "The Walking Dead 193 (2019) (Digital).cbz"
+          ],
+          "out": {
+            "title": "The Walking Dead 193 (2019) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-059",
+          "in": [
+            "Fables 001 (2002) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Fables 001 (2002) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-060",
+          "in": [
+            "Chew 001 (2009) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Chew 001 (2009) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-061",
+          "in": [
+            "Locke & Key 001 (2008) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Locke & Key 001 (2008) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-062",
+          "in": [
+            "Bone 001 (1991) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Bone 001 (1991) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-063",
+          "in": [
+            "Bone v01 c001.cbz"
+          ],
+          "out": {
+            "title": "Bone v01 c001",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-064",
+          "in": [
+            "Death Note 001 (2003) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Death Note 001 (2003) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-065",
+          "in": [
+            "Fullmetal Alchemist 001 (2001) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Fullmetal Alchemist 001 (2001) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-066",
+          "in": [
+            "Fullmetal Alchemist v01 c001.cbz"
+          ],
+          "out": {
+            "title": "Fullmetal Alchemist v01 c001",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-067",
+          "in": [
+            "My Hero Academia 001 (2014) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "My Hero Academia 001 (2014) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-068",
+          "in": [
+            "My Hero Academia 300 (2021) (Digital).cbz"
+          ],
+          "out": {
+            "title": "My Hero Academia 300 (2021) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-069",
+          "in": [
+            "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Tokyo Ghoul 001 (2011) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-070",
+          "in": [
+            "Chainsaw Man 001 (2018) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Chainsaw Man 001 (2018) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-071",
+          "in": [
+            "Vinland Saga 001 (2005) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Vinland Saga 001 (2005) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-072",
+          "in": [
+            "Vinland Saga v01 c001.cbz"
+          ],
+          "out": {
+            "title": "Vinland Saga v01 c001",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-073",
+          "in": [
+            "Blame! 001 (1997) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Blame! 001 (1997) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-074",
+          "in": [
+            "Hellsing 001 (1997) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Hellsing 001 (1997) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-075",
+          "in": [
+            "Akira 001 (1982) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Akira 001 (1982) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-076",
+          "in": [
+            "Akira v01 c001.cbz"
+          ],
+          "out": {
+            "title": "Akira v01 c001",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-077",
+          "in": [
+            "Dorohedoro 001 (2000) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Dorohedoro 001 (2000) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-078",
+          "in": [
+            "Planetes 001 (1999) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Planetes 001 (1999) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-079",
+          "in": [
+            "20th Century Boys 001 (1999) (Digital).cbz"
+          ],
+          "out": {
+            "title": "20th Century Boys 001 (1999) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-080",
+          "in": [
+            "Uzumaki 001 (1998) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Uzumaki 001 (1998) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-081",
+          "in": [
+            "Tomie 001 (1987) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Tomie 001 (1987) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-082",
+          "in": [
+            "Saga Vol. 01 (2012) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga Vol. 01 (2012) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-083",
+          "in": [
+            "Saga Vol. 02 (2013) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga Vol. 02 (2013) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-084",
+          "in": [
+            "Saga Vol. 1 - Part 01 (2012).cbz"
+          ],
+          "out": {
+            "title": "Part 01 (2012)",
+            "series": "Saga Vol.",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-085",
+          "in": [
+            "Batman Vol. 05 - Part 02 (2016) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Part 02 (2016) (Digital)",
+            "series": "Batman Vol.",
+            "number": "5",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-086",
+          "in": [
+            "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen).cbz"
+          ],
+          "out": {
+            "title": "Iron Man v1 Vol. 02 (1969) (Digital) (Minutemen)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-087",
+          "in": [
+            "Berserk Volume 03 (2004) (Digital) (Dark).cbz"
+          ],
+          "out": {
+            "title": "Berserk Volume 03 (2004) (Digital) (Dark)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-088",
+          "in": [
+            "Berserk v03 (2004) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Berserk v03 (2004) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-089",
+          "in": [
+            "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Solo Leveling Vol. 05 (2020) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-090",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) (c2c).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire) (c2c)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-091",
+          "in": [
+            "Saga 055 (2018) (Webrip) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Webrip) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-092",
+          "in": [
+            "Saga 055 (2018) (digital) (zone-empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (digital) (zone-empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-093",
+          "in": [
+            "Saga 055 (2018) (Scan) (Minutemen).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Scan) (Minutemen)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-094",
+          "in": [
+            "Saga 055 (2018) (scanned) (Minutemen).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (scanned) (Minutemen)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-095",
+          "in": [
+            "Saga 055 (2018) (Repack) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Repack) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-096",
+          "in": [
+            "Saga 055 (2018) (Fixed) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Fixed) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-097",
+          "in": [
+            "Saga 055 (2018) (Complete) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Complete) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-098",
+          "in": [
+            "Saga 055 (2018) (NoAds) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (NoAds) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-099",
+          "in": [
+            "Saga 055 (2018) (Retail) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Retail) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-100",
+          "in": [
+            "Saga 055 (2018) (Web) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Web) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-101",
+          "in": [
+            "Saga 055 (2018) (HD) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (HD) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-102",
+          "in": [
+            "Saga 055 (2018) (SD) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (SD) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-103",
+          "in": [
+            "Saga 055 (2018) (Ongoing) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Ongoing) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-104",
+          "in": [
+            "Saga 055 (2018) (OCR) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (OCR) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-105",
+          "in": [
+            "Saga 055 (2018) (Uncensored) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Uncensored) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-106",
+          "in": [
+            "Saga 055 (2018) (Decensored) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Decensored) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-107",
+          "in": [
+            "Saga 055 (2018) (Remastered) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Remastered) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-108",
+          "in": [
+            "Saga 055 (2018) (Compressed) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Compressed) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-109",
+          "in": [
+            "Saga 055 (2018) (Digital) (LuCaZ).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (LuCaZ)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-110",
+          "in": [
+            "Saga 055 (2018) (Digital) (-KS-).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (-KS-)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-111",
+          "in": [
+            "Saga 055 (1968-1996) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (1968-1996) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-112",
+          "in": [
+            "Saga 055 (2020-2021) (Digital).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2020-2021) (Digital)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-113",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) extra.cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire) extra",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-114",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) [hq].cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire) [hq]",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-115",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act).cbz"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire) (The Faust Act)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-116",
+          "in": [
+            "(Saga 055 (2018) (Digital) (Zone-Empire).cbz"
+          ],
+          "out": {
+            "title": "(Saga 055 (2018) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-117",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire).cbr"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-118",
+          "in": [
+            "Saga 055 (2018) (Digital) (Zone-Empire).cb7"
+          ],
+          "out": {
+            "title": "Saga 055 (2018) (Digital) (Zone-Empire)",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-119",
+          "in": [
+            "Mistborn 01 - The Final Empire.epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": "Mistborn",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-120",
+          "in": [
+            "Mistborn 02 - The Well of Ascension.epub"
+          ],
+          "out": {
+            "title": "The Well of Ascension",
+            "series": "Mistborn",
+            "number": "2",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-121",
+          "in": [
+            "Mistborn 03 - The Hero of Ages.epub"
+          ],
+          "out": {
+            "title": "The Hero of Ages",
+            "series": "Mistborn",
+            "number": "3",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-122",
+          "in": [
+            "Dune.epub"
+          ],
+          "out": {
+            "title": "Dune",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-123",
+          "in": [
+            "Dune Messiah.epub"
+          ],
+          "out": {
+            "title": "Dune Messiah",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-124",
+          "in": [
+            "Frank Herbert - Dune.epub"
+          ],
+          "out": {
+            "title": "Dune",
+            "series": null,
+            "number": null,
+            "author": "Frank Herbert"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-125",
+          "in": [
+            "Frank Herbert - Dune Messiah.epub"
+          ],
+          "out": {
+            "title": "Dune Messiah",
+            "series": null,
+            "number": null,
+            "author": "Frank Herbert"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-126",
+          "in": [
+            "Brandon Sanderson - The Final Empire.epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": null,
+            "number": null,
+            "author": "Brandon Sanderson"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-127",
+          "in": [
+            "Brandon Sanderson - Mistborn 01 - The Final Empire.epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": "Brandon Sanderson - Mistborn",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-128",
+          "in": [
+            "Author - Series 01 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": "Author - Series",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-129",
+          "in": [
+            "Author - Series 02 - Title.epub"
+          ],
+          "out": {
+            "title": "Title",
+            "series": "Author - Series",
+            "number": "2",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-130",
+          "in": [
+            "Some Author - Some Title.epub"
+          ],
+          "out": {
+            "title": "Some Title",
+            "series": null,
+            "number": null,
+            "author": "Some Author"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-131",
+          "in": [
+            "The Hobbit.epub"
+          ],
+          "out": {
+            "title": "The Hobbit",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-132",
+          "in": [
+            "J R R Tolkien - The Hobbit.epub"
+          ],
+          "out": {
+            "title": "The Hobbit",
+            "series": null,
+            "number": null,
+            "author": "J R R Tolkien"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-133",
+          "in": [
+            "1984.epub"
+          ],
+          "out": {
+            "title": "1984",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-134",
+          "in": [
+            "George Orwell - 1984.epub"
+          ],
+          "out": {
+            "title": "1984",
+            "series": null,
+            "number": null,
+            "author": "George Orwell"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-135",
+          "in": [
+            "Catch-22.epub"
+          ],
+          "out": {
+            "title": "Catch-22",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-136",
+          "in": [
+            "Joseph Heller - Catch-22.epub"
+          ],
+          "out": {
+            "title": "Catch-22",
+            "series": null,
+            "number": null,
+            "author": "Joseph Heller"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-137",
+          "in": [
+            "The 39 Steps.epub"
+          ],
+          "out": {
+            "title": "The 39 Steps",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-138",
+          "in": [
+            "John Buchan - The 39 Steps.epub"
+          ],
+          "out": {
+            "title": "The 39 Steps",
+            "series": null,
+            "number": null,
+            "author": "John Buchan"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-139",
+          "in": [
+            "Dune (Dune #1).epub"
+          ],
+          "out": {
+            "title": "Dune",
+            "series": null,
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-140",
+          "in": [
+            "Mistborn 01 - The Final Empire (Mistborn #1).epub"
+          ],
+          "out": {
+            "title": "The Final Empire",
+            "series": "Mistborn",
+            "number": "1",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-141",
+          "in": [
+            "A Book Without Series.epub"
+          ],
+          "out": {
+            "title": "A Book Without Series",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-142",
+          "in": [
+            "A Book: With A Subtitle.epub"
+          ],
+          "out": {
+            "title": "A Book: With A Subtitle",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-143",
+          "in": [
+            "Series Book 4.epub"
+          ],
+          "out": {
+            "title": "Series Book 4",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-144",
+          "in": [
+            "Title - With Dash.epub"
+          ],
+          "out": {
+            "title": "With Dash",
+            "series": null,
+            "number": null,
+            "author": "Title"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-145",
+          "in": [
+            "Author Name - Title With - Dash.epub"
+          ],
+          "out": {
+            "title": "Dash",
+            "series": null,
+            "number": null,
+            "author": "Author Name"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-146",
+          "in": [
+            "12 - 13.epub"
+          ],
+          "out": {
+            "title": "13",
+            "series": null,
+            "number": "12",
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-147",
+          "in": [
+            "Ünïcödé Äuthor - Tïtlé.epub"
+          ],
+          "out": {
+            "title": "Tïtlé",
+            "series": null,
+            "number": null,
+            "author": "Ünïcödé Äuthor"
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-148",
+          "in": [
+            "日本語のタイトル.epub"
+          ],
+          "out": {
+            "title": "日本語のタイトル",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-149",
+          "in": [
+            "No Extension"
+          ],
+          "out": {
+            "title": "No Extension",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-150",
+          "in": [
+            ".hidden.epub"
+          ],
+          "out": {
+            "title": ".hidden",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        },
+        {
+          "id": "I4-151",
+          "in": [
+            "Trailing Dots...epub"
+          ],
+          "out": {
+            "title": "Trailing Dots..",
+            "series": null,
+            "number": null,
+            "author": null
+          },
+          "provenance": "new edge case (realistic filename)"
+        }
+      ]
+    },
+    "I5": {
+      "signature": "bookMediaDefaults(embedded: Metadata, filename: string) -> Metadata",
+      "note": "`out` lists the four semantic fields (Title, Series, Number, Writer); null means the key is absent.",
+      "cases": [
+        {
+          "id": "I5-001",
+          "in": [
+            {},
+            "Mistborn 01 - The Final Empire.epub"
+          ],
+          "out": {
+            "Title": "The Final Empire",
+            "Series": "Mistborn",
+            "Number": "1",
+            "Writer": null
+          },
+          "provenance": "spec §2.5 worked example"
+        },
+        {
+          "id": "I5-002",
+          "in": [
+            {},
+            "Brandon Sanderson - The Final Empire.epub"
+          ],
+          "out": {
+            "Title": "The Final Empire",
+            "Series": null,
+            "Number": null,
+            "Writer": "Brandon Sanderson"
+          },
+          "provenance": "spec §2.5 worked example"
+        },
+        {
+          "id": "I5-003",
+          "in": [
+            {
+              "Title": "Dune",
+              "Series": "Dune",
+              "Number": "1"
+            },
+            "Frank Herbert - Dune.epub"
+          ],
+          "out": {
+            "Title": "Dune",
+            "Series": "Dune",
+            "Number": "1",
+            "Writer": "Frank Herbert"
+          },
+          "provenance": "spec §2.5 worked example (embedded wins)"
+        },
+        {
+          "id": "I5-004",
+          "in": [
+            {
+              "Title": "The Ultimate Hitchhiker's Guide to the Galaxy",
+              "Writer": "Douglas Adams",
+              "Series": "Douglas Adams"
+            },
+            "AuthorSeries.epub"
+          ],
+          "out": {
+            "Title": "The Ultimate Hitchhiker's Guide to the Galaxy",
+            "Series": null,
+            "Number": null,
+            "Writer": "Douglas Adams"
+          },
+          "provenance": "spec §2.5 worked example (author-as-series dropped)"
+        },
+        {
+          "id": "I5-005",
+          "in": [
+            {
+              "Title": "The Gate of the Feral Gods: Dungeon Crawler Carl Book 4",
+              "Series": "Dungeon Crawler Carl",
+              "Number": "4"
+            },
+            "Blurb.epub"
+          ],
+          "out": {
+            "Title": "The Gate of the Feral Gods",
+            "Series": "Dungeon Crawler Carl",
+            "Number": "4",
+            "Writer": null
+          },
+          "provenance": "spec §2.5 worked example (series blurb dropped)"
+        },
+        {
+          "id": "I5-006",
+          "in": [
+            {},
+            "Dune.epub"
+          ],
+          "out": {
+            "Title": "Dune",
+            "Series": null,
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (standalone keeps no Series/Number)"
+        },
+        {
+          "id": "I5-007",
+          "in": [
+            {
+              "Title": "  "
+            },
+            "Dune.epub"
+          ],
+          "out": {
+            "Title": "Dune",
+            "Series": null,
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (blank embedded Title is filled)"
+        },
+        {
+          "id": "I5-008",
+          "in": [
+            {
+              "Series": "Saga (2020) (Digital)"
+            },
+            "Whatever.epub"
+          ],
+          "out": {
+            "Title": "Whatever",
+            "Series": "Saga",
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (embedded Series cleaned)"
+        },
+        {
+          "id": "I5-009",
+          "in": [
+            {
+              "Writer": "Brandon Sanderson"
+            },
+            "Brandon Sanderson - The Final Empire.epub"
+          ],
+          "out": {
+            "Title": "The Final Empire",
+            "Series": null,
+            "Number": null,
+            "Writer": "Brandon Sanderson"
+          },
+          "provenance": "new edge case (embedded Writer wins)"
+        },
+        {
+          "id": "I5-010",
+          "in": [
+            {
+              "Series": "Mistborn",
+              "Writer": "Mistborn"
+            },
+            "Mistborn 01 - X.epub"
+          ],
+          "out": {
+            "Title": "X",
+            "Series": null,
+            "Number": "1",
+            "Writer": "Mistborn"
+          },
+          "provenance": "new edge case (author-as-series dropped)"
+        },
+        {
+          "id": "I5-011",
+          "in": [
+            {
+              "Title": "Dune"
+            },
+            "Frank Herbert - Dune.epub"
+          ],
+          "out": {
+            "Title": "Dune",
+            "Series": null,
+            "Number": null,
+            "Writer": "Frank Herbert"
+          },
+          "provenance": "new edge case (filename fills the Writer)"
+        },
+        {
+          "id": "I5-012",
+          "in": [
+            {
+              "Number": "1"
+            },
+            "Dune.epub"
+          ],
+          "out": {
+            "Title": "Dune",
+            "Series": null,
+            "Number": "1",
+            "Writer": null
+          },
+          "provenance": "new edge case (filename fills the Title)"
+        },
+        {
+          "id": "I5-013",
+          "in": [
+            {
+              "Title": "T",
+              "Series": "S",
+              "Number": "2"
+            },
+            "Anything.epub"
+          ],
+          "out": {
+            "Title": "T",
+            "Series": "S",
+            "Number": "2",
+            "Writer": null
+          },
+          "provenance": "new edge case (all embedded, filename ignored)"
+        },
+        {
+          "id": "I5-014",
+          "in": [
+            {},
+            "Series 01 - Title.epub"
+          ],
+          "out": {
+            "Title": "Title",
+            "Series": "Series",
+            "Number": "1",
+            "Writer": null
+          },
+          "provenance": "new edge case (series shape)"
+        },
+        {
+          "id": "I5-015",
+          "in": [
+            {},
+            "Frank Herbert - Dune.epub"
+          ],
+          "out": {
+            "Title": "Dune",
+            "Series": null,
+            "Number": null,
+            "Writer": "Frank Herbert"
+          },
+          "provenance": "new edge case (realistic author shape)"
+        },
+        {
+          "id": "I5-016",
+          "in": [
+            {},
+            "Catch-22.epub"
+          ],
+          "out": {
+            "Title": "Catch-22",
+            "Series": null,
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (hyphen title)"
+        },
+        {
+          "id": "I5-017",
+          "in": [
+            {},
+            "1984.epub"
+          ],
+          "out": {
+            "Title": "1984",
+            "Series": null,
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (numeric title)"
+        },
+        {
+          "id": "I5-018",
+          "in": [
+            {},
+            "Author - Series 02 - Title.epub"
+          ],
+          "out": {
+            "Title": "Title",
+            "Series": "Author - Series",
+            "Number": "2",
+            "Writer": null
+          },
+          "provenance": "new edge case (realistic series shape)"
+        },
+        {
+          "id": "I5-019",
+          "in": [
+            {
+              "Title": "A Book Without Series"
+            },
+            "A Book Without Series.epub"
+          ],
+          "out": {
+            "Title": "A Book Without Series",
+            "Series": null,
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (standalone keeps no Series)"
+        },
+        {
+          "id": "I5-020",
+          "in": [
+            {},
+            ".hidden.epub"
+          ],
+          "out": {
+            "Title": "hidden",
+            "Series": null,
+            "Number": null,
+            "Writer": null
+          },
+          "provenance": "new edge case (dotfile title cleaned)"
+        }
+      ]
+    },
+    "I6": {
+      "signature": "canonicalBookName(meta: Metadata) -> { series, filename }",
+      "cases": [
+        {
+          "id": "I6-001",
+          "in": [
+            {
+              "Series": "Dungeon Crawler Carl",
+              "Number": "4",
+              "Title": "The Gate of the Feral Gods"
+            }
+          ],
+          "out": {
+            "series": "Dungeon Crawler Carl",
+            "filename": "Dungeon Crawler Carl #4 - The Gate of the Feral Gods"
+          },
+          "provenance": "spec §2.6 worked example"
+        },
+        {
+          "id": "I6-002",
+          "in": [
+            {
+              "Series": "Mistborn",
+              "Number": "1",
+              "Title": "The Final Empire"
+            }
+          ],
+          "out": {
+            "series": "Mistborn",
+            "filename": "Mistborn #1 - The Final Empire"
+          },
+          "provenance": "spec §2.6 worked example"
+        },
+        {
+          "id": "I6-003",
+          "in": [
+            {
+              "Writer": "Douglas Adams",
+              "Title": "The Ultimate Hitchhiker's Guide to the Galaxy"
+            }
+          ],
+          "out": {
+            "series": "Douglas Adams",
+            "filename": "The Ultimate Hitchhiker's Guide to the Galaxy"
+          },
+          "provenance": "spec §2.6 worked example (standalone with author)"
+        },
+        {
+          "id": "I6-004",
+          "in": [
+            {
+              "Title": "Dune"
+            }
+          ],
+          "out": {
+            "series": "Dune",
+            "filename": "Dune"
+          },
+          "provenance": "spec §2.6 worked example (standalone)"
+        },
+        {
+          "id": "I6-005",
+          "in": [
+            {
+              "Series": "Saga"
+            }
+          ],
+          "out": {
+            "series": "Saga",
+            "filename": "Saga"
+          },
+          "provenance": "spec §2.6 worked example (series, no number/title)"
+        },
+        {
+          "id": "I6-006",
+          "in": [
+            {
+              "Series": "Saga",
+              "Number": "5"
+            }
+          ],
+          "out": {
+            "series": "Saga",
+            "filename": "Saga #5"
+          },
+          "provenance": "new edge case (series without title)"
+        },
+        {
+          "id": "I6-007",
+          "in": [
+            {
+              "Series": "Saga (2020) (Digital)",
+              "Number": "5",
+              "Title": "Saga 005 (2020)"
+            }
+          ],
+          "out": {
+            "series": "Saga",
+            "filename": "Saga #5 - Saga 005"
+          },
+          "provenance": "new edge case (series and title cleaned)"
+        },
+        {
+          "id": "I6-008",
+          "in": [
+            {
+              "Title": "",
+              "Series": "",
+              "Writer": ""
+            }
+          ],
+          "out": {
+            "series": "Unsorted",
+            "filename": "Untitled"
+          },
+          "provenance": "new edge case (all empty)"
+        },
+        {
+          "id": "I6-009",
+          "in": [
+            {
+              "Writer": "Douglas Adams",
+              "Title": ""
+            }
+          ],
+          "out": {
+            "series": "Douglas Adams",
+            "filename": "Untitled"
+          },
+          "provenance": "new edge case (author but no title)"
+        },
+        {
+          "id": "I6-010",
+          "in": [
+            {
+              "Series": "Dungeon Crawler Carl",
+              "Number": "",
+              "Title": "The Gate of the Feral Gods"
+            }
+          ],
+          "out": {
+            "series": "Dungeon Crawler Carl",
+            "filename": "Dungeon Crawler Carl - The Gate of the Feral Gods"
+          },
+          "provenance": "new edge case (series without number)"
+        },
+        {
+          "id": "I6-011",
+          "in": [
+            {
+              "Series": "Dungeon Crawler Carl",
+              "Number": "4",
+              "Title": ""
+            }
+          ],
+          "out": {
+            "series": "Dungeon Crawler Carl",
+            "filename": "Dungeon Crawler Carl #4"
+          },
+          "provenance": "new edge case (series without title)"
+        },
+        {
+          "id": "I6-012",
+          "in": [
+            {
+              "Series": "Mistborn",
+              "Number": "1",
+              "Title": "Mistborn: The Final Empire"
+            }
+          ],
+          "out": {
+            "series": "Mistborn",
+            "filename": "Mistborn #1 - The Final Empire"
+          },
+          "provenance": "new edge case (repeated series prefix dropped from title)"
+        },
+        {
+          "id": "I6-013",
+          "in": [
+            {
+              "Title": "Dune",
+              "Writer": "Frank Herbert"
+            }
+          ],
+          "out": {
+            "series": "Frank Herbert",
+            "filename": "Dune"
+          },
+          "provenance": "new edge case (standalone with author and title)"
+        },
+        {
+          "id": "I6-014",
+          "in": [
+            {
+              "Title": "The Ultimate Hitchhiker's Guide to the Galaxy"
+            }
+          ],
+          "out": {
+            "series": "The Ultimate Hitchhiker's Guide to the Galaxy",
+            "filename": "The Ultimate Hitchhiker's Guide to the Galaxy"
+          },
+          "provenance": "new edge case (standalone, no author: folder is the title)"
+        }
+      ]
+    },
+    "I7": {
+      "signature": "canonicalBookName(meta) -> { series, filename }   // manga/comic suggested template (§2.7)",
+      "runnable": false,
+      "reason": "The manga/comic default file-name shape is a review-UI suggestion, not a pure function in the implementation; there is no exported helper that builds `Series vVV cNNN` / `Series vVV #NNN`. The authoritative transform of a submitted comic/manga name is cleanName (N4) + dedupeSeriesVolume (N6).",
+      "cases": [
+        {
+          "id": "I7-001",
+          "in": [
+            {
+              "media": "manga",
+              "Series": "Solo Leveling",
+              "Number": "159"
+            }
+          ],
+          "out": {
+            "series": "Solo Leveling",
+            "filename": "Solo Leveling c159"
+          },
+          "provenance": "spec §2.7 worked example"
+        },
+        {
+          "id": "I7-002",
+          "in": [
+            {
+              "media": "manga",
+              "Series": "Berserk",
+              "Volume": "3",
+              "Number": "7"
+            }
+          ],
+          "out": {
+            "series": "Berserk",
+            "filename": "Berserk v03 c007"
+          },
+          "provenance": "spec §2.7 worked example"
+        },
+        {
+          "id": "I7-003",
+          "in": [
+            {
+              "media": "comic",
+              "Series": "Saga",
+              "Volume": "1",
+              "Number": "5"
+            }
+          ],
+          "out": {
+            "series": "Saga",
+            "filename": "Saga v01 #005"
+          },
+          "provenance": "spec §2.7 worked example"
+        },
+        {
+          "id": "I7-004",
+          "in": [
+            {
+              "media": "comic",
+              "Series": "Iron Man v1",
+              "Volume": "1",
+              "Number": "1"
+            }
+          ],
+          "out": {
+            "series": "Iron Man v1",
+            "filename": "Iron Man v1 #001"
+          },
+          "provenance": "spec §2.7 worked example (volume token suppressed)"
+        },
+        {
+          "id": "I7-005",
+          "in": [
+            {
+              "media": "manga",
+              "Series": "Berserk",
+              "Volume": "3"
+            }
+          ],
+          "out": {
+            "series": "Berserk",
+            "filename": "Berserk v03"
+          },
+          "provenance": "new edge case (volume, no number)"
+        },
+        {
+          "id": "I7-006",
+          "in": [
+            {
+              "media": "comic",
+              "Series": "Saga",
+              "Number": "5"
+            }
+          ],
+          "out": {
+            "series": "Saga",
+            "filename": "Saga #005"
+          },
+          "provenance": "new edge case (number, no volume)"
+        },
+        {
+          "id": "I7-007",
+          "in": [
+            {
+              "media": "manga",
+              "Series": "Solo Leveling"
+            }
+          ],
+          "out": {
+            "series": "Solo Leveling",
+            "filename": "Solo Leveling"
+          },
+          "provenance": "new edge case (no volume or number)"
+        },
+        {
+          "id": "I7-008",
+          "in": [
+            {
+              "media": "comic",
+              "Series": "Batman",
+              "Volume": "5",
+              "Number": "50"
+            }
+          ],
+          "out": {
+            "series": "Batman",
+            "filename": "Batman v05 #050"
+          },
+          "provenance": "new edge case (zero-padding both parts)"
+        }
+      ]
+    }
+  }
+}

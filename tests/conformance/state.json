@@ -1,0 +1,309 @@
+{
+  "spec": "companion-rules-v1",
+  "family": "S",
+  "rules": {
+    "S1": {
+      "signature": "transition(status: string, event: string) -> status",
+      "runnable": false,
+      "reason": "The status machine lives in src/uploads.ts and src/review.ts behind the database and the tus routes; transitions are SQL compare-and-swap statements, so no pure function exposes them.",
+      "cases": [
+        {
+          "id": "S1-001",
+          "in": [
+            "(new)",
+            "upload created"
+          ],
+          "out": "uploading",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-002",
+          "in": [
+            "uploading",
+            "upload finished"
+          ],
+          "out": "checking",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-003",
+          "in": [
+            "checking",
+            "content sniff ok, hash ok"
+          ],
+          "out": "pending",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-004",
+          "in": [
+            "checking",
+            "content mismatch / unreadable"
+          ],
+          "out": "invalid",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-005",
+          "in": [
+            "checking",
+            "duplicate found"
+          ],
+          "out": "duplicate",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-006",
+          "in": [
+            "uploading",
+            "uploader withdraw (uploading)"
+          ],
+          "out": "cancelled",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-007",
+          "in": [
+            "pending",
+            "uploader withdraw (pending)"
+          ],
+          "out": "withdrawn",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-008",
+          "in": [
+            "uploading",
+            "abandoned partial (no bytes for a while)"
+          ],
+          "out": "expired",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-009",
+          "in": [
+            "pending",
+            "reviewer approves (pending)"
+          ],
+          "out": "approving",
+          "provenance": "spec §5.2 (compare-and-swap)"
+        },
+        {
+          "id": "S1-010",
+          "in": [
+            "approving",
+            "job success"
+          ],
+          "out": "approved",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-011",
+          "in": [
+            "approving",
+            "job failure"
+          ],
+          "out": "pending",
+          "provenance": "spec §5.2 (with a review error)"
+        },
+        {
+          "id": "S1-012",
+          "in": [
+            "pending",
+            "reviewer rejects (pending)"
+          ],
+          "out": "rejected",
+          "provenance": "spec §5.2 (reason required)"
+        },
+        {
+          "id": "S1-013",
+          "in": [
+            "rejected",
+            "retention elapsed"
+          ],
+          "out": "rejected",
+          "provenance": "spec §5.2 (file deleted; row kept)"
+        },
+        {
+          "id": "S1-014",
+          "in": [
+            "approved",
+            "reviewer fixes (approved)"
+          ],
+          "out": "fixing",
+          "provenance": "spec §5.2 (compare-and-swap)"
+        },
+        {
+          "id": "S1-015",
+          "in": [
+            "fixing",
+            "job success"
+          ],
+          "out": "approved",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-016",
+          "in": [
+            "fixing",
+            "job failure"
+          ],
+          "out": "approved",
+          "provenance": "spec §5.2 (with a review error)"
+        },
+        {
+          "id": "S1-017",
+          "in": [
+            "rejected",
+            "restore (rejected, file still present)"
+          ],
+          "out": "pending",
+          "provenance": "spec §5.2"
+        },
+        {
+          "id": "S1-018",
+          "in": [
+            "approving",
+            "restart with a persisted plan"
+          ],
+          "out": "approving",
+          "provenance": "spec §5.3 (re-queued)"
+        },
+        {
+          "id": "S1-019",
+          "in": [
+            "approving",
+            "restart without a plan"
+          ],
+          "out": "pending",
+          "provenance": "spec §5.3 (failed back)"
+        },
+        {
+          "id": "S1-020",
+          "in": [
+            "fixing",
+            "restart with a persisted plan"
+          ],
+          "out": "fixing",
+          "provenance": "spec §5.3 (re-queued)"
+        },
+        {
+          "id": "S1-021",
+          "in": [
+            "fixing",
+            "restart without a plan"
+          ],
+          "out": "approved",
+          "provenance": "spec §5.3 (left approved with a review error)"
+        }
+      ]
+    },
+    "S2": {
+      "signature": "place(job) -> outcome   // in: [mode, destinationState, sourceRelation]",
+      "runnable": false,
+      "reason": "Placement is an async filesystem/archive job in src/review.ts (buildFinalFile/runJob) using the filesystem and 7-Zip; it cannot be exercised as a pure function.",
+      "cases": [
+        {
+          "id": "S2-001",
+          "in": [
+            "approve",
+            "destination exists",
+            "destination != source"
+          ],
+          "out": "refuse: destination already exists",
+          "provenance": "spec §5.4 (TOCTOU guard)"
+        },
+        {
+          "id": "S2-002",
+          "in": [
+            "fix",
+            "destination exists",
+            "destination == source"
+          ],
+          "out": "proceed: replaces the fix's own file",
+          "provenance": "spec §5.4 (TOCTOU guard)"
+        },
+        {
+          "id": "S2-003",
+          "in": [
+            "fix",
+            "destination exists",
+            "destination != source"
+          ],
+          "out": "refuse: destination already exists",
+          "provenance": "spec §5.4 (TOCTOU guard)"
+        },
+        {
+          "id": "S2-004",
+          "in": [
+            "approve",
+            "destination absent",
+            "n/a"
+          ],
+          "out": "build temporary beside destination; rename; then remove source; rescan series folder",
+          "provenance": "spec §5.4"
+        },
+        {
+          "id": "S2-005",
+          "in": [
+            "fix",
+            "destination absent",
+            "destination != source"
+          ],
+          "out": "build temporary; rename; remove source; remove empty old dir; rescan old and new",
+          "provenance": "spec §5.4"
+        },
+        {
+          "id": "S2-006",
+          "in": [
+            "fix",
+            "old folder gone",
+            "n/a"
+          ],
+          "out": "rescan the whole library so the old series is dropped",
+          "provenance": "spec §5.4"
+        },
+        {
+          "id": "S2-007",
+          "in": [
+            "any",
+            "build fails",
+            "n/a"
+          ],
+          "out": "remove temporary; library unchanged; item returns to a reviewable state with a review error",
+          "provenance": "spec §5.4"
+        },
+        {
+          "id": "S2-008",
+          "in": [
+            "any",
+            "temporary name",
+            "n/a"
+          ],
+          "out": ".<marker><job_id>.part beside the destination (scanner-ignored)",
+          "provenance": "spec §5.4"
+        },
+        {
+          "id": "S2-009",
+          "in": [
+            "fix",
+            "source handling",
+            "n/a"
+          ],
+          "out": "source copied/read-only, never moved before the rename",
+          "provenance": "spec §5.4"
+        },
+        {
+          "id": "S2-010",
+          "in": [
+            "approve",
+            "source handling",
+            "n/a"
+          ],
+          "out": "source removed only after the rename",
+          "provenance": "spec §5.4"
+        }
+      ]
+    }
+  }
+}

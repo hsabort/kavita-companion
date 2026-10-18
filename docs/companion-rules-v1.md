@@ -190,9 +190,9 @@ function dropOrphanBrackets(input):
 
 | Input | Result | Why |
 |---|---|---|
-| `(Saga` | `Saga` | the `(` is unclosed → dropped |
-| `Saga)` | `Saga` | the `)` has no opener → dropped |
-| `[Solo Leveling` | `Solo Leveling` | the `[` is unclosed → dropped |
+| `(Halcyon` | `Halcyon` | the `(` is unclosed → dropped |
+| `Halcyon)` | `Halcyon` | the `)` has no opener → dropped |
+| `[Ascendant` | `Ascendant` | the `[` is unclosed → dropped |
 | `(a]b)` | `(ab)` | `]` wants `[` but the top of the stack is `(` → `]` dropped; `)` then closes `(` → `)` kept |
 | `(a(b)c)` | `(a(b)c)` | all four brackets pair correctly |
 
@@ -224,7 +224,7 @@ function cleanName(input):
 
 Key points:
 
-- The bracket pattern's **inner part cannot contain any bracket**, so the pass naturally matches **innermost** groups first. A nested case such as `(Saga (1968-1996)` first matches `(1968-1996)`, replaces it with a space, and leaves the now-orphan `(` to be removed by `dropOrphanBrackets`.
+- The bracket pattern's **inner part cannot contain any bracket**, so the pass naturally matches **innermost** groups first. A nested case such as `(Halcyon (1968-1996)` first matches `(1968-1996)`, replaces it with a space, and leaves the now-orphan `(` to be removed by `dropOrphanBrackets`.
 - The pass is a **single** left-to-right scan: text produced by a replacement is not rescanned.
 - A noise group is replaced by a **single space** (not by nothing), so the words on either side do not run together.
 - The final strip removes any of: whitespace, `.`, `_`, `-`, en dash `–`.
@@ -233,16 +233,16 @@ Key points:
 
 | Input | Result |
 |---|---|
-| `(Saga (1968-1996)` | `Saga` |
-| `Solo Leveling (2021) (Digital) (LuCaZ)` | `Solo Leveling` |
-| `(Dungeon Crawler Carl` | `Dungeon Crawler Carl` |
-| `The Ultimate Hitchhiker's Guide to the Galaxy (2005)` | `The Ultimate Hitchhiker's Guide to the Galaxy` |
-| `Saga 001 (2020) (Digital) (Zone-Empire)` | `Saga 001` |
+| `(Halcyon (1968-1996)` | `Halcyon` |
+| `Ascendant (2021) (Digital) (LuCaZ)` | `Ascendant` |
+| `(Dungeon Delver` | `Dungeon Delver` |
+| `The Utterly Complete Guide to Everything (2005)` | `The Utterly Complete Guide to Everything` |
+| `Halcyon 001 (2020) (Digital) (Zone-Empire)` | `Halcyon 001` |
 | `Already Clean` | `Already Clean` |
 
 ### 1.5 `volumeInSeries(series)` (`N5`)
 
-**Statement.** If a series name already ends by naming a volume (`Iron Man v1`, `Saga Vol. 2`, `Berserk volume 3`), return that volume number; otherwise return *absent*.
+**Statement.** If a series name already ends by naming a volume (`Ironclad v1`, `Halcyon Vol. 2`, `Nightbloom volume 3`), return that volume number; otherwise return *absent*.
 
 **Algorithm.**
 
@@ -262,15 +262,15 @@ function volumeInSeries(series):
 
 | `series` | Result |
 |---|---|
-| `Iron Man v1` | `1` |
-| `Saga Vol. 2` | `2` |
-| `Berserk volume 03` | `3` |
-| `Saga` | absent |
+| `Ironclad v1` | `1` |
+| `Halcyon Vol. 2` | `2` |
+| `Nightbloom volume 03` | `3` |
+| `Halcyon` | absent |
 | `V for Vendetta` | absent |
 
 ### 1.6 `dedupeSeriesVolume(name, series, volume)` (`N6`)
 
-**Statement.** Drop a volume token from a file name when the series already carries that same volume, so a reviewer filing `Iron Man v1 01.cbr` under series `Iron Man v1` does not get `Iron Man v1 v01 #001.cbz`. Only the token **right after the series prefix** is removed.
+**Statement.** Drop a volume token from a file name when the series already carries that same volume, so a reviewer filing `Ironclad v1 01.cbr` under series `Ironclad v1` does not get `Ironclad v1 v01 #001.cbz`. Only the token **right after the series prefix** is removed.
 
 **Algorithm.**
 
@@ -291,14 +291,14 @@ function dedupeSeriesVolume(name, series, volume):
 - It is replaced by the cleaned series `s`, so any `Vol.`/`v` styling normalises to the series spelling.
 - The lookahead `(?=\s|$)` ensures the token is followed by whitespace or end-of-string (it does not eat the following number).
 
-**Worked example.** `name = "Iron Man v1 01"`, `series = "Iron Man v1"`, `volume = "1"` → `volumeInSeries("Iron Man v1") == 1 == integer("1")` → match `^Iron Man v1\s+v0*1` → replace with `Iron Man v1` → **`Iron Man v1 01`**. (The `v1` token was part of the matched prefix and is re-emitted as the series spelling, so the file name no longer repeats the volume before the issue number.)
+**Worked example.** `name = "Ironclad v1 01"`, `series = "Ironclad v1"`, `volume = "1"` → `volumeInSeries("Ironclad v1") == 1 == integer("1")` → match `^Ironclad v1\s+v0*1` → replace with `Ironclad v1` → **`Ironclad v1 01`**. (The `v1` token was part of the matched prefix and is re-emitted as the series spelling, so the file name no longer repeats the volume before the issue number.)
 
 ### 1.7 `cleanBookTitle(title, series)` (`N7`)
 
 **Statement.** A book title with a repeated series prefix and/or a trailing series blurb removed:
-`"Dungeon Crawler Carl: A LitRPG/Gamelit Adventure"` → `"A LitRPG/Gamelit Adventure"`;
-`"The Gate of the Feral Gods: Dungeon Crawler Carl Book 4"` → `"The Gate of the Feral Gods"`.
-A title with no series (or no match) is only `cleanName`-ed, so `"Dune: Messiah"` is left alone.
+`"Dungeon Delver: A LitRPG/Gamelit Adventure"` → `"A LitRPG/Gamelit Adventure"`;
+`"The Gate of the Silver Gods: Dungeon Delver Book 4"` → `"The Gate of the Silver Gods"`.
+A title with no series (or no match) is only `cleanName`-ed, so `"Vermilion: Requiem"` is left alone.
 
 **Algorithm.**
 
@@ -330,10 +330,10 @@ function cleanBookTitle(title, series = ""):
 
 | title | series | Result |
 |---|---|---|
-| `Dungeon Crawler Carl: A LitRPG/Gamelit Adventure` | `Dungeon Crawler Carl` | `A LitRPG/Gamelit Adventure` |
-| `The Gate of the Feral Gods: Dungeon Crawler Carl Book 4` | `Dungeon Crawler Carl` | `The Gate of the Feral Gods` |
-| `Dune: Messiah` | *(none)* | `Dune: Messiah` |
-| `The Ultimate Hitchhiker's Guide to the Galaxy (2005)` | `(Dungeon Crawler Carl` | `The Ultimate Hitchhiker's Guide to the Galaxy` |
+| `Dungeon Delver: A LitRPG/Gamelit Adventure` | `Dungeon Delver` | `A LitRPG/Gamelit Adventure` |
+| `The Gate of the Silver Gods: Dungeon Delver Book 4` | `Dungeon Delver` | `The Gate of the Silver Gods` |
+| `Vermilion: Requiem` | *(none)* | `Vermilion: Requiem` |
+| `The Utterly Complete Guide to Everything (2005)` | `(Dungeon Delver` | `The Utterly Complete Guide to Everything` |
 
 ---
 
@@ -387,11 +387,11 @@ function stripSeriesMarker(name):
 - The group may contain other text before the `#`.
 - The group is anchored at the end of the string, with optional surrounding whitespace.
 
-**Worked example.** `"Mistborn 01 - The Final Empire (Mistborn #1)"` → `{ name: "Mistborn 01 - The Final Empire", number: "1" }`.
+**Worked example.** `"Ashfall 01 - The Cinder Throne (Ashfall #1)"` → `{ name: "Ashfall 01 - The Cinder Throne", number: "1" }`.
 
 ### 2.4 `guessFromFilename(filename)` (`I4`)
 
-**Statement.** Best-effort title/series/number/author from a book filename. The separator is a **spaced dash** `" - "`, so a hyphen inside a word (`Catch-22`) never splits and a numeric title (`1984`) stays a title. Recognises, in order:
+**Statement.** Best-effort title/series/number/author from a book filename. The separator is a **spaced dash** `" - "`, so a hyphen inside a word (`Cross-Fire`) never splits and a numeric title (`2087`) stays a title. Recognises, in order:
 
 1. `Series 01 - Title`
 2. `Series #1`
@@ -440,11 +440,11 @@ function guessFromFilename(filename):
 
 | filename | Result |
 |---|---|
-| `Dune.epub` | title `Dune` |
-| `Mistborn 01 - The Final Empire.epub` | series `Mistborn`, number `1`, title `The Final Empire` |
-| `Brandon Sanderson - The Final Empire.epub` | author `Brandon Sanderson`, title `The Final Empire`, no series |
-| `Catch-22.epub` | title `Catch-22` |
-| `1984.epub` | title `1984` |
+| `Vermilion.epub` | title `Vermilion` |
+| `Ashfall 01 - The Cinder Throne.epub` | series `Ashfall`, number `1`, title `The Cinder Throne` |
+| `B. A. Corwin - The Cinder Throne.epub` | author `B. A. Corwin`, title `The Cinder Throne`, no series |
+| `Cross-Fire.epub` | title `Cross-Fire` |
+| `2087.epub` | title `2087` |
 
 ### 2.5 `bookMediaDefaults(embedded, filename)` (`I5`)
 
@@ -493,11 +493,11 @@ function bookMediaDefaults(embedded, filename):
 
 | embedded | filename | Result |
 |---|---|---|
-| *(none)* | `Mistborn 01 - The Final Empire.epub` | Series `Mistborn`, Number `1`, Title `The Final Empire` |
-| *(none)* | `Brandon Sanderson - The Final Empire.epub` | Title `The Final Empire`, Writer `Brandon Sanderson`, no Series |
-| `Title=Dune, Series=Dune, Number=1` | `Frank Herbert - Dune.epub` | Series `Dune`, Title `Dune`, Number `1` (embedded wins) |
-| `Title=The Ultimate Hitchhiker's Guide to the Galaxy, Writer=Douglas Adams, Series=Douglas Adams` | `AuthorSeries.epub` | Series removed (author-as-series), Title kept |
-| `Title=The Gate of the Feral Gods: Dungeon Crawler Carl Book 4, Series=Dungeon Crawler Carl, Number=4` | `Blurb.epub` | Title `The Gate of the Feral Gods`, Series `Dungeon Crawler Carl`, Number `4` |
+| *(none)* | `Ashfall 01 - The Cinder Throne.epub` | Series `Ashfall`, Number `1`, Title `The Cinder Throne` |
+| *(none)* | `B. A. Corwin - The Cinder Throne.epub` | Title `The Cinder Throne`, Writer `B. A. Corwin`, no Series |
+| `Title=Vermilion, Series=Vermilion, Number=1` | `F. R. Halloway - Vermilion.epub` | Series `Vermilion`, Title `Vermilion`, Number `1` (embedded wins) |
+| `Title=The Utterly Complete Guide to Everything, Writer=Dana Aldridge, Series=Dana Aldridge` | `AuthorSeries.epub` | Series removed (author-as-series), Title kept |
+| `Title=The Gate of the Silver Gods: Dungeon Delver Book 4, Series=Dungeon Delver, Number=4` | `Blurb.epub` | Title `The Gate of the Silver Gods`, Series `Dungeon Delver`, Number `4` |
 
 ### 2.6 `canonicalBookName(meta)` (`I6`)
 
@@ -531,11 +531,11 @@ function canonicalBookName(meta):
 
 | meta | folder (`series`) | file (`filename`) |
 |---|---|---|
-| Series `Dungeon Crawler Carl`, Number `4`, Title `The Gate of the Feral Gods` | `Dungeon Crawler Carl` | `Dungeon Crawler Carl #4 - The Gate of the Feral Gods` |
-| Series `Mistborn`, Number `1`, Title `The Final Empire` | `Mistborn` | `Mistborn #1 - The Final Empire` |
-| no Series, Writer `Douglas Adams`, Title `The Ultimate Hitchhiker's Guide to the Galaxy` | `Douglas Adams` | `The Ultimate Hitchhiker's Guide to the Galaxy` |
-| no Series, no Writer, Title `Dune` | `Dune` | `Dune` |
-| Series `Saga`, no Number, no Title | `Saga` | `Saga` |
+| Series `Dungeon Delver`, Number `4`, Title `The Gate of the Silver Gods` | `Dungeon Delver` | `Dungeon Delver #4 - The Gate of the Silver Gods` |
+| Series `Ashfall`, Number `1`, Title `The Cinder Throne` | `Ashfall` | `Ashfall #1 - The Cinder Throne` |
+| no Series, Writer `Dana Aldridge`, Title `The Utterly Complete Guide to Everything` | `Dana Aldridge` | `The Utterly Complete Guide to Everything` |
+| no Series, no Writer, Title `Vermilion` | `Vermilion` | `Vermilion` |
+| Series `Halcyon`, no Number, no Title | `Halcyon` | `Halcyon` |
 
 ### 2.7 Manga and comic filename shapes (suggested templates) (`I7`)
 
@@ -552,10 +552,10 @@ where `VV` is the volume zero-padded to **2** digits, `NNN` is the issue number 
 
 | media | Series / Volume / Number | Suggested name |
 |---|---|---|
-| Manga | `Solo Leveling`, no volume, `159` | `Solo Leveling c159` |
-| Manga | `Berserk`, `3`, `7` | `Berserk v03 c007` |
-| Comic | `Saga`, `1`, `5` | `Saga v01 #005` |
-| Comic | `Iron Man v1`, `1`, `1` | `Iron Man v1 #001` (volume token suppressed) |
+| Manga | `Ascendant`, no volume, `159` | `Ascendant c159` |
+| Manga | `Nightbloom`, `3`, `7` | `Nightbloom v03 c007` |
+| Comic | `Halcyon`, `1`, `5` | `Halcyon v01 #005` |
+| Comic | `Ironclad v1`, `1`, `1` | `Ironclad v1 #001` (volume token suppressed) |
 
 ---
 
@@ -590,7 +590,7 @@ function safeSegment(input):
 
 - `é` is **2 bytes** in UTF-8. 100 × `é` = 200 bytes → **kept in full**. 101 × `é` = 202 bytes → trimmed to 100 × `é` = 200 bytes.
 - A CJK character (e.g. `字`) is **3 bytes**. 67 × `字` = 201 bytes → trimmed to 66 × `字` = **198 bytes** (the 67th code point is removed whole).
-- `Saga: Volume 1?` → reserved characters `:` and `?` become spaces → `Saga  Volume 1 ` → collapse → `Saga Volume 1` → **`Saga Volume 1`**.
+- `Halcyon: Volume 1?` → reserved characters `:` and `?` become spaces → `Halcyon  Volume 1 ` → collapse → `Halcyon Volume 1` → **`Halcyon Volume 1`**.
 - `../../etc/passwd` → `/` becomes spaces, leading dots stripped → `etc passwd` (no traversal).
 
 ### 3.2 `splitName(filename)` (`P2`)
@@ -606,7 +606,7 @@ function splitName(filename):
 
 A leading dot is not an extension separator (`dot <= 0`).
 
-**Worked example.** `"Saga #005.CBZ"` → `{ base: "Saga #005", ext: "cbz" }`. `".bashrc"` → `{ base: ".bashrc", ext: "" }`.
+**Worked example.** `"Halcyon #005.CBZ"` → `{ base: "Halcyon #005", ext: "cbz" }`. `".bashrc"` → `{ base: ".bashrc", ext: "" }`.
 
 ### 3.3 `targetExtension(kind)` (`P3`)
 
@@ -653,7 +653,7 @@ function natural_compare(a, b):
 - `fold_for_base` = decompose to NFD, remove combining marks, then casefold. This gives the `sensitivity:"base"` behaviour (case- and accent-insensitive).
 - Runs of ASCII digits are read in full and compared by value; ties by digit-run length for determinism.
 
-**Worked examples.** `p001.jpg < p002.jpg < p010.jpg`; `Solo Leveling 2 < Solo Leveling 10`; `Émile < emile` compares equal at the letter level (accent-insensitive).
+**Worked examples.** `p001.jpg < p002.jpg < p010.jpg`; `Ascendant 2 < Ascendant 10`; `Émile < emile` compares equal at the letter level (accent-insensitive).
 
 ---
 
@@ -943,12 +943,12 @@ Properties that must hold:
 - **Both** the old location and the new location are rescanned. If the old folder no longer exists, the whole library is rescanned so the old series is dropped.
 - On failure, the item returns to a reviewable state with a **review error**; the library is unchanged.
 
-**Worked example (fix).** An approved `Saga #005.cbz` is filed under the wrong series folder `Saga (old)`. A reviewer fixes it to folder `Saga` with the same filename.
+**Worked example (fix).** An approved `Halcyon #005.cbz` is filed under the wrong series folder `Halcyon (old)`. A reviewer fixes it to folder `Halcyon` with the same filename.
 1. Destination exists? Yes, but it is the source's own path only if unchanged — here the folder differs, so `destination != source` and the destination is new.
-2. Build `Saga/.kc-<id>.part` from `Saga (old)/Saga #005.cbz` (source untouched).
-3. Rename `.kc-<id>.part` → `Saga/Saga #005.cbz`.
-4. Remove `Saga (old)/Saga #005.cbz`; remove `Saga (old)` if now empty.
-5. Rescan `Saga (old)` (or the whole library if it is gone) and rescan `Saga`.
+2. Build `Halcyon/.kc-<id>.part` from `Halcyon (old)/Halcyon #005.cbz` (source untouched).
+3. Rename `.kc-<id>.part` → `Halcyon/Halcyon #005.cbz`.
+4. Remove `Halcyon (old)/Halcyon #005.cbz`; remove `Halcyon (old)` if now empty.
+5. Rescan `Halcyon (old)` (or the whole library if it is gone) and rescan `Halcyon`.
 
 ### 5.5 Post-placement verification (integration-flavoured)
 
@@ -1016,14 +1016,14 @@ function mergeRecords(records, current = {}, order = absent, force = [], locked 
 
 > **Trap (stable sort).** When `order` is supplied, the sort must be **stable**: records whose provider is not in `order` keep their original relative order and sort after all listed providers. Use a stable sort keyed on the order index (unlisted → a value larger than any index).
 
-**Worked example.** `current = { Series: "Saga", Year: "2020" }`, `force = []`, two records in precedence order: A `{ Series: "Saga (Image)", Number: "5" }`, B `{ Year: "2019", Publisher: "Image" }`.
-- `Series`: A supplies a valid value; current is non-empty and not forced → **conflict** `{current: "Saga", proposed: "Saga (Image)", source: A}`; `Series` marked seen.
+**Worked example.** `current = { Series: "Halcyon", Year: "2020" }`, `force = []`, two records in precedence order: A `{ Series: "Halcyon (Image)", Number: "5" }`, B `{ Year: "2019", Publisher: "Image" }`.
+- `Series`: A supplies a valid value; current is non-empty and not forced → **conflict** `{current: "Halcyon", proposed: "Halcyon (Image)", source: A}`; `Series` marked seen.
 - `Number`: A supplies `5`; current empty → applied, provenance A.
 - `Year`: B supplies `2019`; current `2020` non-empty, not forced → **conflict** `{current: "2020", proposed: "2019", source: B}`.
 - `Publisher`: B supplies `Image`; current empty → applied, provenance B.
 - Result: `fields = { Number: "5", Publisher: "Image" }`, `conflicts` has `Series` and `Year`.
 
-With `force = ["Series"]`: `Series` becomes `fields.Series = "Saga (Image)"` (provenance A), and the `Series` conflict disappears.
+With `force = ["Series"]`: `Series` becomes `fields.Series = "Halcyon (Image)"` (provenance A), and the `Series` conflict disappears.
 
 ---
 

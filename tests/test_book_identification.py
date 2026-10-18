@@ -58,14 +58,14 @@ def defaults_of(items, upload_id):
 
 
 try:
-    id_dune = upload(uploader, "Dune.epub", epub(), BOOKS)
-    id_mistborn = upload(uploader, "Mistborn 01 - The Final Empire.epub", epub(), BOOKS)
-    id_author = upload(uploader, "Brandon Sanderson - The Final Empire.epub", epub(), BOOKS)
-    id_catch = upload(uploader, "Catch-22.epub", epub(), BOOKS)
-    id_1984 = upload(uploader, "1984.epub", epub(), BOOKS)
-    id_embedded = upload(uploader, "Frank Herbert - Dune.epub",
-                         epub(dc_title="Dune", calibre_series="Dune", calibre_index="1"), BOOKS)
-    uploaded += [id_dune, id_mistborn, id_author, id_catch, id_1984, id_embedded]
+    id_vermilion = upload(uploader, "Vermilion.epub", epub(), BOOKS)
+    id_ashfall = upload(uploader, "Ashfall 01 - The Cinder Throne.epub", epub(), BOOKS)
+    id_author = upload(uploader, "B. A. Corwin - The Cinder Throne.epub", epub(), BOOKS)
+    id_crossfire = upload(uploader, "Cross-Fire.epub", epub(), BOOKS)
+    id_2087 = upload(uploader, "2087.epub", epub(), BOOKS)
+    id_embedded = upload(uploader, "F. R. Halloway - Vermilion.epub",
+                         epub(dc_title="Vermilion", calibre_series="Vermilion", calibre_index="1"), BOOKS)
+    uploaded += [id_vermilion, id_ashfall, id_author, id_crossfire, id_2087, id_embedded]
 
     items = {}
     for _ in range(90):
@@ -74,39 +74,39 @@ try:
             break
         time.sleep(1)
 
-    d = defaults_of(items, id_dune)
-    check("a bare title becomes the book Title", d.get("Title") == "Dune", str(d))
+    d = defaults_of(items, id_vermilion)
+    check("a bare title becomes the book Title", d.get("Title") == "Vermilion", str(d))
     check("a bare title invents no series", not d.get("Series"), str(d))
 
-    m = defaults_of(items, id_mistborn)
+    m = defaults_of(items, id_ashfall)
     check("a series-prefixed name splits into Series/Number/Title",
-          m.get("Series") == "Mistborn" and m.get("Number") == "1" and m.get("Title") == "The Final Empire", str(m))
+          m.get("Series") == "Ashfall" and m.get("Number") == "1" and m.get("Title") == "The Cinder Throne", str(m))
 
     a = defaults_of(items, id_author)
     check("an author-prefixed name keeps the title clean and invents no series",
-          a.get("Title") == "The Final Empire" and not a.get("Series"), str(a))
-    check("an 'Author - Title' name supplies the author", a.get("Writer") == "Brandon Sanderson", str(a))
+          a.get("Title") == "The Cinder Throne" and not a.get("Series"), str(a))
+    check("an 'Author - Title' name supplies the author", a.get("Writer") == "B. A. Corwin", str(a))
 
-    c = defaults_of(items, id_catch)
-    check("a hyphen in a title is not a series separator", c.get("Title") == "Catch-22", str(c))
+    c = defaults_of(items, id_crossfire)
+    check("a hyphen in a title is not a series separator", c.get("Title") == "Cross-Fire", str(c))
 
-    y = defaults_of(items, id_1984)
-    check("a numeric title is not treated as a number", y.get("Title") == "1984", str(y))
+    y = defaults_of(items, id_2087)
+    check("a numeric title is not treated as a number", y.get("Title") == "2087", str(y))
 
     e = defaults_of(items, id_embedded)
     check("embedded metadata wins over the filename guess",
-          e.get("Series") == "Dune" and e.get("Title") == "Dune" and e.get("Number") == "1", str(e))
+          e.get("Series") == "Vermilion" and e.get("Title") == "Vermilion" and e.get("Number") == "1", str(e))
 
     # --- a book is renamed to its canonical name before it is put in front of a reviewer (Task 4) ---
     check("the review item shows the staged canonical name",
-          defaults_of(items, id_mistborn) is not None and (items.get(id_mistborn) or {}).get("stagedName")
-          == "Mistborn #1 - The Final Empire.epub", str((items.get(id_mistborn) or {}).get("stagedName")))
+          defaults_of(items, id_ashfall) is not None and (items.get(id_ashfall) or {}).get("stagedName")
+          == "Ashfall #1 - The Cinder Throne.epub", str((items.get(id_ashfall) or {}).get("stagedName")))
     check("the staged file on disk is renamed to match",
-          (PENDING / f"{id_mistborn} Mistborn #1 - The Final Empire.epub").exists()
-          and not (PENDING / f"{id_mistborn}.epub").exists(),
-          str(sorted(p.name for p in PENDING.iterdir() if p.name.startswith(id_mistborn))))
+          (PENDING / f"{id_ashfall} Ashfall #1 - The Cinder Throne.epub").exists()
+          and not (PENDING / f"{id_ashfall}.epub").exists(),
+          str(sorted(p.name for p in PENDING.iterdir() if p.name.startswith(id_ashfall))))
     check("a standalone book is staged under its title",
-          (PENDING / f"{id_dune} Dune.epub").exists(), str(sorted(p.name for p in PENDING.iterdir() if p.name.startswith(id_dune[:8]))))
+          (PENDING / f"{id_vermilion} Vermilion.epub").exists(), str(sorted(p.name for p in PENDING.iterdir() if p.name.startswith(id_vermilion[:8]))))
 
     # --- the search key: a book searches by its Title, with its series as a hint (Task 2) ---
     ol_fake = ProviderFake(urlparse(env.get("PROVIDER_OPENLIBRARY_BASE", "")).port or 20906,
@@ -115,26 +115,26 @@ try:
         app("POST", "/api/admin/providers", admin, {"id": "openlibrary", "enabled": True})
         ol_fake.reset()
         docs = {"numFound": 2, "docs": [
-            {"key": "/works/OL1W", "title": "The Final Empire", "series": ["Elantris"]},
-            {"key": "/works/OL2W", "title": "The Final Empire", "series": ["Mistborn"]},
+            {"key": "/works/OL1W", "title": "The Cinder Throne", "series": ["Emberlight"]},
+            {"key": "/works/OL2W", "title": "The Cinder Throne", "series": ["Ashfall"]},
         ]}
         ol_fake.script("/search.json", [{"json": docs}, {"json": docs}])
 
-        _, body = app("GET", f"/api/review/{id_mistborn}/match", admin)
+        _, body = app("GET", f"/api/review/{id_ashfall}/match", admin)
         q = body.get("query") or {}
         check("a book searches by its Title, with its series as a hint",
-              q.get("title") == "The Final Empire" and q.get("series") == "Mistborn", str(q))
+              q.get("title") == "The Cinder Throne" and q.get("series") == "Ashfall", str(q))
         ol_candidates = [c for c in body.get("candidates", []) if c.get("provider") == "openlibrary"]
         check("the title search reaches the provider and returns its candidates",
               {c["externalId"] for c in ol_candidates} == {"OL1W", "OL2W"}, str(ol_candidates))
         calls = ol_fake.requests("/search.json")
         check("the lookup asked the provider once, with the title as the term",
-              len(calls) == 1 and parse_qs(calls[0]["query"]).get("q") == ["The Final Empire"],
+              len(calls) == 1 and parse_qs(calls[0]["query"]).get("q") == ["The Cinder Throne"],
               str([(r["path"], r["query"]) for r in calls]))
 
         _, body = app("GET", f"/api/review/{id_author}/match", admin)
         check("an 'Author - Title' name searches the title, never the author",
-              (body.get("query") or {}).get("title") == "The Final Empire", str(body.get("query")))
+              (body.get("query") or {}).get("title") == "The Cinder Throne", str(body.get("query")))
     finally:
         app("POST", "/api/admin/providers", admin, {"id": "openlibrary", "enabled": False})
         ol_fake.stop()

@@ -1,0 +1,610 @@
+{
+  "spec": "companion-rules-v1",
+  "family": "P",
+  "rules": {
+    "P1": {
+      "signature": "safeSegment(input: string) -> string | null",
+      "note": "Byte-cap cases carry a `bytes` field: the UTF-8 byte length of `out`.",
+      "cases": [
+        {
+          "id": "P1-001",
+          "in": [
+            "Saga: Volume 1?"
+          ],
+          "out": "Saga Volume 1",
+          "provenance": "spec \u00a73.1 worked example"
+        },
+        {
+          "id": "P1-002",
+          "in": [
+            "../../etc/passwd"
+          ],
+          "out": "etc passwd",
+          "provenance": "spec \u00a73.1 worked example (no traversal)"
+        },
+        {
+          "id": "P1-003",
+          "in": [
+            "."
+          ],
+          "out": null,
+          "provenance": "spec \u00a73.1 (only a dot -> absent)"
+        },
+        {
+          "id": "P1-004",
+          "in": [
+            ".."
+          ],
+          "out": null,
+          "provenance": "spec \u00a73.1 (only dots -> absent)"
+        },
+        {
+          "id": "P1-005",
+          "in": [
+            ""
+          ],
+          "out": null,
+          "provenance": "spec \u00a73.1 (empty -> absent)"
+        },
+        {
+          "id": "P1-006",
+          "in": [
+            "   "
+          ],
+          "out": null,
+          "provenance": "new edge case (whitespace only -> absent)"
+        },
+        {
+          "id": "P1-007",
+          "in": [
+            "  ..  "
+          ],
+          "out": null,
+          "provenance": "new edge case (dots and spaces only -> absent)"
+        },
+        {
+          "id": "P1-008",
+          "in": [
+            "normal name"
+          ],
+          "out": "normal name",
+          "provenance": "new edge case (already safe)"
+        },
+        {
+          "id": "P1-009",
+          "in": [
+            "a<b>c:d\"e/f\\g|h?i*j"
+          ],
+          "out": "a b c d e f g h i j",
+          "provenance": "spec \u00a73.1 (reserved characters become spaces)"
+        },
+        {
+          "id": "P1-010",
+          "in": [
+            "trailing. "
+          ],
+          "out": "trailing",
+          "provenance": "spec \u00a73.1 (trailing dot/space stripped)"
+        },
+        {
+          "id": "P1-011",
+          "in": [
+            ".leading"
+          ],
+          "out": "leading",
+          "provenance": "spec \u00a73.1 (leading dot stripped)"
+        },
+        {
+          "id": "P1-012",
+          "in": [
+            "...."
+          ],
+          "out": null,
+          "provenance": "new edge case (only dots -> absent)"
+        },
+        {
+          "id": "P1-013",
+          "in": [
+            "....name...."
+          ],
+          "out": "name",
+          "provenance": "new edge case (leading and trailing dots stripped)"
+        },
+        {
+          "id": "P1-014",
+          "in": [
+            "tab\tname"
+          ],
+          "out": "tab name",
+          "provenance": "spec \u00a73.1 (control character becomes a space)"
+        },
+        {
+          "id": "P1-015",
+          "in": [
+            "line\nbreak"
+          ],
+          "out": "line break",
+          "provenance": "spec \u00a73.1 (control character becomes a space)"
+        },
+        {
+          "id": "P1-016",
+          "in": [
+            "\u0000nul\u0001name"
+          ],
+          "out": "nul name",
+          "provenance": "spec \u00a73.1 (control characters become spaces)"
+        },
+        {
+          "id": "P1-017",
+          "in": [
+            "Saga  Volume   1"
+          ],
+          "out": "Saga Volume 1",
+          "provenance": "spec \u00a73.1 (whitespace collapsed)"
+        },
+        {
+          "id": "P1-018",
+          "in": [
+            "caf\u00e9"
+          ],
+          "out": "caf\u00e9",
+          "provenance": "new edge case (Unicode)"
+        },
+        {
+          "id": "P1-019",
+          "in": [
+            "Cafe\u0301"
+          ],
+          "out": "Caf\u00e9",
+          "provenance": "new edge case (Unicode NFC)"
+        },
+        {
+          "id": "P1-020",
+          "in": [
+            "1.5 GB"
+          ],
+          "out": "1.5 GB",
+          "provenance": "new edge case (internal dot kept)"
+        },
+        {
+          "id": "P1-021",
+          "in": [
+            "\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9"
+          ],
+          "out": "\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9",
+          "provenance": "new edge case (byte length: 100 x \u00e9 = 200 bytes, kept)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-022",
+          "in": [
+            "\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9"
+          ],
+          "out": "\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9",
+          "provenance": "new edge case (byte length: 101 x \u00e9 = 202 bytes, trimmed to 100)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-023",
+          "in": [
+            "\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57"
+          ],
+          "out": "\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57",
+          "provenance": "new edge case (byte length: 67 x \u5b57 = 201 bytes, trimmed to 66 = 198)",
+          "bytes": 198
+        },
+        {
+          "id": "P1-024",
+          "in": [
+            "\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57"
+          ],
+          "out": "\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57\u5b57",
+          "provenance": "new edge case (byte length: 66 x \u5b57 = 198 bytes, kept)",
+          "bytes": 198
+        },
+        {
+          "id": "P1-025",
+          "in": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "out": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "provenance": "new edge case (byte length: 200 ASCII bytes, kept)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-026",
+          "in": [
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "out": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "provenance": "new edge case (byte length: 201 ASCII bytes, trimmed to 200)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-027",
+          "in": [
+            "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42"
+          ],
+          "out": "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42",
+          "provenance": "new edge case (byte length: 51 x astral = 204 bytes, trimmed to 50 = 200)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-028",
+          "in": [
+            "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42"
+          ],
+          "out": "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42",
+          "provenance": "new edge case (byte length: 50 x astral = 200 bytes, kept)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-029",
+          "in": [
+            "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42ab"
+          ],
+          "out": "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42",
+          "provenance": "new edge case (byte length: 202 bytes, trailing ASCII trimmed)",
+          "bytes": 200
+        },
+        {
+          "id": "P1-030",
+          "in": [
+            "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42a\ud83d\ude42"
+          ],
+          "out": "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42a",
+          "provenance": "new edge case (byte length: 201 bytes, last code point removed whole)",
+          "bytes": 197,
+          "current": "\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42\ud83d\ude42a\ud83d",
+          "note": "The reference removes one UTF-16 code unit at a time, splitting the trailing astral character and leaving a lone high surrogate (200 bytes). The intended rule removes the whole code point (197 bytes)."
+        }
+      ]
+    },
+    "P2": {
+      "signature": "splitName(filename: string) -> { base: string, ext: string }",
+      "cases": [
+        {
+          "id": "P2-001",
+          "in": [
+            "Saga #005.CBZ"
+          ],
+          "out": {
+            "base": "Saga #005",
+            "ext": "cbz"
+          },
+          "provenance": "spec \u00a73.2 worked example (extension lower-cased)"
+        },
+        {
+          "id": "P2-002",
+          "in": [
+            ".bashrc"
+          ],
+          "out": {
+            "base": ".bashrc",
+            "ext": ""
+          },
+          "provenance": "spec \u00a73.2 worked example (dotfile)"
+        },
+        {
+          "id": "P2-003",
+          "in": [
+            "noext"
+          ],
+          "out": {
+            "base": "noext",
+            "ext": ""
+          },
+          "provenance": "new edge case (no dot)"
+        },
+        {
+          "id": "P2-004",
+          "in": [
+            "a.b.c"
+          ],
+          "out": {
+            "base": "a.b",
+            "ext": "c"
+          },
+          "provenance": "new edge case (multiple dots)"
+        },
+        {
+          "id": "P2-005",
+          "in": [
+            "UPPER.EPUB"
+          ],
+          "out": {
+            "base": "UPPER",
+            "ext": "epub"
+          },
+          "provenance": "new edge case (upper-case extension lower-cased)"
+        },
+        {
+          "id": "P2-006",
+          "in": [
+            "trailing."
+          ],
+          "out": {
+            "base": "trailing",
+            "ext": ""
+          },
+          "provenance": "new edge case (trailing dot)"
+        },
+        {
+          "id": "P2-007",
+          "in": [
+            ".a.b"
+          ],
+          "out": {
+            "base": ".a",
+            "ext": "b"
+          },
+          "provenance": "new edge case (leading dot plus extension)"
+        },
+        {
+          "id": "P2-008",
+          "in": [
+            ".."
+          ],
+          "out": {
+            "base": ".",
+            "ext": ""
+          },
+          "provenance": "new edge case (all dots)"
+        },
+        {
+          "id": "P2-009",
+          "in": [
+            "a."
+          ],
+          "out": {
+            "base": "a",
+            "ext": ""
+          },
+          "provenance": "new edge case (dot with no extension)"
+        },
+        {
+          "id": "P2-010",
+          "in": [
+            ""
+          ],
+          "out": {
+            "base": "",
+            "ext": ""
+          },
+          "provenance": "new edge case (empty)"
+        }
+      ]
+    },
+    "P3": {
+      "signature": "targetExtension(kind: \"comic\" | \"epub\" | \"pdf\") -> string",
+      "note": "targetExtension takes a file kind, not a raw extension; the mobi mapping is reached via the file-kind rule (T2), which converts mobi/azw/azw3 to epub.",
+      "cases": [
+        {
+          "id": "P3-001",
+          "in": [
+            "comic"
+          ],
+          "out": "cbz",
+          "provenance": "spec \u00a73.3 (comic archives always become CBZ)"
+        },
+        {
+          "id": "P3-002",
+          "in": [
+            "epub"
+          ],
+          "out": "epub",
+          "provenance": "spec \u00a73.3 (epub stays epub)"
+        },
+        {
+          "id": "P3-003",
+          "in": [
+            "pdf"
+          ],
+          "out": "pdf",
+          "provenance": "spec \u00a73.3 (pdf stays pdf)"
+        },
+        {
+          "id": "P3-004",
+          "in": [
+            "epub"
+          ],
+          "out": "epub",
+          "provenance": "spec \u00a78.2 (mobi/azw/azw3 are converted to EPUB, so their file kind is epub)"
+        }
+      ]
+    },
+    "P4": {
+      "signature": "naturalCompare(a: string, b: string) -> number   // -1 | 0 | +1",
+      "cases": [
+        {
+          "id": "P4-001",
+          "in": [
+            "p001.jpg",
+            "p002.jpg"
+          ],
+          "out": -1,
+          "provenance": "spec \u00a73.4 worked example"
+        },
+        {
+          "id": "P4-002",
+          "in": [
+            "p002.jpg",
+            "p010.jpg"
+          ],
+          "out": -1,
+          "provenance": "spec \u00a73.4 worked example"
+        },
+        {
+          "id": "P4-003",
+          "in": [
+            "p010.jpg",
+            "p002.jpg"
+          ],
+          "out": 1,
+          "provenance": "spec \u00a73.4 worked example (reverse)"
+        },
+        {
+          "id": "P4-004",
+          "in": [
+            "Solo Leveling 2",
+            "Solo Leveling 10"
+          ],
+          "out": -1,
+          "provenance": "spec \u00a73.4 worked example"
+        },
+        {
+          "id": "P4-005",
+          "in": [
+            "Solo Leveling 10",
+            "Solo Leveling 2"
+          ],
+          "out": 1,
+          "provenance": "spec \u00a73.4 worked example (reverse)"
+        },
+        {
+          "id": "P4-006",
+          "in": [
+            "\u00c9mile",
+            "emile"
+          ],
+          "out": 0,
+          "provenance": "spec \u00a73.4 worked example (accent-insensitive)"
+        },
+        {
+          "id": "P4-007",
+          "in": [
+            "page 9",
+            "page 10"
+          ],
+          "out": -1,
+          "provenance": "new edge case (digit run compared as a number)"
+        },
+        {
+          "id": "P4-008",
+          "in": [
+            "v1",
+            "v10"
+          ],
+          "out": -1,
+          "provenance": "new edge case (digit run compared as a number)"
+        },
+        {
+          "id": "P4-009",
+          "in": [
+            "2",
+            "10"
+          ],
+          "out": -1,
+          "provenance": "new edge case (pure digit runs)"
+        },
+        {
+          "id": "P4-010",
+          "in": [
+            "img12",
+            "img2"
+          ],
+          "out": 1,
+          "provenance": "new edge case (digit run compared as a number)"
+        },
+        {
+          "id": "P4-011",
+          "in": [
+            "x",
+            "x2"
+          ],
+          "out": -1,
+          "provenance": "new edge case (prefix is shorter)"
+        },
+        {
+          "id": "P4-012",
+          "in": [
+            "A",
+            "a"
+          ],
+          "out": 0,
+          "provenance": "new edge case (case-insensitive)"
+        },
+        {
+          "id": "P4-013",
+          "in": [
+            "b",
+            "A"
+          ],
+          "out": 1,
+          "provenance": "new edge case (case-insensitive)"
+        },
+        {
+          "id": "P4-014",
+          "in": [
+            "",
+            "a"
+          ],
+          "out": -1,
+          "provenance": "new edge case (empty string sorts first)"
+        },
+        {
+          "id": "P4-015",
+          "in": [
+            "a",
+            ""
+          ],
+          "out": 1,
+          "provenance": "new edge case (empty string sorts first)"
+        },
+        {
+          "id": "P4-016",
+          "in": [
+            "",
+            ""
+          ],
+          "out": 0,
+          "provenance": "new edge case (both empty)"
+        },
+        {
+          "id": "P4-017",
+          "in": [
+            "p1",
+            "p01"
+          ],
+          "out": -1,
+          "provenance": "spec \u00a73.4 tie-break (equal value: shorter digit run first)",
+          "current": 0,
+          "note": "localeCompare numeric returns 0 for equal values; the spec's algorithm breaks the tie by digit-run length. The spec's own comment says 'more leading zeros sorts first' but its code line sorts the shorter run first (len(ra) < len(rb)); this case follows the code line."
+        },
+        {
+          "id": "P4-018",
+          "in": [
+            "p01",
+            "p1"
+          ],
+          "out": 1,
+          "provenance": "spec \u00a73.4 tie-break (equal value: shorter digit run first)",
+          "current": 0,
+          "note": "See P4-017."
+        },
+        {
+          "id": "P4-019",
+          "in": [
+            "1",
+            "01"
+          ],
+          "out": -1,
+          "provenance": "spec \u00a73.4 tie-break (equal value: shorter digit run first)",
+          "current": 0,
+          "note": "See P4-017."
+        },
+        {
+          "id": "P4-020",
+          "in": [
+            "p001",
+            "p1"
+          ],
+          "out": 1,
+          "provenance": "spec \u00a73.4 tie-break (equal value: shorter digit run first)",
+          "current": 0,
+          "note": "See P4-017; the algorithm's code line puts the longer run last."
+        }
+      ]
+    }
+  }
+}

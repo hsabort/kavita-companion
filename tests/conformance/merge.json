@@ -1,0 +1,465 @@
+{
+  "spec": "companion-rules-v1",
+  "family": "G",
+  "rules": {
+    "G1": {
+      "signature": "mergeRecords(options: MergeOptions) -> { fields, provenance, conflicts }",
+      "note": "Each case's single argument is the MergeOptions object.",
+      "cases": [
+        {
+          "id": "G1-001",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Series": "Saga (Image)",
+                    "Number": "5"
+                  }
+                },
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Year": "2019",
+                    "Publisher": "Image"
+                  }
+                }
+              ],
+              "current": {
+                "Series": "Saga",
+                "Year": "2020"
+              }
+            }
+          ],
+          "out": {
+            "fields": {
+              "Number": "5",
+              "Publisher": "Image"
+            },
+            "provenance": {
+              "Number": "A",
+              "Publisher": "B"
+            },
+            "conflicts": [
+              {
+                "field": "Series",
+                "current": "Saga",
+                "proposed": "Saga (Image)",
+                "source": "A"
+              },
+              {
+                "field": "Year",
+                "current": "2020",
+                "proposed": "2019",
+                "source": "B"
+              }
+            ]
+          },
+          "provenance": "spec §6 worked example"
+        },
+        {
+          "id": "G1-002",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Series": "Saga (Image)",
+                    "Number": "5"
+                  }
+                },
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Year": "2019",
+                    "Publisher": "Image"
+                  }
+                }
+              ],
+              "current": {
+                "Series": "Saga",
+                "Year": "2020"
+              },
+              "force": [
+                "Series"
+              ]
+            }
+          ],
+          "out": {
+            "fields": {
+              "Series": "Saga (Image)",
+              "Number": "5",
+              "Publisher": "Image"
+            },
+            "provenance": {
+              "Series": "A",
+              "Number": "A",
+              "Publisher": "B"
+            },
+            "conflicts": [
+              {
+                "field": "Year",
+                "current": "2020",
+                "proposed": "2019",
+                "source": "B"
+              }
+            ]
+          },
+          "provenance": "spec §6 worked example (force overwrites)"
+        },
+        {
+          "id": "G1-003",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Series": "Saga",
+                    "Number": "5"
+                  }
+                }
+              ],
+              "current": {},
+              "locked": [
+                "Series"
+              ]
+            }
+          ],
+          "out": {
+            "fields": {
+              "Number": "5"
+            },
+            "provenance": {
+              "Number": "A"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.3 (locked fields are never proposed)"
+        },
+        {
+          "id": "G1-004",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Publisher": "B Pub"
+                  }
+                },
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Publisher": "A Pub"
+                  }
+                }
+              ],
+              "order": [
+                "A",
+                "B"
+              ]
+            }
+          ],
+          "out": {
+            "fields": {
+              "Publisher": "A Pub"
+            },
+            "provenance": {
+              "Publisher": "A"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.2 (order re-sorts records)"
+        },
+        {
+          "id": "G1-005",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "C",
+                  "fields": {
+                    "Publisher": "C"
+                  }
+                },
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Publisher": "A"
+                  }
+                },
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Title": "T"
+                  }
+                }
+              ],
+              "order": [
+                "A"
+              ]
+            }
+          ],
+          "out": {
+            "fields": {
+              "Publisher": "A",
+              "Title": "T"
+            },
+            "provenance": {
+              "Publisher": "A",
+              "Title": "B"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.2 trap (unlisted providers keep relative order, after listed ones)"
+        },
+        {
+          "id": "G1-006",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {}
+                }
+              ],
+              "current": {}
+            }
+          ],
+          "out": {
+            "fields": {},
+            "provenance": {},
+            "conflicts": []
+          },
+          "provenance": "new edge case (empty candidate record)"
+        },
+        {
+          "id": "G1-007",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Series": "Saga"
+                  }
+                },
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Series": "Other",
+                    "Number": "1"
+                  }
+                }
+              ],
+              "current": {}
+            }
+          ],
+          "out": {
+            "fields": {
+              "Series": "Saga",
+              "Number": "1"
+            },
+            "provenance": {
+              "Series": "A",
+              "Number": "B"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.3 (first valid value wins the field; lower precedence fills the rest)"
+        },
+        {
+          "id": "G1-008",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Year": "19x",
+                    "Series": "Saga"
+                  }
+                },
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Year": "2019"
+                  }
+                }
+              ],
+              "current": {}
+            }
+          ],
+          "out": {
+            "fields": {
+              "Series": "Saga",
+              "Year": "2019"
+            },
+            "provenance": {
+              "Series": "A",
+              "Year": "B"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.3 (an invalid value does not claim the field)"
+        },
+        {
+          "id": "G1-009",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Number": 5,
+                    "Series": "Saga"
+                  }
+                }
+              ],
+              "current": {}
+            }
+          ],
+          "out": {
+            "fields": {
+              "Series": "Saga"
+            },
+            "provenance": {
+              "Series": "A"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.3 (normalisation of a non-string: skipped)"
+        },
+        {
+          "id": "G1-010",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Series": "A Series"
+                  }
+                },
+                {
+                  "provider": "B",
+                  "fields": {
+                    "Series": "B Series"
+                  }
+                }
+              ],
+              "current": {
+                "Series": "Cur"
+              }
+            }
+          ],
+          "out": {
+            "fields": {},
+            "provenance": {},
+            "conflicts": [
+              {
+                "field": "Series",
+                "current": "Cur",
+                "proposed": "A Series",
+                "source": "A"
+              }
+            ]
+          },
+          "provenance": "spec §6.3 (a conflict marks the field seen, so no lower record is consulted)"
+        },
+        {
+          "id": "G1-011",
+          "in": [
+            {
+              "records": [],
+              "current": {
+                "Series": "X"
+              }
+            }
+          ],
+          "out": {
+            "fields": {},
+            "provenance": {},
+            "conflicts": []
+          },
+          "provenance": "new edge case (no records)"
+        },
+        {
+          "id": "G1-012",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Title": "T",
+                    "Series": "S"
+                  }
+                }
+              ],
+              "current": {}
+            }
+          ],
+          "out": {
+            "fields": {
+              "Title": "T",
+              "Series": "S"
+            },
+            "provenance": {
+              "Title": "A",
+              "Series": "A"
+            },
+            "conflicts": []
+          },
+          "provenance": "spec §6.3 (provenance per applied field)"
+        },
+        {
+          "id": "G1-013",
+          "in": [
+            {
+              "records": [],
+              "current": {
+                "Title": "T"
+              }
+            }
+          ],
+          "out": {
+            "fields": {},
+            "provenance": {},
+            "conflicts": []
+          },
+          "provenance": "new edge case (current values are not echoed back)"
+        },
+        {
+          "id": "G1-014",
+          "in": [
+            {
+              "records": [
+                {
+                  "provider": "A",
+                  "fields": {
+                    "Summary": "<b>Hello</b> world"
+                  }
+                }
+              ],
+              "current": {}
+            }
+          ],
+          "out": {
+            "fields": {
+              "Summary": "Hello world"
+            },
+            "provenance": {
+              "Summary": "A"
+            },
+            "conflicts": []
+          },
+          "provenance": "new edge case (provider text normalised: HTML stripped)"
+        }
+      ]
+    }
+  }
+}
