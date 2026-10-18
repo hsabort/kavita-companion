@@ -19,3 +19,8 @@ tests/screenshots/
 docs/reviews/*/ui-ux-shots/
 __pycache__/
 *.pyc
+
+# Lectern working documents. These quote Kavita source references and third-party proprietary text,
+# so they live in the shared scratchpad (/srv/kavita-companion/scratchpad/lectern), not here.
+/docs/superpowers/specs/
+/docs/superpowers/plans/2026-10-18-kavita-companion-lectern-compliance.md

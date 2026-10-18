@@ -11,7 +11,7 @@ Kavita's providers, or (2) integrate third-party APIs directly, or (3) use an in
 - Valid per library type; series can override (metadataProviderOverride). Discovery:
   GET /api/Library/metadata-providers?libraryType=, GET /api/Library/metadata-enabled-libraries.
 - NO per-provider API keys. Kavita calls its own backend plus.kavitareader.com with the instance's
-  Kavita+ license key. (Configuration.GetKavitaPlusApiUrl; KavitaPlusApiService.)
+  Kavita+ license key.
 - ComicVine survives only as a library TYPE (LibraryType.ComicVine=5) and a stored external id
   (comicVineId), NOT a live provider in v0.9.1.4. AniList/MAL/MangaBaka/Hardcover as metadata are via
   Kavita+; AniList/MAL/Hardcover/MangaBaka also exist as SCROBBLE providers (OAuth). No live MangaDex
@@ -64,11 +64,11 @@ Kavita's providers, or (2) integrate third-party APIs directly, or (3) use an in
 - POST /api/Series/match (interactive; free-text query or short codes anilist:123 / hardcover:slug /
   cbr:slug; cached 1 min).
 - POST /api/Series/update-match (enqueue FixSeriesMatch; refetch metadata+covers).
-- GET /api/Metadata/series-detail-plus runs TryMatchAndLoadMetadataForSeries(OnDemand) — bypasses the
-  50/24h limit by design (a code TODO questions this).
+- GET /api/Metadata/series-detail-plus triggers an on-demand match that bypasses the
+  50/24h limit by design (observed; Kavita's own notes query this).
 - GET /api/Series/external-series-detail?seriesId=&aniListId=&malId=&mangaBakaId=&hardcoverId=&recommendedSeriesId=
   ([KPlus], 15-min cache).
-- Background: KavitaPlusDataRefresh job → FetchExternalDataTask (subject to 50/24h).
+- Background: a scheduled Kavita+ data-refresh job fetches external data (subject to 50/24h).
 - CAVEATS: POST /api/Series/refresh-metadata and /api/Library/refresh-metadata are MISNAMED — they run
   cover generation, NOT a metadata pull. match/match-info/update-match/dont-match/external-series-detail
   → 403 without license; match* also admin. Rate limit 50/24h for background. External metadata

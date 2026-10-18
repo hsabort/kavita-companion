@@ -23,15 +23,6 @@ const MAP: Record<string, string> = {
   "--card-bg-color": "--surface-solid",
 };
 
-/** Kavita Dark's values, used to resolve var() references to variables a theme doesn't override. */
-const DARK: Record<string, string> = {
-  "--bs-body-bg": "#212529", "--body-text-color": "#efefef", "--primary-color": "#4ac694",
-  "--primary-color-dark-shade": "#3B9E76", "--primary-color-darker-shade": "#338A67",
-  "--btn-primary-text-color": "white", "--navbar-bg-color": "black", "--navbar-text-color": "white",
-  "--input-bg-color": "#343a40", "--input-text-color": "#fff", "--input-placeholder-color": "#aeaeae",
-  "--error-color": "#BD362F", "--btn-secondary-bg-color": "#6c757d", "--text-muted-color": "hsla(0,0%,100%,.45)",
-};
-
 export interface PortalTheme {
   id: number | null;
   name: string;
@@ -60,7 +51,9 @@ export function themeVariables(css: string): Record<string, string> {
 }
 
 function resolve(name: string, vars: Record<string, string>, depth = 0): string | null {
-  const raw = vars[name] ?? DARK[name];
+  // Only the theme's own variables resolve. A reference to a variable the theme does not define is
+  // dropped, so the portal's stylesheet default applies (public/style.css `:root`).
+  const raw = vars[name];
   if (raw === undefined || depth > 5) return null;
   const ref = /^var\(\s*(--[\w-]+)\s*(?:,\s*([^)]+))?\)$/.exec(raw);
   if (ref) return resolve(ref[1]!, vars, depth + 1) ?? (ref[2] && SAFE_VALUE.test(ref[2].trim()) ? ref[2].trim() : null);

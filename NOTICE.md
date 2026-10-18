@@ -8,13 +8,12 @@ This repository (the Docker configuration, `setup.sh`, scripts, tests, documenta
 
 | Material | Location | Source | Licence |
 |---|---|---|---|
-| Kavita logo and favicon | `kavita-companion/public/assets/img/` | [Kavita](https://github.com/Kareadita/Kavita) v0.9.1.4 web UI, unmodified | GNU GPL v3 |
-| Kavita OpenAPI description | `docs/reference/kavita-openapi-v0.9.1.4.json` | Kavita repository, tag v0.9.1.4, unmodified | GNU GPL v3 |
 | Poppins font | `kavita-companion/public/assets/fonts/Poppins.woff2` | Kavita v0.9.1.4 web UI, unmodified | SIL Open Font License 1.1 (`OFL-Poppins.txt`) |
 | League Spartan font | `kavita-companion/public/assets/fonts/LeagueSpartan-VariableFont_wght.ttf` | Kavita v0.9.1.4 web UI, unmodified | SIL Open Font License 1.1 (`OFL-LeagueSpartan.txt`) |
 
-Kavita's colours and layout conventions are followed so the portal looks like part of Kavita; no
-Kavita source code is included. kavita-companion talks to Kavita only through its HTTP API.
+kavita-companion talks to Kavita only through its HTTP API, and its own mark, palette and layout are
+original work chosen to sit alongside Kavita's UI; no Kavita source code, schema, strings or assets
+are included. See [docs/clean-room.md](docs/clean-room.md).
 Kavita itself is not part of this repository: the stack runs the separately distributed
 [linuxserver.io Kavita image](https://docs.linuxserver.io/images/docker-kavita/) (GPL v3, source at
 https://github.com/Kareadita/Kavita).

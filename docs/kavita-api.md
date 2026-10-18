@@ -1,9 +1,9 @@
 # Kavita API notes
 
 Behaviour of Kavita **v0.9.1.4** (linuxserver `v0.9.1.4-ls128`) that this project relies on, verified
-against a live server. Re-check after upgrading Kavita. The full API description is in
-`reference/kavita-openapi-v0.9.1.4.json` (from Kavita's repository; it says "built against v0.9.1.1").
-Kavita's Swagger UI is only served in Development builds.
+against a live server. Re-check after upgrading Kavita. For the full API surface use Kavita's own
+published documentation and its Swagger UI (served only in Development builds). We deliberately do
+not vendor Kavita's OpenAPI description — it is a Kavita schema; see `docs/clean-room.md`.
 
 ## Authentication
 
@@ -71,7 +71,7 @@ Kavita's Swagger UI is only served in Development builds.
 ## Sidebar
 
 - Sidebar "external source" entries render as `<host> + "login" + "?apiKey=" + <key>` and open in a new
-  tab (`side-nav.component.html`).
+  tab (observed in the running Kavita UI).
 - `GET /api/Stream/external-sources`, `POST /api/Stream/create-external-source {id:0,name,host,apiKey}`,
   `POST /api/Stream/update-external-source`, `POST /api/Stream/add-sidenav-stream-from-external-source?externalSourceId=<id>`,
   `GET /api/Stream/sidenav?visibleOnly=false` (stream type 6 = external source). All act on the signed-in user.
