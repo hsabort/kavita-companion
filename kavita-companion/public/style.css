@@ -1,5 +1,5 @@
-/* Kavita Companion, styled to match Kavita's own dark theme (v0.9.1.4, UI/Web/src/theme/themes/dark.scss).
-   Token values are Kavita's unless noted. */
+/* Kavita Companion. The palette below is our own; it was chosen to sit alongside Kavita's dark UI
+   and is not derived from Kavita source. See docs/clean-room.md. */
 
 @font-face {
   font-family: "Poppins";

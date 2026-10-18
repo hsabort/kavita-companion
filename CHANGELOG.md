@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+Changed:
+- **The portal's mark is our own.** The logo and favicon were Kavita assets (GPL-3.0); they are
+  replaced by an original mark (`public/assets/img/logo.svg`, `favicon.svg`).
+- **Clean-room remediation.** Removed the vendored Kavita OpenAPI description
+  (`docs/reference/`), the Kavita-source citations in `public/style.css`, `docs/kavita-api.md` and
+  `docs/research/R4-kavita-native.md`, and the hardcoded fallback palette in `src/themes.ts` that had
+  been read out of Kavita's source. Theme variables a theme does not define now fall back to the
+  portal's own stylesheet defaults. The rules are documented in `docs/clean-room.md`.
+
 ## 0.8.1 — 2026-10-18
 
 Fixed:
