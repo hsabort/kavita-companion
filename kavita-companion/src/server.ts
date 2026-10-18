@@ -9,6 +9,7 @@ import {
 } from "./auth.js";
 import { registerActivityRoutes } from "./activity.js";
 import { backupDatabase } from "./backup.js";
+import { capabilities, probeCapabilities } from "./capabilities.js";
 import { registerLibraryRoutes } from "./library.js";
 import { drainNotifications, registerNotifyRoutes } from "./notify.js";
 import { purgeExpiredCache } from "./providers/cache.js";
@@ -84,13 +85,17 @@ app.addHook("onRequest", async (request) => {
   await recheckSessionRoles(request);
 });
 
+// `capabilities` is added to both responses: whether the optional 7-Zip/KindleUnpack tools are
+// present is useful even when Kavita itself is unreachable, and an operator can use it to tell the
+// default image from the `-formats` one.
 app.get("/api/health", async (_request, reply) => {
+  const caps = capabilities();
   try {
     await kavita.libraries();
-    return { ok: true, kavita: "reachable" };
+    return { ok: true, kavita: "reachable", capabilities: caps };
   } catch (err) {
     app.log.warn({ err }, "Kavita health check failed");
-    return reply.code(503).send({ ok: false, kavita: "unreachable" });
+    return reply.code(503).send({ ok: false, kavita: "unreachable", capabilities: caps });
   }
 });
 
@@ -240,5 +245,9 @@ void hourlyJobs();
 // Every minute: check that recently approved/fixed files show up in Kavita.
 setInterval(() => void confirmInKavita().catch((err: unknown) => app.log.error({ err }, "Kavita confirmation failed")), 60_000).unref();
 setInterval(() => void hourlyJobs(), 3_600_000).unref();
+
+// Probe the optional tools once at boot, before serving, so the health endpoint reports the truth
+// from the first request. The result is cached for the life of the process (design §7.1).
+app.log.info({ capabilities: await probeCapabilities() }, "optional tool capabilities probed");
 
 await app.listen({ host: "0.0.0.0", port: config.port });

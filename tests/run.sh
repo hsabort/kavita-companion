@@ -18,7 +18,7 @@ cd "$(dirname "$0")/.." || exit 1
 
 PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright/python:v1.62.0-noble"
 PLAYWRIGHT_VERSION="1.62.0"
-fast_tests=(test_settings_guard test_auth test_activity test_library test_preview test_notifications test_sidebar_label test_sidebar_connect test_providers_framework test_providers_metron test_providers_gcd test_providers_mangadex test_providers_anilist test_providers_hardcover test_providers_openlibrary test_providers_match test_providers_safeguard test_book_identification test_naming)
+fast_tests=(test_settings_guard test_auth test_capabilities test_activity test_library test_preview test_notifications test_sidebar_label test_sidebar_connect test_providers_framework test_providers_metron test_providers_gcd test_providers_mangadex test_providers_anilist test_providers_hardcover test_providers_openlibrary test_providers_match test_providers_safeguard test_book_identification test_naming)
 slow_tests=(test_uploads test_review test_metadata test_themes test_fix test_fix_book test_epub_repair test_requests test_metadata_match)
 browser_tests=(upload_page review_page fix_page library_page kavita_integration activity_page notifications_page requests_page suggestion_card)
 run_fast=0 run_slow=0 run_browser=0 run_roles=0 only="" repeat=1
