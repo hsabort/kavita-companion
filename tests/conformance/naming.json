@@ -1974,7 +1974,7 @@
         {
           "id": "N6-003",
           "in": [
-            "iron man v1 v01 01",
+            "ironclad v1 v01 01",
             "Ironclad v1",
             "1"
           ],
@@ -2233,7 +2233,7 @@
             "Vermilion: Requiem",
             "Vermilion"
           ],
-          "out": "Messiah",
+          "out": "Requiem",
           "provenance": "new edge case (series prefix removed)"
         },
         {
