@@ -1,5 +1,8 @@
 # Changelog
 
+> **Development ended 2026-10-18.** 0.9.0 is the final release. The entries below are kept as the
+> record of what was built; nothing further is planned.
+
 ## 0.9.0 — 2026-10-18
 
 Changed:

@@ -1,7 +1,13 @@
 # Contributing
 
-Thanks for looking. This is a small project with an unusually strict provenance rule, so please read
-the first two sections before opening a pull request.
+**Development has ended (2026-10-18).** This project is frozen and is not accepting pull requests.
+The guidance below is kept because it records how the project was built — in particular the
+clean-room rule, which is the reason the reusable parts of it are safe to share. Code may still be
+reused under the Apache-2.0 licence (see [LICENSE](LICENSE)); for anything else, open an issue rather
+than a pull request.
+
+Thanks for looking. This is a small project with an unusually strict provenance rule; the first two
+sections below are the ones that matter.
 
 ## Licence
 
@@ -31,18 +37,14 @@ contribution was produced with AI assistance, say so in the pull request descrip
 directed and what you checked. The clean-room rules above apply to agent output exactly as they apply
 to your own typing, and you are responsible for what you submit.
 
-## Sign your commits (DCO)
+## Commit sign-off (historical)
 
-Every commit must carry a `Signed-off-by` line certifying the [Developer Certificate of
-Origin](https://developercertificate.org/):
-
-```
-Signed-off-by: Your Name <your@email>
-```
-
-Use `git commit -s` to add it automatically. The sign-off certifies that you wrote the contribution,
-or have the right to submit it under this project's licence — which, given the clean-room rules, means
-you have confirmed it is not copied from a GPL project.
+While the project was under development, contributions were expected to carry a `Signed-off-by` line
+certifying the [Developer Certificate of Origin](https://developercertificate.org/), added with
+`git commit -s`. The project's own history does not carry a sign-off on every commit, and with
+contributions now closed the rule is no longer enforced; it is recorded here only as the original
+intent. The sign-off's substance — that a contribution is your own work, or is submitted with the
+right to do so, and is not copied from a GPL project — still applies to anyone reusing this code.
 
 ## Working on the code
 
@@ -66,9 +68,11 @@ Add a test for behaviour you change. Where a change affects naming, identificati
 expected outputs are also part of the language-neutral rule spec in
 [docs/companion-rules-v1.md](docs/companion-rules-v1.md) — keep the two in step.
 
-## Pull requests
+## Pull requests (historical)
+
+These were the rules while the project was active; it no longer accepts pull requests.
 
 - One concern per pull request, with a commit message that says *why*.
 - Update [CHANGELOG.md](CHANGELOG.md) for anything a user would notice.
 - Keep the style of the surrounding code: comments explain the reasoning, not the mechanics.
-- `main` is the deployable branch; open pull requests against it.
+- `main` was the deployable branch; pull requests were opened against it.

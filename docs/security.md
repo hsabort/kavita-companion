@@ -112,3 +112,26 @@ changes and revoked sessions with user and client IP in the `audit_log` table of
 - Users who never sign in to the portal with their password don't get the sidebar link (Kavita doesn't
   let an admin create keys for other users, by design).
 - The Kavita sidebar link always opens in a new tab (Kavita behaviour).
+
+### Known and unfixed (found in the 2026-10-17 review; development ended before these were fixed)
+
+These are real and were not fixed. They are recorded so the frozen release is not mistaken for
+hardened. Full write-ups are in `docs/reviews/2026-10-17/` (`appsec.md`, `qa.md`,
+`product-review.md`).
+
+- **The notification SSRF guard is bypassable (High).** `safeTarget` is the only check on a
+  user-supplied notification target, and it can be defeated by bracketed IPv6 literals, a trailing-dot
+  hostname, or a name that resolves to a loopback or private address; delivery also follows redirects
+  into private space. A user who can set a notification target can therefore make the portal issue
+  requests to internal addresses. It is *not* a way to read data back out, but it is a request-forgery
+  primitive. Mitigation in place: notifications ship off, and `NOTIFY_ALLOW_PRIVATE` defaults to
+  `false`. Do not enable user notifications on an instance you do not trust.
+- **The global rate limit is keyed on a client-supplied cookie value (Medium).** A caller can send a
+  fresh cookie on every request and get a fresh bucket, so the limit does not bound request volume; the
+  unauthenticated `GET /api/health` then lets an attacker make the portal hammer Kavita with its
+  admin-level key. Mitigation: keep the portal off the public internet — it is designed to sit behind
+  the same HTTPS reverse proxy as Kavita — and treat `GET /api/health` as a costly endpoint.
+- **`GET /login?apiKey=…` is a state-changing `GET` with no CSRF/Origin check (Low).** It signs the
+  caller in as the key's owner, so it is a login-CSRF gap and can also end the victim's session. The
+  key is read only from the query string on `GET /login` and is redacted from logs. Mitigation: do not
+  follow untrusted links to the portal while signed in.

@@ -5,6 +5,9 @@ Planned features for kavita-companion, in the spirit of the existing design (see
 reaches readers, reuse Kavita's accounts and API, and match Kavita's look. This is a design document —
 nothing here is built yet.
 
+> **Development has ended (2026-10-18).** Nothing below was built after the frozen 0.9.0 release; this
+> is design kept for reference, not a plan of work.
+
 Each feature below lists what it adds, how it works, the data it needs, the Kavita API it calls, the UI,
 security notes and the tests it needs. New settings go in `.env` → `compose.yaml` → `src/config.ts`; new
 columns/tables go in `src/db.ts` with the `PRAGMA table_info` migration; every user-visible change gets a

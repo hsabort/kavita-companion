@@ -6,6 +6,15 @@ Kavita admins check, correct and approve them before they appear in the library.
 
 Everything runs in Docker and comes up with one script.
 
+> **Project status: end of development.** kavita-companion is no longer under active development and
+> is not accepting contributions. It is left here as a working, self-contained tool: the published
+> images and the documentation below are accurate for the frozen release, and nothing further is
+> planned. The reusable naming/metadata **rules and fixture corpus** this project produced
+> (`docs/companion-rules-v1.md`, `tests/conformance/`, `tests/fixtures/`) were handed to the Lectern
+> project as a language-neutral specification, and the repository is Apache-2.0 so its code can be
+> reused. Issues that are known and were not fixed are listed under
+> [Known limits](docs/security.md#known-limits).
+
 ## What you get
 
 - **Kavita** over HTTPS, with its library folders mounted read-only.
@@ -125,12 +134,16 @@ data/                 runtime data: databases, certificates (not in git)
 
 ## Status
 
-Version 0.9.0. See [CHANGELOG.md](CHANGELOG.md) for what's done and what's next.
+**Frozen at 0.9.0** (2026-10-18). Development has ended; see the note at the top. The stack is
+deployable as-is and the acceptance tests pass against it. [CHANGELOG.md](CHANGELOG.md) records what
+was built; [docs/roadmap.md](docs/roadmap.md) and [docs/roadmap-phase2.md](docs/roadmap-phase2.md)
+are unbuilt design, kept for reference.
 
 ## License
 
-Apache License 2.0 ([LICENSE](LICENSE)) — Copyright 2026 James VanTassel. Contributions are accepted
-under the same licence with a `Signed-off-by` sign-off; see [CONTRIBUTING.md](CONTRIBUTING.md).
+Apache License 2.0 ([LICENSE](LICENSE)) — Copyright 2026 James VanTassel. The repository is frozen and
+contributions are closed (see [CONTRIBUTING.md](CONTRIBUTING.md)); code from this project may be
+reused under the terms of that licence.
 
 Two container images are published. The **permissive default** (`:X.Y.Z`, and what `:latest` means)
 contains only this repository's Apache-2.0 code and the SIL OFL 1.1 Poppins and League Spartan fonts,

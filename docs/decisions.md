@@ -77,6 +77,16 @@ Short records of choices that shape this project, newest last. Each says what wa
     supersedes 21: the repository and its default image are both permissive now, and only the
     `-formats` image is a combined work.
 
+25. **Development ended; the project is frozen at 0.9.0.** Both goals were discharged: the reusable
+    naming/metadata rules and the synthetic fixture corpus were handed to the Lectern project as a
+    language-neutral specification, and the Kavita-side tool was left working at 0.9.0 with the licence
+    risk resolved (an Apache-2.0 repository and a permissive default image; the GPL tools isolated to
+    the optional `-formats` image). The repository stays public and unarchived, with an
+    end-of-development note; contributions are closed; the three local `feature/*` branches that were
+    never pushed are deleted; and the known-unfixed findings from the 2026-10-17 review are disclosed
+    in `docs/security.md`. Two dangling pull-request refs that still reach the purged blobs
+    (`refs/pull/1/head`, `refs/pull/2/head`) need GitHub Support to expire them and run a GC.
+
 ## Metadata providers — open items (docket)
 
 - **Never write `<Volume>` into a comic's ComicInfo** (0.6.6). Kavita treats a comic whose ComicInfo
