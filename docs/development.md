@@ -6,7 +6,7 @@
 src/            server (TypeScript, Node 24, ES modules) — see docs/architecture.md for each file
 web/main.js     browser code (bundled with Uppy by esbuild into public/build/)
 public/         index.html, style.css, assets/ (Kavita's fonts and icons, see assets/fonts/README.txt)
-Dockerfile      3 stages: 7-Zip download (pinned + checksum), build, runtime
+Dockerfile      5 stages: 7-Zip download (pinned + checksum), build, base, then the `runtime-formats` and `runtime` targets (`runtime` is last, so a bare build is the permissive default)
 build-web.mjs   esbuild bundle step
 ```
 
@@ -79,6 +79,14 @@ local 20002), Docker subnet `172.31.0.0/24`, `MEDIA_ROOT=/srv/media-test`, `DATA
 portal image `kavita-companion:test` (via `COMPANION_IMAGE`). It loads `compose.test.yaml` and `caddy/Caddyfile.test`, which
 **reuse the live stack's Let's Encrypt certificate** (the domain's HTTP-01 challenge can only reach one
 stack). Restart the test Caddy after the live certificate renews: `docker compose restart caddy`.
+
+The test stack builds the **formats** image, not the permissive default: the slow tier needs the
+GPL/LGPL extras — `tests/test_uploads.py` asserts a MOBI upload is converted to EPUB, and
+`tests/test_metadata.py` builds a `.cb7` with `7zzs` and uploads it for the portal to read. `compose.test.yaml` carries that as a
+tracked default (`target: ${COMPANION_BUILD_TARGET:-runtime-formats}`), so a rebuild stays on the
+formats image without depending on the untracked `.env`; the overlay wins because it is listed second
+in `COMPOSE_FILE`. `compose.yaml` on its own defaults to the permissive `runtime` target, which is
+what an operator building from source gets.
 
 The `TEST_*` Kavita accounts must exist in the test stack (create them once in the test Kavita,
 Settings → Users). Work on a feature branch in the worktree, then merge to `main` and update live with

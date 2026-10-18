@@ -61,9 +61,13 @@ CI publishes the portal image to `ghcr.io/hsabort/kavita-companion`:
 
 | Trigger | Tags pushed |
 |---|---|
-| a version tag `vX.Y.Z` | `X.Y.Z`, `X.Y`, `latest` |
-| a push to `main` | `edge` (and `sha-<short>`) |
+| a version tag `vX.Y.Z` | `X.Y.Z`, `X.Y`, `latest` — each with a `-formats` counterpart (`X.Y.Z-formats`, `X.Y-formats`, `latest-formats`) |
+| a push to `main` | `edge` and `sha-<short>` — each with a `-formats` counterpart |
 | a pull request | none (build check only) |
+
+Every published tag has a `-formats` counterpart, built from the same commit and carrying the GPL
+tools. `latest` is **always** the permissive image, so an unqualified pull never gets the combined
+work.
 
 The package is **public**, so it can be pulled without logging in — in this stack or anywhere else:
 
@@ -86,6 +90,49 @@ COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:0.2.1
 
 Roll back by pointing `COMPANION_IMAGE` at an earlier tag and pulling again. Leave `COMPANION_IMAGE`
 empty to build from `./kavita-companion` (the default, and what the test environment does).
+
+### Which image: permissive default or formats
+
+Two images are published from one Dockerfile:
+
+| Image | Reads / converts | Licence |
+|---|---|---|
+| `X.Y.Z` — the **permissive default**, and what `latest` means | `.zip`, `.cbz`, `.epub`, `.pdf`, and a `.cbr` whose bytes are really a zip | permissive (`Apache-2.0 AND OFL-1.1`) |
+| `X.Y.Z-formats` — the **combined work** | all of the above **plus** reading `.rar`/`.cb7`/`.7z` and converting `.mobi`/`.azw`/`.azw3` to EPUB | `Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later`; never tagged `latest` |
+
+The formats image adds 7-Zip and KindleUnpack. The default image refuses a file it cannot handle with
+a message naming the formats image — never a silent failure.
+
+**Switch to the formats image (prebuilt):**
+
+```bash
+# .env
+COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:X.Y.Z-formats
+```
+```bash
+./setup.sh                       # or: docker compose pull kavita-companion && docker compose up -d
+```
+
+**Switch to the formats image (building from source):**
+
+```bash
+# .env
+COMPANION_BUILD_TARGET=runtime-formats
+```
+```bash
+docker compose up -d --build kavita-companion
+```
+
+**Switch back to the permissive default:** empty `COMPANION_BUILD_TARGET` (the variable is read with
+`:-` semantics, so an empty value selects the default `runtime` target) and either point
+`COMPANION_IMAGE` at a plain tag or empty it to build from source, then apply the same way.
+
+### Migrating a deployment that needs the extras
+
+A stack that reads `.rar`/`.cb7`/`.7z` or converts MOBI/AZW/AZW3 needs the formats image. Move it
+before upgrading to a release that ships the split, either with
+`COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:X.Y.Z-formats`, or, building from source,
+`COMPANION_BUILD_TARGET=runtime-formats`. Otherwise those formats are refused after the upgrade.
 
 ## Moving the media library
 

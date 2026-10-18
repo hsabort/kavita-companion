@@ -41,12 +41,36 @@ for the upload portal. Each user signs in to the portal once with their Kavita p
 ## Using the published image
 
 The upload portal is published to GitHub Container Registry and can be pulled without signing in
-(public, `linux/amd64`): `ghcr.io/hsabort/kavita-companion`.
+(public, `linux/amd64`): `ghcr.io/hsabort/kavita-companion`. There are **two images**:
+
+- the **permissive default** (`ghcr.io/hsabort/kavita-companion:X.Y.Z`, and what an unqualified pull
+  means) — reads `.zip`, `.cbz`, `.epub`, `.pdf`, and any `.cbr` whose bytes are really a zip;
+- the **formats image** (`ghcr.io/hsabort/kavita-companion:X.Y.Z-formats`) — the default plus 7-Zip
+  and KindleUnpack, so it can also read `.rar`/`.cb7`/`.7z` and convert `.mobi`/`.azw`/`.azw3` to
+  EPUB. It is a combined GPL work and is never tagged `latest`.
+
+The default gives up exactly those extras: reading `.rar`, `.cb7` and `.7z`, and MOBI/AZW/AZW3
+conversion. Everything else — `.zip`, `.cbz`, `.epub`, `.pdf`, and a `.cbr` whose bytes are really a
+zip — still works. An upload of a file the image can't handle is refused with a message naming the
+formats image, never a silent failure.
 
 To run a released build instead of building from source, set it in `.env` and re-run `./setup.sh`:
 
 ```dotenv
 COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:0.2.1
+```
+
+Need the formats image? Point `COMPANION_IMAGE` at the `-formats` tag for the release:
+
+```dotenv
+COMPANION_IMAGE=ghcr.io/hsabort/kavita-companion:X.Y.Z-formats
+```
+
+Building from source, the switch is `COMPANION_BUILD_TARGET` in `.env`: the default `runtime` builds
+the permissive image, and `runtime-formats` builds the combined work:
+
+```dotenv
+COMPANION_BUILD_TARGET=runtime-formats
 ```
 
 `./setup.sh` then pulls the image instead of building it (`docker compose pull kavita-companion &&
@@ -101,10 +125,12 @@ Version 0.2.0. See [CHANGELOG.md](CHANGELOG.md) for what's done and what's next.
 Apache License 2.0 ([LICENSE](LICENSE)) — Copyright 2026 James VanTassel. Contributions are accepted
 under the same licence with a `Signed-off-by` sign-off; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The **container image** is a combined work and is not Apache-2.0 on its own: it bundles 7-Zip
-(LGPL 2.1+ with the unRAR restriction) and KindleUnpack (GPL-3.0-only), so the image as a whole is
-distributed under GPL-3.0. The Poppins and League Spartan fonts (SIL OFL 1.1) are included
-unmodified. See [NOTICE.md](NOTICE.md) for the full set.
+Two container images are published. The **permissive default** (`:X.Y.Z`, and what `:latest` means)
+contains only this repository's Apache-2.0 code and the SIL OFL 1.1 Poppins and League Spartan fonts,
+so it is `Apache-2.0 AND OFL-1.1`. The **formats image** (`:X.Y.Z-formats`) is a combined work: the
+default plus 7-Zip (LGPL 2.1+ with the unRAR restriction) and KindleUnpack (GPL-3.0-only), so it is
+`Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later` and is never tagged `latest`. See
+[NOTICE.md](NOTICE.md) for the full set.
 
 Kavita itself is a separate project, run here from the
 [linuxserver.io image](https://docs.linuxserver.io/images/docker-kavita/); this repository contains no

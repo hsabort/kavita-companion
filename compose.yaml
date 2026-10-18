@@ -70,6 +70,10 @@ services:
       # their single source of truth (see kavita-companion/Dockerfile).
       context: .
       dockerfile: kavita-companion/Dockerfile
+      # Which Dockerfile target to build: the permissive `runtime` image by default, or the combined
+      # `runtime-formats` work (7-Zip + KindleUnpack) with COMPANION_BUILD_TARGET=runtime-formats.
+      # See README.md and docs/operations.md.
+      target: ${COMPANION_BUILD_TARGET:-runtime}
     image: ${COMPANION_IMAGE:-kavita-companion:local}
     user: "${PUID}:${PGID}"
     depends_on:

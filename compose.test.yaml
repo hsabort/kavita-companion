@@ -11,3 +11,11 @@ services:
   caddy:
     volumes:
       - ${LIVE_CERT_DIR}:/certs:ro
+  # The test stack runs the formats image: the slow tier converts MOBI/AZW uploads to EPUB and reads
+  # `.cb7` archives built with 7-Zip, so it needs the GPL/LGPL extras the permissive default lacks.
+  # This tracked default keeps the test stack on `runtime-formats` without depending on the
+  # untracked .env; the overlay wins because it is listed second in COMPOSE_FILE. Override either
+  # default with COMPANION_BUILD_TARGET (see .env.example).
+  kavita-companion:
+    build:
+      target: ${COMPANION_BUILD_TARGET:-runtime-formats}

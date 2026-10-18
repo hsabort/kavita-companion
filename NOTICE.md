@@ -18,10 +18,17 @@ This repository (the Docker configuration, `setup.sh`, scripts, tests, documenta
 Contributions are accepted under the same licence and require a `Signed-off-by` sign-off — see
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The **published container image** is a combined work and is *not* Apache-2.0 on its own: it bundles
-7-Zip and KindleUnpack (below), so the image as a whole is distributed under GPL-3.0. Isolating those
-from the image is tracked work; until then the `org.opencontainers.image.licenses` label on the image
-names every licence it actually contains.
+Two container images are published from one Dockerfile:
+
+| Image | Contains | SPDX `org.opencontainers.image.licenses` |
+|---|---|---|
+| `ghcr.io/hsabort/kavita-companion:X.Y.Z` — the **permissive default**, and what an unqualified pull means | this repository's Apache-2.0 code and the SIL OFL 1.1 fonts | `Apache-2.0 AND OFL-1.1` |
+| `ghcr.io/hsabort/kavita-companion:X.Y.Z-formats` — the **combined work** | the default plus 7-Zip and KindleUnpack (below) | `Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later` |
+
+The **formats image** is a combined work and is *not* Apache-2.0 on its own: it bundles 7-Zip
+(LGPL-2.1-or-later with the unRAR restriction) and KindleUnpack (GPL-3.0-only), so that image as a
+whole is distributed under GPL-3.0. It is never tagged `latest`. Each image's label names every
+licence it actually contains.
 
 ### Historical material, outside the grant
 
@@ -66,12 +73,12 @@ Not stored in this repository; fetched at build time and pinned:
 
 | Software | Used for | Licence |
 |---|---|---|
-| Node.js packages (`kavita-companion/package-lock.json`): Fastify and plugins, @tus/server, yazl, fast-xml-parser and their dependencies | portal server | MIT, ISC, BSD-3-Clause, Apache-2.0, BlueOak-1.0.0 |
+| Node.js packages (`kavita-companion/package-lock.json`): Fastify and plugins, @tus/server, yazl, yauzl, fast-xml-parser and their dependencies | portal server | MIT, ISC, BSD-3-Clause, Apache-2.0, BlueOak-1.0.0 |
 | Uppy, Preact, tus-js-client and dependencies | bundled into the portal's web page | MIT |
 | TypeScript, esbuild | build only | Apache-2.0, MIT |
-| 7-Zip 26.01 (`7zzs`, official Linux build, SHA-256 pinned in the Dockerfile) | reading archives in the portal image | GNU LGPL 2.1+ with the unRAR licence restriction, BSD; licence text shipped in the image at `/usr/local/share/doc/7zip/License.txt`. The unRAR code is used only to extract, never to create RAR archives. |
-| `mobi` 0.4.1 (PyPI, pinned in the Dockerfile) — a repackaging of KindleUnpack | converting MOBI/AZW book uploads to EPUB | GNU GPL v3 **only** (not "or later"); licence text shipped in the image at `/usr/local/share/doc/kindleunpack/LICENSE`. Package source: https://github.com/iscc/mobi (derived from KindleUnpack, https://github.com/kevinhendricks/KindleUnpack) |
-| `loguru` 0.7.3 and `standard-imghdr` 3.13.0, installed as `mobi`'s dependencies | `mobi`'s runtime imports | MIT (`loguru`), PSF-2.0 (`standard-imghdr`). `standard-imghdr` ships its own licence file inside the image; `loguru`'s wheel carries none, so its MIT notice does **not** yet travel — a tracked gap, not a licence change. |
+| 7-Zip 26.01 (`7zzs`, official Linux build, SHA-256 pinned in the Dockerfile) | reading `.rar`/`.7z` archives in the formats image | GNU LGPL 2.1+ with the unRAR licence restriction, BSD; licence text shipped in the image at `/usr/local/share/doc/7zip/License.txt`. The unRAR code is used only to extract, never to create RAR archives. |
+| `mobi` 0.4.1 (PyPI, pinned in the Dockerfile) — a repackaging of KindleUnpack | converting MOBI/AZW book uploads to EPUB in the formats image | GNU GPL v3 **only** (not "or later"); licence text shipped in the image at `/usr/local/share/doc/kindleunpack/LICENSE`. Package source: https://github.com/iscc/mobi (derived from KindleUnpack, https://github.com/kevinhendricks/KindleUnpack) |
+| `loguru` 0.7.3 and `standard-imghdr` 3.13.0, installed as `mobi`'s dependencies | `mobi`'s runtime imports in the formats image | MIT (`loguru`), PSF-2.0 (`standard-imghdr`). Both travel in the formats image: `standard-imghdr` ships its own licence file, and `loguru`'s wheel carries none, so its MIT text is fetched from upstream at build time (pinned by URL and SHA-256) into `/usr/local/share/doc/kindleunpack/`. This closes the gap previously recorded here. |
 | Caddy, Kavita, Node.js base images | containers | Apache-2.0, GPL-3.0, MIT (respectively) |
 
 ## Metadata provider credits
