@@ -1,4 +1,4 @@
-# Build check for kavita-companion. The acceptance tests need a running Kavita stack, so they run
+# Build checks for kavita-companion. The acceptance tests need a running Kavita stack, so they run
 # against the test environment on the host (docs/development.md) rather than here.
 name: CI
 
@@ -26,3 +26,58 @@ jobs:
         run: npm run licences
       - name: Type-check and build (server + web bundle)
         run: npm run build
+
+  docker:
+    # Both image targets are built here, so a change that breaks either the permissive default or the
+    # formats image that adds the GPL tools cannot merge (design §7.7). The assertions below run the
+    # images: the default must not contain the GPL tools, and the formats image must contain them.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build the permissive (runtime) target
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./kavita-companion/Dockerfile
+          target: runtime
+          platforms: linux/amd64
+          push: false
+          load: true
+          provenance: false
+          sbom: false
+          tags: kavita-companion:ci-permissive
+          cache-from: type=gha,scope=ci-companion-runtime
+          cache-to: type=gha,mode=max,scope=ci-companion-runtime
+      - name: Build the formats (runtime-formats) target
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./kavita-companion/Dockerfile
+          target: runtime-formats
+          platforms: linux/amd64
+          push: false
+          load: true
+          provenance: false
+          sbom: false
+          tags: kavita-companion:ci-formats
+          cache-from: type=gha,scope=ci-companion-runtime-formats
+          cache-to: type=gha,mode=max,scope=ci-companion-runtime-formats
+      - name: Assert the permissive image carries no GPL tools
+        run: |
+          docker run --rm --entrypoint /bin/sh kavita-companion:ci-permissive -c '
+            for path in /usr/local/bin/7zzs /opt/kindleunpack; do
+              if [ -e "$path" ]; then
+                echo "unexpected $path in the permissive image" >&2
+                exit 1
+              fi
+            done
+            echo "permissive image carries neither 7zzs nor kindleunpack"
+          '
+      - name: Assert the formats image carries the GPL tools
+        run: |
+          docker run --rm --entrypoint /bin/sh kavita-companion:ci-formats -c '
+            test -x /usr/local/bin/7zzs
+            test -d /opt/kindleunpack
+            echo "formats image carries 7zzs and kindleunpack"
+          '

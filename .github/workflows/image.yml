@@ -1,16 +1,28 @@
 # Build kavita-companion and publish it to GitHub Container Registry.
 #
-#   - version tags (vX.Y.Z): publish X.Y.Z, X.Y and latest
-#   - pushes to main:        publish edge (plus a sha-<short> tag)
+# Two images are built from one Dockerfile (kavita-companion/Dockerfile):
+#
+#   - `runtime`         — the permissive default, `Apache-2.0 AND OFL-1.1`; `latest` is this one.
+#   - `runtime-formats` — the combined work: the default plus 7-Zip and KindleUnpack, so it carries
+#                         `Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later`.
+#
+# Every published tag gets a `-formats` counterpart. Both targets are built, scanned and pushed from
+# the same commit in this one job, so a release never publishes one without the other.
+#
+#   - version tags (vX.Y.Z): publish X.Y.Z, X.Y and latest — each with a -formats counterpart
+#   - pushes to main:        publish edge and sha-<short> — each with a -formats counterpart
 #   - pull requests:         build only, no push
 #   - manual runs:           via workflow_dispatch
 #
+# The formats image must never be what an unqualified pull means: `latest` (and `edge`) stay on the
+# permissive image, and the formats image only ever gets the `-formats` forms of those tags.
+#
 # Every build is scanned with Trivy before it is published: HIGH/CRITICAL vulnerabilities that have a
-# fix fail the run, so the image never reaches GHCR, and the report is uploaded as a SARIF artifact
+# fix fail the run, so neither image reaches GHCR, and the reports are uploaded as a SARIF artifact
 # (and to the Security tab where code scanning is on).
 #
-# The image is linux/amd64 only: the Dockerfile ships the x64 7-Zip build. The package is public, so
-# it can be pulled (e.g. by docker compose) without logging in (docs/operations.md).
+# The images are linux/amd64 only: the Dockerfile ships the x64 7-Zip build. The package is public,
+# so it can be pulled (e.g. by docker compose) without logging in (docs/operations.md).
 name: Image
 
 on:
@@ -41,7 +53,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Work out the image tags
+      # One metadata step per image. The formats step is the permissive step plus `suffix=-formats`.
+      # `onlatest=true` must be on the same flavor line as the suffix: with `suffix` alone,
+      # metadata-action leaves `latest` untouched, which would hand the `latest` tag to the formats
+      # image (verified against metadata-action v5). `latest=auto` then yields `latest-formats`.
+      #
+      # `sha-<short>` is a main-branch traceability tag; it is not published for version tags, as
+      # docs/operations.md documents. metadata-action enables it for every event by default, so it is
+      # gated on a non-tag ref to keep the published matrix exactly as documented.
+      #
+      # The `labels` entry re-states the Dockerfile's SPDX label: a build `--label` overrides a
+      # Dockerfile `LABEL`, and metadata-action would otherwise label the image with the repository's
+      # own SPDX id (`Apache-2.0`), hiding the OFL fonts (default) or the GPL/LGPL tools (formats).
+      - name: Work out the permissive image tags
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -50,82 +74,204 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=edge,branch=main
-            type=sha,format=short
+            type=sha,format=short,enable=${{ github.ref_type != 'tag' }}
+          labels: |
+            org.opencontainers.image.licenses=Apache-2.0 AND OFL-1.1
 
-      - name: Build the image (loaded locally, not yet published)
+      - name: Work out the formats image tags
+        id: meta-formats
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          flavor: |
+            suffix=-formats,onlatest=true
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=edge,branch=main
+            type=sha,format=short,enable=${{ github.ref_type != 'tag' }}
+          labels: |
+            org.opencontainers.image.licenses=Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later
+
+      - name: Assert the formats tags mirror the permissive tags and never take latest/edge
+        run: |
+          printf '%s\n' "${{ steps.meta.outputs.tags }}" | sed 's/$/-formats/' > /tmp/expected-formats-tags
+          printf '%s\n' "${{ steps.meta-formats.outputs.tags }}" > /tmp/formats-tags
+          if ! diff -u /tmp/expected-formats-tags /tmp/formats-tags; then
+            echo "::error::the formats tags are not exactly the permissive tags with a -formats suffix"
+            exit 1
+          fi
+          for forbidden in latest edge; do
+            if grep -qx "ghcr.io/${{ github.repository }}:${forbidden}" /tmp/formats-tags; then
+              echo "::error::the formats image must never carry the unsuffixed '${forbidden}' tag"
+              exit 1
+            fi
+          done
+          echo "formats tags mirror the permissive tags; latest and edge stay permissive"
+
+      - name: Build the permissive image (loaded locally, not yet published)
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./kavita-companion/Dockerfile
+          target: runtime
           platforms: linux/amd64
-          # Build into the local Docker store so the scan below runs before anything reaches GHCR: a
-          # vulnerable image is never published. The push build further down publishes it once the scan
-          # passes (attestations cannot be loaded locally, so they are added there).
+          # Build into the local Docker store so the scan and the assertions below run before
+          # anything reaches GHCR: a vulnerable or wrongly-labelled image is never published. The
+          # push builds further down publish once the gate passes (attestations cannot be loaded
+          # locally, so they are added there).
           push: false
           load: true
-          # Attestations cannot be loaded into the local store; the push build adds them.
           provenance: false
           sbom: false
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: kavita-companion:ci-permissive
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=companion-runtime
+          cache-to: type=gha,mode=max,scope=companion-runtime
 
-      - name: Set the image reference
-        id: image
-        run: echo "ref=ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
+      - name: Build the formats image (loaded locally, not yet published)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./kavita-companion/Dockerfile
+          target: runtime-formats
+          platforms: linux/amd64
+          push: false
+          load: true
+          provenance: false
+          sbom: false
+          tags: kavita-companion:ci-formats
+          labels: ${{ steps.meta-formats.outputs.labels }}
+          cache-from: type=gha,scope=companion-runtime-formats
+          cache-to: type=gha,mode=max,scope=companion-runtime-formats
 
-      - name: Scan the image (SARIF for the Security tab / artifact)
+      - name: Assert the permissive image carries no GPL tools
+        run: |
+          docker run --rm --entrypoint /bin/sh kavita-companion:ci-permissive -c '
+            for path in /usr/local/bin/7zzs /opt/kindleunpack; do
+              if [ -e "$path" ]; then
+                echo "unexpected $path in the permissive image" >&2
+                exit 1
+              fi
+            done
+            echo "permissive image carries neither 7zzs nor kindleunpack"
+          '
+
+      - name: Assert the formats image carries the GPL tools
+        run: |
+          docker run --rm --entrypoint /bin/sh kavita-companion:ci-formats -c '
+            test -x /usr/local/bin/7zzs
+            test -d /opt/kindleunpack
+            echo "formats image carries 7zzs and kindleunpack"
+          '
+
+      - name: Assert the two images are distinct and carry the right SPDX labels
+        run: |
+          permissive_id="$(docker inspect -f '{{.Id}}' kavita-companion:ci-permissive)"
+          formats_id="$(docker inspect -f '{{.Id}}' kavita-companion:ci-formats)"
+          if [ "$permissive_id" = "$formats_id" ]; then
+            echo "::error::the permissive and formats targets produced the same image"
+            exit 1
+          fi
+          permissive_lic="$(docker inspect -f '{{ index .Config.Labels "org.opencontainers.image.licenses" }}' kavita-companion:ci-permissive)"
+          formats_lic="$(docker inspect -f '{{ index .Config.Labels "org.opencontainers.image.licenses" }}' kavita-companion:ci-formats)"
+          test "$permissive_lic" = "Apache-2.0 AND OFL-1.1"
+          test "$formats_lic" = "Apache-2.0 AND OFL-1.1 AND GPL-3.0-only AND LGPL-2.1-or-later"
+          echo "distinct images; SPDX labels correct"
+
+      - name: Prepare the scan report directory
+        run: mkdir -p trivy-results
+
+      - name: Scan the permissive image (SARIF for the Security tab / artifact)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ steps.image.outputs.ref }}
+          image-ref: kavita-companion:ci-permissive
           format: sarif
-          output: trivy-results.sarif
+          output: trivy-results/permissive.sarif
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           vuln-type: os,library
           exit-code: "0"
 
-      - name: Upload the scan to the Security tab
+      - name: Scan the formats image (SARIF for the Security tab / artifact)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: kavita-companion:ci-formats
+          format: sarif
+          output: trivy-results/formats.sarif
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          vuln-type: os,library
+          exit-code: "0"
+
+      - name: Upload the scans to the Security tab
         # Code scanning needs GitHub Advanced Security on a private repository, so this is allowed to
-        # fail; the artifact below is kept either way.
+        # fail; the artifacts below are kept either way.
         if: always()
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: trivy-results.sarif
+          sarif_file: trivy-results
 
-      - name: Keep the scan as an artifact
+      - name: Keep the scans as an artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: trivy-results
-          path: trivy-results.sarif
+          path: trivy-results
           if-no-files-found: ignore
 
-      - name: Fail on HIGH/CRITICAL vulnerabilities
+      - name: Fail on HIGH/CRITICAL vulnerabilities in the permissive image
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ steps.image.outputs.ref }}
+          image-ref: kavita-companion:ci-permissive
           format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           vuln-type: os,library
           exit-code: "1"
 
-      - name: Push the image
-        # Only runs once the scan above passed, so a flagged image is never published. Attestations can
-        # only travel with a registry push (the local Docker store cannot hold them), so this rebuilds
-        # from the shared cache and pushes, adding the provenance and SBOM manifests.
+      - name: Fail on HIGH/CRITICAL vulnerabilities in the formats image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: kavita-companion:ci-formats
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          vuln-type: os,library
+          exit-code: "1"
+
+      - name: Push the formats image
+        # Formats is pushed first: the permissive push below is what moves `latest`, so doing it last
+        # means `latest` only advances once the formats counterpart is already published. Both pushes
+        # only run after both scans passed, so a vulnerable image never reaches GHCR. Attestations
+        # travel only with a registry push (the local store cannot hold them), so each rebuilds from
+        # the shared cache and pushes with the provenance and SBOM manifests.
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./kavita-companion/Dockerfile
+          target: runtime-formats
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta-formats.outputs.tags }}
+          labels: ${{ steps.meta-formats.outputs.labels }}
+          cache-from: type=gha,scope=companion-runtime-formats
+          provenance: true
+          sbom: true
+
+      - name: Push the permissive image
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./kavita-companion/Dockerfile
+          target: runtime
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
+          cache-from: type=gha,scope=companion-runtime
           provenance: true
           sbom: true
