@@ -188,3 +188,18 @@ export function writeEpubMetadata(opfXml: string, updates: Metadata): string {
   const body = builder.build(doc.filter((n) => tagOf(n) !== "?xml")) as string;
   return `<?xml version="1.0" encoding="utf-8"?>\n${body.trim()}\n`;
 }
+
+/**
+ * Kavita's EPUB reader (VersOne) is stricter than ours, and calibre/mobiunpack output trips it twice:
+ * a `<guide>` whose `<reference>` items have no `href` ("Incorrect EPUB guide: item href is missing")
+ * and a bare `&` in the NCX/OPF XML ("TOC file is not a valid XML file"). Both make the file invisible
+ * to Kavita, so an approved EPUB is normalised before it is repacked.
+ */
+export function escapeBareAmpersands(xml: string): string {
+  return xml.replace(/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/g, "&amp;");
+}
+
+/** Drop the OPF `<guide>`: Kavita ignores it, and a half-written one makes the whole package unreadable. */
+export function sanitizeEpubOpf(opfXml: string): string {
+  return escapeBareAmpersands(opfXml).replace(/<guide(?:\s[^>]*)?>[\s\S]*?<\/guide>/g, "<guide/>");
+}
