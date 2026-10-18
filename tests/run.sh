@@ -10,11 +10,30 @@
 #   tests/run.sh --repeat N     run the fast tier N times, reporting anything that failed once
 #   tests/run.sh --only NAME    a single test file, e.g. --only test_review
 #
+# Which image the stack runs is chosen with COMPANION_TEST_TARGET (runtime-formats by default; see
+# "Which image" below). The default image's refusal suite needs the permissive one:
+#
+#   COMPANION_TEST_TARGET=runtime ./tests/run.sh --only test_default_image
+#
 # A full run restarts kavita-companion first to clear its in-memory rate-limit counters, so repeated
 # runs don't lock the test accounts out. Needs the TEST_* accounts in .env (tests/README.md), python3
 # and Docker on the host.
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
+
+# ---- Which image the stack runs (design §7.7) ---------------------------------------------------
+# The shared test stack runs the formats image, because the slow tier needs the GPL/LGPL extras
+# (test_uploads.py converts a MOBI, test_metadata.py shells out to 7zzs). The default image's refusal
+# suite needs the permissive `runtime` image instead, so it is selected with COMPANION_TEST_TARGET.
+# This sets COMPANION_BUILD_TARGET (compose's build switch, Task 6) and, when the image tag the stack
+# uses is not already built from that target, builds it and recreates the companion before the tests
+# start — once, up front, so the per-run restart for rate limits and --repeat are untouched.
+COMPANION_TEST_TARGET="${COMPANION_TEST_TARGET:-runtime-formats}"
+case "$COMPANION_TEST_TARGET" in
+  runtime|runtime-formats) ;;
+  *) echo "COMPANION_TEST_TARGET must be runtime or runtime-formats (got '$COMPANION_TEST_TARGET')." >&2; exit 2 ;;
+esac
+export COMPANION_BUILD_TARGET="$COMPANION_TEST_TARGET"
 
 PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright/python:v1.62.0-noble"
 PLAYWRIGHT_VERSION="1.62.0"
@@ -31,7 +50,7 @@ while [ $# -gt 0 ]; do
     --all) run_fast=1 run_slow=1 run_browser=1 run_roles=1 ;;
     --repeat) repeat="$2"; shift ;;
     --only) only="$2"; shift ;;
-    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "Unknown option: $1" >&2; exit 2 ;;
   esac
   shift
@@ -91,14 +110,54 @@ run_ui() {
 }
 
 # Restart the portal so its in-memory failed-sign-in counters start clean, then wait for health.
-restart_portal() {
+wait_health() {
   local domain port url
   domain="$(sed -n 's/^DOMAIN=//p' .env)"
   port="$(sed -n 's/^COMPANION_HTTPS_PORT=//p' .env)"
-  docker compose restart kavita-companion >/dev/null 2>&1
   url="https://${domain}:${port}/api/health"
   for _ in $(seq 1 60); do curl -sf -m 5 "$url" >/dev/null 2>&1 && return; sleep 1; done
   echo "warning: kavita-companion did not report healthy" >&2
+}
+
+restart_portal() {
+  docker compose restart kavita-companion >/dev/null 2>&1
+  wait_health
+}
+
+# The image tag the stack runs (COMPANION_IMAGE in .env, else compose's own default).
+companion_image() {
+  local image
+  image="$(sed -n 's/^COMPANION_IMAGE=//p' .env)"
+  echo "${image:-kavita-companion:local}"
+}
+
+# Which target an existing image tag was built from, read from its SPDX label: the formats image names
+# GPL-3.0-only, the permissive one does not (kavita-companion/Dockerfile). Empty when it doesn't exist.
+image_target() {
+  local licenses
+  licenses="$(docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.licenses" }}' "$1" 2>/dev/null)" || return
+  case "$licenses" in
+    *GPL*) echo runtime-formats ;;
+    "") echo "" ;;
+    *) echo runtime ;;
+  esac
+}
+
+# Build and recreate the companion when the selected target is not what the stack is already running.
+# A rebuilt tag does not move a running container (containers pin the image id), so a recreate — not a
+# plain restart — is what makes a build take effect.
+ensure_companion_image() {
+  local image current
+  image="$(companion_image)"
+  current="$(image_target "$image")"
+  if [ "$current" = "$COMPANION_TEST_TARGET" ]; then
+    echo "companion image $image is already the $COMPANION_TEST_TARGET target"
+    return
+  fi
+  echo "building companion image $image for the $COMPANION_TEST_TARGET target"
+  docker compose build kavita-companion || { echo "kavita-companion build failed" >&2; exit 1; }
+  docker compose up -d --no-deps kavita-companion >/dev/null || { echo "kavita-companion recreate failed" >&2; exit 1; }
+  wait_health
 }
 
 # browser/review_page approves a "Browser Review <tag>" series; remove it from disk and Kavita.
@@ -119,6 +178,11 @@ for _ in range(20):
     time.sleep(3)
 EOF
 }
+
+# Select the image the run needs, building and recreating the companion first when the tag is not
+# already that target (a no-op when it is). Done once, before the loop, so --repeat and the per-run
+# restart-for-rate-limits are unaffected.
+ensure_companion_image
 
 if [ -n "$only" ]; then
   if [ -f "tests/browser/$only.py" ]; then

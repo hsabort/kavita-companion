@@ -85,3 +85,34 @@ jobs:
           '
           docker run --rm --entrypoint /bin/sh -e EXPECT=absent  -e IMAGE=kavita-companion:ci-permissive kavita-companion:ci-permissive -c "$check"
           docker run --rm --entrypoint /bin/sh -e EXPECT=present -e IMAGE=kavita-companion:ci-formats    kavita-companion:ci-formats    -c "$check"
+
+  default-image:
+    # The permissive default image's refusals, kept separate from the `docker` job above (which builds
+    # the formats image). The full suite, tests/test_default_image.py, runs over the HTTP stack on the
+    # test host, because it needs Kavita — which GitHub-hosted runners do not have. What they can run
+    # is the same file's `--image-only` mode: it drives the refusal logic inside the built `runtime`
+    # image (the capability probe, the typed capability error, the archive dispatcher and Kindle
+    # conversion), so a change that re-admits 7-Zip or KindleUnpack to the default image, or that
+    # breaks the capability message, fails here.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build the permissive (runtime) target
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./kavita-companion/Dockerfile
+          target: runtime
+          platforms: linux/amd64
+          push: false
+          load: true
+          provenance: false
+          sbom: false
+          tags: kavita-companion:ci-permissive
+          cache-from: type=gha,scope=ci-companion-runtime
+          cache-to: type=gha,mode=max,scope=ci-companion-runtime
+      - name: Run the default-image refusal suite
+        env:
+          COMPANION_IMAGE: kavita-companion:ci-permissive
+        run: python3 tests/test_default_image.py --image-only

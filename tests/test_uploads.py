@@ -21,6 +21,7 @@ import urllib.error
 import urllib.request
 import zipfile
 
+from capability_message import capability_message
 from harness import app, check, finish, login
 from settings import COMPANION_PORT as PORT, DOMAIN as HOST, INCOMING, ORIGIN, ROOT, env, library_ids
 
@@ -199,8 +200,11 @@ def capability_outcome(label, filename, data, library_id, capability, stored_ext
         check(f"a {label} file is accepted on an image with the {capability} capability",
               u and u["status"] == "pending", str(u))
         return
+    # The message is asserted verbatim (not just "-formats"): the refusal must be capabilityMessage()
+    # for the capability in question, so a wording change is caught (Task 8 tightening Task 3).
+    wanted = capability_message("archive-extras" if capability == "archiveExtras" else "kindle")
     check(f"a {label} file is refused with the actionable capability message",
-          u and u["status"] == "invalid" and "-formats" in (u.get("error") or ""), str(u))
+          u and u["status"] == "invalid" and u.get("error") == wanted, str(u))
     check(f"the refused {label} file never reaches the pending area",
           not (INCOMING / "pending" / f"{uid}.{stored_ext}").exists(), str(uid))
     _, activity = app("GET", "/api/admin/activity?action=upload_invalid&limit=200", admin)
