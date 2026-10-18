@@ -1072,10 +1072,14 @@ async function openFix(id) {
     // 415 means the file needs the optional formats image (design §7.6): show the actionable reason
     // the server sent, and disable the row's Fix action with the same reason, so the reviewer is not
     // invited to retry something this image can never do — and never sees a generic "Fix failed".
+    // Any other status (a transient 500, or 410 "no longer in the library folder") leaves the button
+    // alone, so it stays retryable without a page refresh.
     const reason = body.error ?? "This file can't be fixed right now.";
     area.replaceChildren(el("p", { className: "error", textContent: reason }));
-    const button = document.querySelector(`#review-recent li[data-id="${id}"] button`);
-    if (button) { button.disabled = true; button.title = reason; }
+    if (status === 415) {
+      const button = document.querySelector(`#review-recent li[data-id="${CSS.escape(id)}"] button`);
+      if (button) { button.disabled = true; button.title = reason; }
+    }
     return;
   }
   review = { ...review, libraries: body.libraries };

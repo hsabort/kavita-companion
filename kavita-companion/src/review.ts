@@ -1086,8 +1086,10 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     try {
       plan = await planApproval(row, request.body);
     } catch (err) {
+      // planApproval only does exists/stat/Kavita lookups and never reads the archive, so it cannot
+      // raise a CapabilityError. Approval of a file this image can't repack is queued and then fails
+      // in runJob's catch, which surfaces the capability message verbatim — not a 415 here.
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
-      if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       throw err;
     }
     if (q.claim.run("approving", Date.now(), row.id, "pending").changes !== 1) {
@@ -1115,7 +1117,9 @@ export async function registerReviewRoutes(app: FastifyInstance) {
       return { item: await fixItem(row), libraries: (await kavita.librariesCached()).map((l) => ({ id: l.id, name: l.name, type: l.type })) };
     } catch (err) {
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
-      // Fix needs a tool this image lacks (design §7.6): the actionable message, not "Fix failed".
+      // The real request-time path: fixItem reads the archive and propagates the CapabilityError, so
+      // Fix is refused with 415 and the actionable message, not "Fix failed" (design §7.6). The queued
+      // job's catch is only a mid-flight backstop.
       if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       throw err;
     }
@@ -1143,8 +1147,9 @@ export async function registerReviewRoutes(app: FastifyInstance) {
     try {
       plan = await planApproval(row, request.body, "fix");
     } catch (err) {
+      // planApproval never reads the archive (see the approve route): a file this image can't repack
+      // fails later in runJob's catch with the capability message, not with a 415 here.
       if (err instanceof ReviewError) return reply.code(err.status).send({ error: err.message });
-      if (isCapabilityError(err)) return reply.code(415).send({ error: err.message });
       throw err;
     }
     if (q.claim.run("fixing", Date.now(), row.id, "approved").changes !== 1) {
