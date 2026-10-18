@@ -28,8 +28,8 @@ import { mergeRecords } from "./providers/merge.js";
 import { all as allProviders, enabledFor, get as getProvider, isConfigured, isEnabled, keyFor, type ProviderRegistration } from "./providers/registry.js";
 import type { MatchQuery, MediaKind } from "./providers/types.js";
 import {
-  AGE_RATINGS, COMICINFO_FIELDS, type Metadata, type MetadataField,
-  opfPathFromContainer, readComicInfo, writeComicInfo, writeEpubMetadata,
+  AGE_RATINGS, COMICINFO_FIELDS, escapeBareAmpersands, type Metadata, type MetadataField,
+  opfPathFromContainer, readComicInfo, sanitizeEpubOpf, writeComicInfo, writeEpubMetadata,
 } from "./metadata.js";
 import { getUpload, type UploadRow } from "./uploads.js";
 
@@ -660,7 +660,16 @@ async function buildFinalFile(
   if (opfRel) {
     const opfFile = resolve(work, opfRel);
     if (!isInside(opfFile, work)) throw new ReviewError(422, "This EPUB's package path is invalid.");
-    await writeFile(opfFile, writeEpubMetadata(await readFile(opfFile, "utf8"), plan.metadata));
+    const opf = sanitizeEpubOpf(writeEpubMetadata(await readFile(opfFile, "utf8"), plan.metadata));
+    await writeFile(opfFile, opf);
+    // The NCX is XML too, and calibre leaves bare "&" in chapter titles.
+    const ncxHref = /<item\b[^>]*media-type="application\/x-dtbncx\+xml"[^>]*href="([^"]+)"/i.exec(opf)?.[1];
+    if (ncxHref) {
+      const ncxFile = resolve(dirname(opfFile), decodeURIComponent(ncxHref));
+      if (isInside(ncxFile, work) && await exists(ncxFile)) {
+        await writeFile(ncxFile, escapeBareAmpersands(await readFile(ncxFile, "utf8")));
+      }
+    }
   } else if (Object.keys(plan.metadata).some((k) => k !== "Series")) {
     throw new ReviewError(422, "This EPUB has no readable package document, so its metadata can't be changed.");
   }
