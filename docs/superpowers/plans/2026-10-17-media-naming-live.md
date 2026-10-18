@@ -122,3 +122,32 @@ again first (`backups/media-20261018-004940`, `backups/companion.db.20261018-004
   Kavita now shows one clean `Lord of the Rings` series (3 books, 262/211/181 pages).
 
 Live library after cleanup: **Books** 8, **Comics** 7, **Manga** 1; portal 124 approved / 0 dangling.
+
+## Follow-up (2026-10-18): the pending queue, and EPUBs Kavita couldn't read
+
+**The queue.** All 38 pending items were `jp-kavita2`'s. 37 were approved into **Books** (author
+strings normalised per the operator: `Dawkins, Richard` -> `Richard Dawkins`, the two-author
+Nietzsche -> `Friedrich Nietzsche`, so both Nietzsche books share one folder; the three mis-filed
+Comics items moved to Books). 1 was rejected — the duplicate *Excession* (`Banks_Iain_M_-Excession.epub`;
+the Books copy was kept). Portal: 124 -> **161 approved, 0 pending**.
+
+**A book Kavita could not read.** 6 of the newly-approved EPUBs — and 7 of the older books — sat on
+disk but were invisible in Kavita (75 on disk vs 62 indexed). VersOne, Kavita's EPUB reader, is
+stricter than the portal's, and calibre/mobiunpack output trips it two ways:
+
+- an OPF `<guide>` whose `<reference>` items have no `href` — *"Incorrect EPUB guide: item href is
+  missing"* (Cosmos, The Demon-Haunted World, Burning Chrome, Mona Lisa Overdrive; also the
+  Foundation and Snicket files);
+- a bare `&` in `toc.ncx` — *"TOC file is not a valid XML file"* (The City & The City, Poe).
+
+All 13 were repaired in place (backup `backups/media-fixes-20261018-014750`): the guide dropped, bare
+ampersands escaped, repacked cleanly. The stored `final_sha256` was refreshed for each. The *Smart
+Girl's Guide to Privacy* PDF had no `/Title`, so Kavita named its series after the folder (`Violet
+Blue`); `/Info` was set, and the series is now `The Smart Girl's Guide to Privacy`. Kavita now indexes
+**75/75** Books files across 45 series.
+
+**Code.** `sanitizeEpubOpf()`/`escapeBareAmpersands()` (`kavita-companion/src/metadata.ts`) run in the
+EPUB branch of `buildFinalFile` (`review.ts`) before repacking, so an approved book is always readable.
+`tests/test_epub_repair.py` uploads a deliberately broken EPUB, approves it, checks the stored copy is
+sanitised, and waits for Kavita to list it. Released as **0.8.1** (`0634fa4`, tag `v0.8.1`) and live
+was repinned to `ghcr.io/hsabort/kavita-companion:0.8.1` (healthy; portal 200).
