@@ -18,7 +18,7 @@ const RELEASE_WORDS = new Set([
 ]);
 
 /** A bare year, a year range, or a release/scanner tag — i.e. a bracketed group worth dropping. */
-function isNoiseGroup(inner: string): boolean {
+export function isNoiseGroup(inner: string): boolean {
   const text = inner.trim();
   if (!text) return true; // "()" / "[]"
   if (/^\d{4}\s*[-–]\s*\d{4}$/.test(text)) return true; // (1968-1996)
@@ -32,7 +32,7 @@ function isNoiseGroup(inner: string): boolean {
 }
 
 /** Remove the bracket characters that have no partner, keeping what is inside them. */
-function dropOrphanBrackets(input: string): string {
+export function dropOrphanBrackets(input: string): string {
   const pairs: Record<string, string> = { ")": "(", "]": "[" };
   const stack: number[] = [];
   const drop = new Set<number>();
@@ -83,7 +83,7 @@ export function cleanBookTitle(title: string, series = ""): string {
 }
 
 /** Does this series already name a volume, e.g. "Iron Man v1" / "Saga Vol. 2"? Returns it, or null. */
-function volumeInSeries(series: string): number | null {
+export function volumeInSeries(series: string): number | null {
   const match = /(?:^|\s)(?:v|vol\.?|volume)\s*0*(\d+)\s*$/i.exec(cleanName(series));
   return match ? Number(match[1]) : null;
 }

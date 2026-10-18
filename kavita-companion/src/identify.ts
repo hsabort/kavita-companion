@@ -15,19 +15,19 @@ export interface NameGuess {
 }
 
 /** The file name without its extension, trimmed. */
-const baseOf = (filename: string): string => {
+export const baseOf = (filename: string): string => {
   const dot = filename.lastIndexOf(".");
   return (dot > 0 ? filename.slice(0, dot) : filename).trim();
 };
 
 /** A leading zero pad goes, a decimal stays: "01" -> "1", "1.5" -> "1.5". */
-const normaliseNumber = (value: string): string => {
+export const normaliseNumber = (value: string): string => {
   const n = Number(value);
   return Number.isFinite(n) ? String(n) : value;
 };
 
 /** Strip a trailing "(series #n)" / "[series #n]" marker, keeping its number. */
-function stripSeriesMarker(name: string): { name: string; number?: string } {
+export function stripSeriesMarker(name: string): { name: string; number?: string } {
   const match = /\s*[(\[]([^)\]]*#\s*(\d{1,4}(?:\.\d+)?))\s*[)\]]\s*$/.exec(name);
   if (!match) return { name };
   return { name: name.slice(0, match.index).trim(), number: normaliseNumber(match[2]!) };

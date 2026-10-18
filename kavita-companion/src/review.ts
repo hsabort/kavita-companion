@@ -21,6 +21,7 @@ import { type FileKind, type Inspection, imageMime, inspectFile, inspectInBackgr
 import { bookMediaDefaults, canonicalBookName } from "./identify.js";
 import { cleanName, dedupeSeriesVolume } from "./naming.js";
 import * as kavita from "./kavita.js";
+import { mediaClass } from "./media.js";
 import { attributionFor } from "./providers/attribution.js";
 import { getCachedRecord, putCachedRecord } from "./providers/cache.js";
 import { providerCooldownMs, ProviderHttpError } from "./providers/http.js";
@@ -31,6 +32,7 @@ import {
   AGE_RATINGS, COMICINFO_FIELDS, escapeBareAmpersands, type Metadata, type MetadataField,
   opfPathFromContainer, readComicInfo, sanitizeEpubOpf, writeComicInfo, writeEpubMetadata,
 } from "./metadata.js";
+import { safeSegment, splitName, targetExtension } from "./rules.js";
 import { getUpload, type UploadRow } from "./uploads.js";
 
 const WORK_DIR = join(config.incomingDir, "work");
@@ -95,25 +97,10 @@ function requireReviewer(request: FastifyRequest, reply: FastifyReply): SessionU
 
 // ---------- Names and paths ----------
 
-/**
- * One path segment (folder or file name) that is safe on any filesystem: no separators, no
- * control or Windows-reserved characters, no leading dots, not "." or "..". Null if nothing is left.
- */
-export function safeSegment(input: string): string | null {
-  let s = input.normalize("NFC").replace(/[\u0000-\u001f\u007f<>:"/\\|?*]/g, " ");
-  // Leading dots/spaces (hidden files, "../.." remnants) and trailing dots/spaces (invalid on Windows).
-  s = s.replace(/\s+/g, " ").replace(/^[. ]+/, "").replace(/[. ]+$/, "");
-  while (Buffer.byteLength(s) > 200) s = s.slice(0, -1);
-  return s && s !== "." && s !== ".." ? s : null;
-}
-
-function splitName(filename: string): { base: string; ext: string } {
-  const dot = filename.lastIndexOf(".");
-  return dot <= 0 ? { base: filename, ext: "" } : { base: filename.slice(0, dot), ext: filename.slice(dot + 1).toLowerCase() };
-}
-
-/** What an approved file of this kind is saved as. Comic archives always become CBZ. */
-const targetExtension = (kind: FileKind) => (kind === "comic" ? "cbz" : kind);
+// `safeSegment`, `splitName` and `targetExtension` are pure, so they live in ./rules.js where the
+// conformance corpus can reach them without importing this module (and its database). Re-exported
+// here because callers and the rule spec already know them by this path.
+export { safeSegment } from "./rules.js";
 
 /** Kavita path (/data/comics/Saga) -> companion path (/media/comics/Saga). Null if outside /data. */
 function toLocalPath(kavitaPath: string): string | null {
@@ -146,7 +133,7 @@ async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: 
   const warnings: string[] = [];
   let defaults: Metadata;
 
-  if (mediaForLibraryType(libraryType) === "book") {
+  if (mediaClass(libraryType) === "book") {
     // Books are identified by their Title. Kavita's file-name parser is manga-shaped (it reads
     // "Catch-22" as series "Catch" and keeps an author prefix), so book defaults come from the
     // file-name guess plus embedded metadata instead.
@@ -163,7 +150,7 @@ async function defaultsFor(row: UploadRow, inspection: Inspection, libraryType: 
     // A "Vol. 5" trade has no issue number: Kavita sometimes reads one out of the subtitle
     // ("... Part 01"), which would otherwise become a spurious "#001". An explicit "vol" marker
     // means the number is noise, so drop it (the reviewer can still type one).
-    if (mediaForLibraryType(libraryType) === "comic" && defaults.Volume && /\bvol\.?\s*\d+/i.test(row.filename)) {
+    if (mediaClass(libraryType) === "comic" && defaults.Volume && /\bvol\.?\s*\d+/i.test(row.filename)) {
       delete defaults.Number;
     }
     // Clean the series so the card starts tidy (a scene tag or orphan bracket never reaches a folder).
@@ -227,13 +214,6 @@ async function suggestFor(row: UploadRow, inspection: Inspection, libraryType: n
 // let the reviewer pick one candidate, then merge its fetched fields onto the card's shared values
 // using the W1 merge rules (never overwrite a value the file already has unless mode="overwrite").
 // One lookup per human action; nothing is fetched in bulk and nothing is written to disk here.
-
-/** Kavita's LibraryType numbers -> provider media classes (see main.js templateName). */
-function mediaForLibraryType(type: number): MediaKind {
-  if (type === 0) return "manga";
-  if (type === 2 || type === 4) return "book";
-  return "comic";
-}
 
 /** Which providers are usable now, so the review card can offer "Find metadata" only where it can help. */
 function metadataAvailability() {
@@ -300,7 +280,7 @@ async function matchFor(
   overrides: { series?: string; title?: string; number?: string; year?: string; media?: MediaKind }, signal?: AbortSignal,
 ) {
   const { defaults } = await defaultsFor(row, inspection, libraryType);
-  const media = overrides.media ?? mediaForLibraryType(libraryType);
+  const media = overrides.media ?? mediaClass(libraryType);
   // Comics/manga are searched by their series; books by their title (their series is only a ranking
   // hint — see src/identify.ts). A book's series is the fallback key when the file has no title.
   const book = media === "book";
@@ -406,7 +386,7 @@ async function applyFor(
   const merged = mergeRecords({ records: [record], current, force, locked: [...locked] });
   // Kavita forks a comic's series when ComicInfo carries a Volume the folder doesn't encode, so a
   // comic is never offered one (the write path drops it as a backstop). Comics are LibraryType 5.
-  if (mediaForLibraryType(libraryType) === "comic") { delete merged.fields.Volume; delete merged.provenance.Volume; }
+  if (mediaClass(libraryType) === "comic") { delete merged.fields.Volume; delete merged.provenance.Volume; }
   return {
     provider: providerId, externalId, mode, cached,
     fields: merged.fields, provenance: merged.provenance, conflicts: merged.conflicts,
@@ -435,7 +415,7 @@ async function reviewItem(row: UploadRow, libraryTypes: Map<number, number>) {
   const { defaults, warnings } = await defaultsFor(row, inspection, libraryType);
   // A book is renamed to its canonical name before it is put in front of a reviewer, so the card
   // shows the file's real name (see settleStagedBookName).
-  const stagedName = mediaForLibraryType(libraryType) === "book"
+  const stagedName = mediaClass(libraryType) === "book"
     ? await settleStagedBookName(row, inspection)
     : null;
   return {
@@ -550,7 +530,7 @@ async function planApproval(row: UploadRow, input: ApproveInput, mode: JobMode =
   const extension = targetExtension(kindOf(source.ext));
   // A book's series is its folder: what the reviewer typed, else its metadata Series, else — for a
   // standalone — the author (else the title). Comics/manga keep the reviewer's series.
-  const book = mediaForLibraryType(library.type) === "book";
+  const book = mediaClass(library.type) === "book";
   const typedSeries = (input.seriesName || metadata.Series || "").trim();
   const seriesName = safeSegment(book ? canonicalBookName({ ...metadata, Series: typedSeries }).series : cleanName(typedSeries));
   if (!seriesName) throw new ReviewError(400, book ? "Enter a title or author." : "Enter a series name.");
@@ -836,7 +816,7 @@ async function fixItem(row: UploadRow) {
   const parsed = await kavita.parseName(row.filename, libraryType).catch(() => null);
   // The series it is filed under now (the folder name) is the best default; the file's metadata fills the rest.
   const currentSeries = basenameOf(dirname(source.path));
-  const defaults: Metadata = mediaForLibraryType(libraryType) === "book"
+  const defaults: Metadata = mediaClass(libraryType) === "book"
     // A book's folder is its series or its author, so use the review card's defaults: the author-as-series
     // guard and the file-name title fallback apply, and a standalone does not come back as "<Author> - <Title>".
     ? bookMediaDefaults(inspection.embedded, basenameOf(source.path))

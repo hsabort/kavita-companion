@@ -3,6 +3,7 @@ import Dashboard from "@uppy/dashboard";
 import Tus from "@uppy/tus";
 import "@uppy/core/css/style.min.css";
 import "@uppy/dashboard/css/style.min.css";
+import { mediaClass } from "../src/media.js";
 
 const $ = (id) => document.getElementById(id);
 const GB = 1024 ** 3;
@@ -605,7 +606,7 @@ function groupCard(items) {
     const meta = review?.metadata;
     if (!meta?.enabled) return null;
     const type = libraryType();
-    const media = type === 0 ? "manga" : (type === 2 || type === 4) ? "book" : "comic";
+    const media = mediaClass(type);
     return (meta.providers ?? []).some((provider) => provider.media.includes(media)) ? media : null;
   };
   const findButton = el("button", { type: "button", className: "btn btn-outline small", textContent: "Find metadata" });
