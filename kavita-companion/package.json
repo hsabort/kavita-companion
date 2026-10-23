@@ -20,7 +20,7 @@
     "@fastify/rate-limit": "11.2.1",
     "@fastify/static": "10.1.6",
     "@tus/file-store": "2.1.1",
-    "@tus/server": "2.4.5",
+    "@tus/server": "2.4.6",
     "fast-xml-parser": "5.11.2",
     "fastify": "5.12.7",
     "yazl": "3.3.1"
@@ -28,8 +28,8 @@
   "devDependencies": {
     "@types/node": "24.19.2",
     "@types/yazl": "3.3.1",
-    "@uppy/core": "6.2.0",
-    "@uppy/dashboard": "6.0.1",
+    "@uppy/core": "6.3.0",
+    "@uppy/dashboard": "6.0.2",
     "@uppy/tus": "6.0.0",
     "esbuild": "0.28.2",
     "typescript": "5.9.3"
