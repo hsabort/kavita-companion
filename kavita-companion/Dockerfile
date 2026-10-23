@@ -1,6 +1,6 @@
 # Official 7-Zip static build: reads zip/rar/7z (Alpine's 7zip package has no RAR support) and
 # writes zip. Version and checksum pinned; RAR code is under the unRAR license (extract only).
-FROM node:24.21.0-alpine AS sevenzip
+FROM node:26.12.0-alpine AS sevenzip
 ARG SEVENZIP_URL=https://www.7-zip.org/a/7z2601-linux-x64.tar.xz
 ARG SEVENZIP_SHA256=8ea0fc8a135e7b848e80a4116fe22dff56c8c4518dde1f43cce67f4e340b437a
 RUN apk add --no-cache tar xz \
@@ -8,7 +8,7 @@ RUN apk add --no-cache tar xz \
  && echo "$SEVENZIP_SHA256  /tmp/7z.tar.xz" | sha256sum -c - \
  && mkdir /7z && tar -xJf /tmp/7z.tar.xz -C /7z 7zzs License.txt
 
-FROM node:24.21.0-alpine AS build
+FROM node:26.12.0-alpine AS build
 WORKDIR /app
 COPY kavita-companion/package.json kavita-companion/package-lock.json ./
 RUN npm ci --ignore-scripts
@@ -18,7 +18,7 @@ COPY kavita-companion/web ./web
 COPY kavita-companion/public ./public
 RUN npm run build
 
-FROM node:24.21.0-alpine
+FROM node:26.12.0-alpine
 # The image is a combined work, so this label names every licence it actually contains — it is NOT
 # "Apache-2.0" alone. Apache-2.0 is this repository's own code; GPL-3.0-only is KindleUnpack and
 # LGPL-2.1-or-later (with the unRAR restriction) is 7-Zip, both bundled below; OFL-1.1 is the fonts.
